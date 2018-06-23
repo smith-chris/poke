@@ -6,6 +6,8 @@ const { WatchIgnorePlugin } = require('webpack')
 const isDev = process.argv.indexOf('-p') === -1
 let removeNull = array => array.filter(e => e !== null)
 
+const ASSETS_PATH = [path.resolve('./src/assets'), path.resolve('./poke-assets')]
+
 let urlLoaderOptions = Object.assign(
   {
     limit: 16 * 1024,
@@ -37,7 +39,7 @@ module.exports = {
       isDev ? '.dev.tsx' : '.prod.tsx',
       isDev ? '.dev.js' : '.prod.js',
     ],
-    modules: ['node_modules', path.resolve('./src')],
+    modules: ['node_modules', path.resolve('./src'), path.resolve('./poke-assets')],
   },
   devtool: 'source-map',
   plugins: [
@@ -79,7 +81,7 @@ module.exports = {
       },
       {
         test: /\.(eot|ttf|woff|woff2|svg)$/,
-        include: path.resolve('./src/assets'),
+        include: ASSETS_PATH,
         use: [
           {
             loader: 'url-loader',
@@ -89,7 +91,7 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|jpeg|gif)$/,
-        include: path.resolve('./src/assets'),
+        include: ASSETS_PATH,
         use: [
           {
             loader: 'sizeof-loader',
