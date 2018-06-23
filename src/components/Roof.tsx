@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Sprite, Container } from 'react-pixi-fiber'
 import { Texture, Rectangle, Point } from 'pixi.js'
 import { overworld, unit } from 'assets'
+import { loop } from 'utils/render'
 
 const POINT_ZERO = new Point(0, 0)
 const TEXTURE_ZERO = Texture.EMPTY
@@ -52,17 +53,14 @@ const threePieceVertTexture = ({
   midTexture = TEXTURE_ZERO,
   bottomTexture = TEXTURE_ZERO,
 }) => {
-  const mid = []
   const midRenderedHeight = height - topHeight - bottomHeight
-  for (let i = 0; i < midRenderedHeight; i += 1) {
-    mid.push(
-      <Sprite
-        key={`${id}_${i}`}
-        texture={midTexture}
-        position={new Point(0, topHeight * unit + i * unit)}
-      />,
-    )
-  }
+  const mid = loop(midRenderedHeight, i => (
+    <Sprite
+      key={`${id}_${i}`}
+      texture={midTexture}
+      position={new Point(0, topHeight * unit + i * unit)}
+    />
+  ))
   const midBottom = (topHeight + midRenderedHeight) * unit
   return (
     <>
@@ -81,42 +79,32 @@ const roofMidBottom = overworld.cut(14, 2, 2, midBottomHeight)
 
 const getRoofMid = (width = 2, height = 4) => {
   if (height === 4) {
-    const result = []
-    for (let x = 0; x < width / 2; x++) {
-      result.push(
-        <Sprite
-          key={`roofMid_${x}`}
-          texture={roofMid}
-          position={new Point(x * unit * 2, 0)}
-        />,
-      )
-    }
-    return result
+    return loop(width / 2, x => (
+      <Sprite
+        key={`roofMid_${x}`}
+        texture={roofMid}
+        position={new Point(x * unit * 2, 0)}
+      />
+    ))
   }
   const midHeight = Math.round(height - midTopHeight - midBottomHeight)
 
-  const top = []
-  for (let x = 0; x < width / 2; x++) {
-    top.push(
-      <Sprite
-        key={`top_${x}`}
-        texture={roofMidTop}
-        position={new Point(x * unit * 2, 0)}
-      />,
-    )
-  }
+  const top = loop(width / 2, x => (
+    <Sprite
+      key={`top_${x}`}
+      texture={roofMidTop}
+      position={new Point(x * unit * 2, 0)}
+    />
+  ))
 
   const midBottom = (midTopHeight + midHeight) * unit - 1
-  const bottom = []
-  for (let x = 0; x < width / 2; x++) {
-    bottom.push(
-      <Sprite
-        key={`bottom_${x}`}
-        texture={roofMidBottom}
-        position={new Point(x * unit * 2, midBottom)}
-      />,
-    )
-  }
+  const bottom = loop(width / 2, x => (
+    <Sprite
+      key={`bottom_${x}`}
+      texture={roofMidBottom}
+      position={new Point(x * unit * 2, midBottom)}
+    />
+  ))
 
   return (
     <>
@@ -129,21 +117,14 @@ const getRoofMid = (width = 2, height = 4) => {
 
 const roofPattern = overworld.cut(4, 2, 2, 2)
 
-const getPattern = (width = 1, height = 1, _y = 0) => {
-  const results = []
-  for (let x = 0; x <= width; x++) {
-    for (let y = 0; y < height; y++) {
-      results.push(
-        <Sprite
-          key={`${x}x${y}`}
-          texture={roofPattern}
-          position={new Point(x * unit * 2 - unit, _y + y * unit * 2)}
-        />,
-      )
-    }
-  }
-  return results
-}
+const getPattern = (width = 1, height = 1, _y = 0) =>
+  loop(width, height, (x, y) => (
+    <Sprite
+      key={`${x}x${y}`}
+      texture={roofPattern}
+      position={new Point(x * unit * 2 - unit, _y + y * unit * 2)}
+    />
+  ))
 
 const MIN_WIDTH = 8
 const MIN_HEIGHT = 6
