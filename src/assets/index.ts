@@ -16,6 +16,9 @@ const cutTexture = (baseTexture: BaseTexture) => (
 
 const addTexture = (asset: typeof _overworld) => {
   const { baseTexture } = Texture.fromImage(asset.src)
+  // Seems like pixi do not read b64 image dimensions correctly
+  baseTexture.width = asset.width
+  baseTexture.height = asset.height
   return { ...asset, baseTexture, cut: cutTexture(baseTexture) }
 }
 
