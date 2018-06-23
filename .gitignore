@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+.cache-loader/
+node_modules/
+dist
+*.sass.d.ts
