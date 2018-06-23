@@ -167,7 +167,7 @@ type Props = {
   height?: number
 }
 
-export class House extends Component<Props> {
+export class Roof extends Component<Props> {
   render() {
     let { width, height } = this.props
     if (!width || width < MIN_WIDTH) {

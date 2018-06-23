@@ -9,7 +9,7 @@ import { BitmapText } from 'utils/components'
 import RandomGenerator from 'utils/RandomGenerator'
 import red from 'gfx/sprites/red.png'
 import { Texture, Rectangle } from 'pixi.js'
-import { House } from './House'
+import { Roof } from './Roof'
 
 const redTexture = Texture.fromImage(red.src)
 redTexture.frame = new Rectangle(0, 0, 16, 16)
@@ -33,7 +33,7 @@ class Game extends Component<Props> {
     } = this.props
     return (
       <>
-        <House width={16} height={8} />
+        <Roof width={24} height={10} />
         <Container position={new Point(32, 32)}>
           <Sprite texture={redTexture} />
         </Container>
