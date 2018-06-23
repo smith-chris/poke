@@ -1,32 +1,20 @@
 import React, { Component } from 'react'
 import { Sprite, Container } from 'react-pixi-fiber'
-import overworld from 'gfx/tilesets/overworld.png'
 import { Texture, Rectangle, Point } from 'pixi.js'
+import { overworld, unit } from 'assets'
 
 const POINT_ZERO = new Point(0, 0)
-const { baseTexture } = Texture.fromImage(overworld.src)
-const TEXTURE_ZERO = new Texture(baseTexture)
+const TEXTURE_ZERO = Texture.EMPTY
 
-const unit = 4
+const roofRight = overworld.cut(16, 0, 4, 6)
+const roofRightTop = overworld.cut(16, 0, 4, 2)
+const roofRightMid = overworld.cut(16, 2, 4, 1)
+const roofRightBottom = overworld.cut(16, 3, 4, 3)
 
-const getTexture = (x = 0, y = 0, width = 1 * unit, height = 1 * unit) => {
-  const tx = new Texture(baseTexture)
-  tx.frame = new Rectangle(x, y, width, height)
-  return tx
-}
-
-const getTextureSimple = (x = 0, y = 0, width = 1, height = 1) =>
-  getTexture(x * unit, y * unit, width * unit, height * unit)
-
-const roofRight = getTextureSimple(16, 0, 4, 6)
-const roofRightTop = getTextureSimple(16, 0, 4, 2)
-const roofRightMid = getTextureSimple(16, 2, 4, 1)
-const roofRightBottom = getTextureSimple(16, 3, 4, 3)
-
-const roofLeft = getTextureSimple(10, 0, 4, 6) // height = 6
-const roofLeftTop = getTextureSimple(10, 0, 4, 2)
-const roofLeftMid = getTextureSimple(10, 2, 4, 1)
-const roofLeftBottom = getTextureSimple(10, 3, 4, 3)
+const roofLeft = overworld.cut(10, 0, 4, 6) // height = 6
+const roofLeftTop = overworld.cut(10, 0, 4, 2)
+const roofLeftMid = overworld.cut(10, 2, 4, 1)
+const roofLeftBottom = overworld.cut(10, 3, 4, 3)
 
 const getRoofLeft = (height = 6, id = '') => {
   return threePieceVertTexture({
@@ -85,11 +73,11 @@ const threePieceVertTexture = ({
   )
 }
 
-const roofMid = getTextureSimple(14, 0, 2, 4)
+const roofMid = overworld.cut(14, 0, 2, 4)
 const midTopHeight = 5 / unit
-const roofMidTop = getTextureSimple(14, 0, 2, midTopHeight)
+const roofMidTop = overworld.cut(14, 0, 2, midTopHeight)
 const midBottomHeight = 2
-const roofMidBottom = getTextureSimple(14, 2, 2, midBottomHeight)
+const roofMidBottom = overworld.cut(14, 2, 2, midBottomHeight)
 
 const getRoofMid = (width = 2, height = 4) => {
   if (height === 4) {
@@ -139,7 +127,7 @@ const getRoofMid = (width = 2, height = 4) => {
   )
 }
 
-const roofPattern = getTextureSimple(4, 2, 2, 2)
+const roofPattern = overworld.cut(4, 2, 2, 2)
 
 const getPattern = (width = 1, height = 1, _y = 0) => {
   const results = []
