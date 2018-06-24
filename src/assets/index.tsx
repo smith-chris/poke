@@ -5,6 +5,9 @@ import { ObjectOf } from 'utils/types'
 import { Sprite } from 'react-pixi-fiber'
 import { loop } from 'utils/render'
 import { Point } from 'utils/pixi'
+import flatten from 'lodash.flatten'
+import mapValues from 'lodash.mapvalues'
+
 export const unit = 4
 
 const cutTexture = (baseTexture: BaseTexture) => (
@@ -38,135 +41,94 @@ const grass2 = _ov.cut(18, 6, 2, 2)
 const wildGrass = _ov.cut(4, 10, 2, 2)
 const fence = _ov.cut(20, 4, 4, 4)
 
-_ov.segments['52'] = (
-  <>
-    {loop(4, 2, (x, y) => (
-      <Sprite
-        key={`52_${x}x${y}`}
-        position={new Point(x * unit * 2, y * unit * 2)}
-        texture={grass}
-      />
-    ))}
-    <Sprite position={new Point(0, unit * 4)} texture={fence} />
-    <Sprite position={new Point(unit * 4, unit * 4)} texture={fence} />
-  </>
-)
+type SpriteDef = {
+  texture: Texture
+  position: Point
+}
 
-_ov.segments['61'] = (
-  <>
-    {loop(4, 2, (x, y) => (
-      <Sprite
-        key={`${x}x${y}`}
-        position={new Point(x * unit * 2, y * unit * 2)}
-        texture={grass2}
-      />
-    ))}
-    <Sprite position={new Point(0, unit * 4)} texture={fence} />
-    <Sprite position={new Point(unit * 4, unit * 4)} texture={fence} />
-  </>
-)
+const makeSprites = (positions: Array<SpriteDef | Array<SpriteDef>>) =>
+  flatten(positions).map(({ texture, position: { x, y } }) => (
+    <Sprite
+      key={`${x}x${y}`}
+      texture={texture}
+      position={new Point(x * unit, y * unit)}
+    />
+  ))
 
-_ov.segments['4f'] = (
-  <>
-    {loop(2, 2, (x, y) => (
-      <Sprite
-        key={`4f_${x}x${y}`}
-        position={new Point(x * unit * 2, y * unit * 2)}
-        texture={grass}
-      />
-    ))}
-    <Sprite position={new Point(unit * 4, 0)} texture={fence} />
-    <Sprite position={new Point(0, unit * 4)} texture={fence} />
-    <Sprite position={new Point(unit * 4, unit * 4)} texture={fence} />
-  </>
-)
+const ovSegments = {
+  '52': [
+    loop(4, 2, (x, y) => ({ texture: grass, position: new Point(x * 2, y * 2) })),
+    { texture: fence, position: new Point(0, 4) },
+    { texture: fence, position: new Point(4, 4) },
+  ],
+  '61': [
+    loop(4, 2, (x, y) => ({
+      position: new Point(x * 2, y * 2),
+      texture: grass2,
+    })),
+    { position: new Point(0, 4), texture: fence },
+    { position: new Point(4, 4), texture: fence },
+  ],
+  '4f': [
+    loop(2, 2, (x, y) => ({
+      position: new Point(x * 2, y * 2),
+      texture: grass,
+    })),
+    { position: new Point(4, 0), texture: fence },
+    { position: new Point(0, 4), texture: fence },
+    { position: new Point(4, 4), texture: fence },
+  ],
+  '50': [
+    loop(2, 2, (x, y) => ({
+      position: new Point(x * 2 + 4, y * 2),
+      texture: grass,
+    })),
+    { position: new Point(0, 0), texture: fence },
+    { position: new Point(0, 4), texture: fence },
+    { position: new Point(4, 4), texture: fence },
+  ],
+  '4e': [
+    loop(2, 4, (x, y) => ({
+      position: new Point(x * 2 + 4, y * 2),
+      texture: grass,
+    })),
+    { position: new Point(0, 0), texture: fence },
+    { position: new Point(0, 4), texture: fence },
+  ],
+  '4d': [
+    loop(2, 4, (x, y) => ({
+      position: new Point(x * 2, y * 2),
+      texture: grass,
+    })),
+    { position: new Point(4, 0), texture: fence },
+    { position: new Point(4, 4), texture: fence },
+  ],
+  '1': [
+    { position: new Point(0, 2), texture: grass2 },
+    { position: new Point(4, 6), texture: grass2 },
+  ],
+  b: [
+    loop(4, 4, (x, y) => ({
+      position: new Point(x * 2, y * 2),
+      texture: wildGrass,
+    })),
+  ],
+  a: [
+    loop(4, 4, (x, y) => ({
+      position: new Point(x * 2, y * 2),
+      texture: grass,
+    })),
+  ],
+  '31': [
+    loop(4, 4, (x, y) => ({
+      position: new Point(x * 2, y * 2),
+      texture: grass2,
+    })),
+  ],
+}
 
-_ov.segments['50'] = (
-  <>
-    {loop(2, 2, (x, y) => (
-      <Sprite
-        key={`50_${x}x${y}`}
-        position={new Point(x * unit * 2 + 4 * unit, y * unit * 2)}
-        texture={grass}
-      />
-    ))}
-    <Sprite position={new Point(0, 0)} texture={fence} />
-    <Sprite position={new Point(0, unit * 4)} texture={fence} />
-    <Sprite position={new Point(unit * 4, unit * 4)} texture={fence} />
-  </>
-)
-
-_ov.segments['4e'] = (
-  <>
-    {loop(2, 4, (x, y) => (
-      <Sprite
-        key={`e1_${x}x${y}`}
-        position={new Point(x * unit * 2 + unit * 4, y * unit * 2)}
-        texture={grass}
-      />
-    ))}
-    <Sprite position={new Point(0, 0)} texture={fence} />
-    <Sprite position={new Point(0, unit * 4)} texture={fence} />
-  </>
-)
-
-_ov.segments['4d'] = (
-  <>
-    {loop(2, 4, (x, y) => (
-      <Sprite
-        key={`${x}x${y}`}
-        position={new Point(x * unit * 2, y * unit * 2)}
-        texture={grass}
-      />
-    ))}
-    <Sprite position={new Point(4 * unit, 0)} texture={fence} />
-    <Sprite position={new Point(4 * unit, unit * 4)} texture={fence} />
-  </>
-)
-
-_ov.segments['1'] = (
-  <>
-    <Sprite position={new Point(0, unit * 2)} texture={grass2} />
-    <Sprite position={new Point(unit * 4, unit * 6)} texture={grass2} />
-  </>
-)
-
-_ov.segments.b = (
-  <>
-    {loop(4, 4, (x, y) => (
-      <Sprite
-        key={`b5_${x}x${y}`}
-        position={new Point(x * unit * 2, y * unit * 2)}
-        texture={wildGrass}
-      />
-    ))}
-  </>
-)
-
-_ov.segments.a = (
-  <>
-    {loop(4, 4, (x, y) => (
-      <Sprite
-        key={`a_${x}x${y}`}
-        position={new Point(x * unit * 2, y * unit * 2)}
-        texture={grass}
-      />
-    ))}
-  </>
-)
-
-_ov.segments['31'] = (
-  <>
-    {loop(4, 4, (x, y) => (
-      <Sprite
-        key={`${x}x${y}`}
-        position={new Point(x * unit * 2, y * unit * 2)}
-        texture={grass2}
-      />
-    ))}
-  </>
-)
-
-// _ov.segments = {}
+_ov.segments = mapValues(ovSegments, (value, key) => {
+  return makeSprites(value)
+})
 
 export const overworld = _ov

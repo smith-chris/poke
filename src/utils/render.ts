@@ -1,6 +1,10 @@
-type SpaceMapFunc = (a: number, b: number) => void
+type SpaceMapFunc<T> = (a: number, b: number) => T
 
-export const loop = (a: number, b?: number | SpaceMapFunc, c?: SpaceMapFunc) => {
+export const loop = <T>(
+  a: number,
+  b?: number | SpaceMapFunc<T>,
+  c?: SpaceMapFunc<T>,
+) => {
   const func = typeof b === 'function' ? b : c
   if (!func) {
     return []

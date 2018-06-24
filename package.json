@@ -26,6 +26,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bluebird": "^3.5.20",
+    "@types/lodash.flatten": "^4.4.3",
     "@types/lodash.mapvalues": "^4.6.3",
     "@types/random-js": "^1.0.30",
     "@types/react": "^16.3.16",
@@ -43,6 +44,7 @@
     "jss-nested": "^3.0.0",
     "jss-vendor-prefixer": "^4.0.0",
     "lodash.debounce": "^4.0.3",
+    "lodash.flatten": "^4.4.0",
     "lodash.mapvalues": "^4.6.0",
     "pixi.js": "^4.8.0",
     "random-js": "^1.0.8",
