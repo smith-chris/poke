@@ -14,7 +14,7 @@ You need also original pokemon red assets. Download/clone this repo:
 
 https://github.com/pret/pokered/tree/98f09b6d26b1f83bdf1779cfe63a73b8a4265aef
 
-and put `/gfx` folder in `/poke-assets` folder (you need to create it).
+and put `/gfx` and `/maps` folder in `/poke-assets` folder (you need to create it).
 
 --
 

@@ -14,7 +14,7 @@ const cutTexture = (baseTexture: BaseTexture) => (
   return tx
 }
 
-const addTexture = (asset: typeof _overworld) => {
+const makeTexture = (asset: typeof _overworld) => {
   const { baseTexture } = Texture.fromImage(asset.src)
   // Seems like pixi do not read b64 image dimensions correctly
   baseTexture.width = asset.width
@@ -22,4 +22,4 @@ const addTexture = (asset: typeof _overworld) => {
   return { ...asset, baseTexture, cut: cutTexture(baseTexture) }
 }
 
-export const overworld = addTexture(_overworld)
+export const overworld = makeTexture(_overworld)

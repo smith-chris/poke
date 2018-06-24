@@ -9,3 +9,9 @@ declare module '*.png' {
 
   export default image
 }
+
+declare module '*.blk' {
+  const map: string
+
+  export default map
+}

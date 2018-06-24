@@ -71,7 +71,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.(xml)$/,
+        test: /\.(xml|blk)$/,
+        include: ASSETS_PATH,
         use: [
           {
             loader: 'raw-loader',
