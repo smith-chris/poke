@@ -17,6 +17,7 @@ const Placeholder = ({ text = '' }) => (
       color="white"
       text={text}
       anchor={0.5}
+      scale={new Point(2, 2)}
       position={new Point(tileSize / 2, tileSize / 2)}
     />
   </>
@@ -33,14 +34,17 @@ export class PalletTown extends Component<Props> {
   render() {
     return (
       <>
-        {palletTown.tiles.map(({ tile, x, y }) => (
-          <Container
-            key={`${tile}_${x}x${y}`}
-            position={new Point(x * tileSize, y * tileSize)}
-          >
-            <Placeholder text={tile} />
-          </Container>
-        ))}
+        {palletTown.tiles.map(({ tile, x, y }) => {
+          const segment = palletTown.texture.segments[tile]
+          return (
+            <Container
+              key={`${tile}_${x}x${y}`}
+              position={new Point(x * tileSize, y * tileSize)}
+            >
+              {segment ? segment : <Placeholder text={tile} />}
+            </Container>
+          )
+        })}
       </>
     )
   }

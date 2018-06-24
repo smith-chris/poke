@@ -8,11 +8,11 @@ const ascii2hex = (input: string) => {
     var hex = Number(input.charCodeAt(i)).toString(16)
     arr.push(hex)
   }
-  return arr.join('')
+  return arr
 }
 
 const makeMap = (tiles: string, width = 0, height = 0, texture = overworld) => {
-  const parsedTiles = ascii2hex(tiles).match(/.{1,2}/g)
+  const parsedTiles = ascii2hex(tiles)
   if (!parsedTiles) {
     throw new Error(`Couldnt parse the tiles (${tiles})`)
   }
