@@ -15,3 +15,9 @@ declare module '*.blk' {
 
   export default map
 }
+
+declare module '*.bst' {
+  const blockset: string
+
+  export default blockset
+}

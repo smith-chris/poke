@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Roof } from './Roof'
-import { overworld, unit } from 'assets'
+import { overworld } from 'assets'
 import { Sprite, Container } from 'react-pixi-fiber'
 import { Point } from 'utils/pixi'
 import { loop } from 'utils/render'
@@ -23,19 +22,14 @@ const Placeholder = ({ text = '' }) => (
   </>
 )
 
-const window = overworld.cut(20, 0, 2, 2)
-
 type Props = {}
-
-const roofHeight = 6
-const middleTop = (roofHeight - 2) * unit
 
 export class PalletTown extends Component<Props> {
   render() {
     return (
       <>
         {palletTown.tiles.map(({ tile, x, y }) => {
-          const segment = palletTown.texture.segments[tile]
+          const segment = palletTown.texture.getBlock(tile)
           return (
             <Container
               key={`${tile}_${x}x${y}`}

@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import _overworld from 'gfx/tilesets/overworld.png'
+import _overworldBlockset from 'gfx/blocksets/overworld.bst'
 import { Texture, BaseTexture, Rectangle } from 'pixi.js'
 import { ObjectOf } from 'utils/types'
 import { Sprite } from 'react-pixi-fiber'
@@ -7,39 +8,25 @@ import { loop } from 'utils/render'
 import { Point } from 'utils/pixi'
 import flatten from 'lodash.flatten'
 import mapValues from 'lodash.mapvalues'
+import { ascii2hex } from './utils'
 
-export const unit = 4
+const overworldBlockset = ascii2hex(_overworldBlockset).map(e => parseInt(e, 16))
+
+const getTileIds = (hex: string) => {
+  const startByte = parseInt(hex, 16) * 16
+  return overworldBlockset.slice(startByte, startByte + 16)
+}
 
 const cutTexture = (baseTexture: BaseTexture) => (
   x = 0,
   y = 0,
-  width = 1 * unit,
-  height = 1 * unit,
+  width = 1,
+  height = 1,
 ) => {
   const tx = new Texture(baseTexture)
-  tx.frame = new Rectangle(x * unit, y * unit, width * unit, height * unit)
+  tx.frame = new Rectangle(x, y, width, height)
   return tx
 }
-
-const makeTexture = (asset: typeof _overworld) => {
-  const { baseTexture } = Texture.fromImage(asset.src)
-  // Seems like pixi do not read b64 image dimensions correctly
-  baseTexture.width = asset.width
-  baseTexture.height = asset.height
-  return {
-    ...asset,
-    baseTexture,
-    cut: cutTexture(baseTexture),
-    segments: {} as ObjectOf<ReactNode>,
-  }
-}
-
-let _ov = makeTexture(_overworld)
-
-const grass = _ov.cut(24, 4, 2, 2)
-const grass2 = _ov.cut(18, 6, 2, 2)
-const wildGrass = _ov.cut(4, 10, 2, 2)
-const fence = _ov.cut(20, 4, 4, 4)
 
 type SpriteDef = {
   texture: Texture
@@ -48,87 +35,42 @@ type SpriteDef = {
 
 const makeSprites = (positions: Array<SpriteDef | Array<SpriteDef>>) =>
   flatten(positions).map(({ texture, position: { x, y } }) => (
-    <Sprite
-      key={`${x}x${y}`}
-      texture={texture}
-      position={new Point(x * unit, y * unit)}
-    />
+    <Sprite key={`${x}x${y}`} texture={texture} position={new Point(x, y)} />
   ))
 
-const ovSegments = {
-  '52': [
-    loop(4, 2, (x, y) => ({ texture: grass, position: new Point(x * 2, y * 2) })),
-    { texture: fence, position: new Point(0, 4) },
-    { texture: fence, position: new Point(4, 4) },
-  ],
-  '61': [
-    loop(4, 2, (x, y) => ({
-      position: new Point(x * 2, y * 2),
-      texture: grass2,
-    })),
-    { position: new Point(0, 4), texture: fence },
-    { position: new Point(4, 4), texture: fence },
-  ],
-  '4f': [
-    loop(2, 2, (x, y) => ({
-      position: new Point(x * 2, y * 2),
-      texture: grass,
-    })),
-    { position: new Point(4, 0), texture: fence },
-    { position: new Point(0, 4), texture: fence },
-    { position: new Point(4, 4), texture: fence },
-  ],
-  '50': [
-    loop(2, 2, (x, y) => ({
-      position: new Point(x * 2 + 4, y * 2),
-      texture: grass,
-    })),
-    { position: new Point(0, 0), texture: fence },
-    { position: new Point(0, 4), texture: fence },
-    { position: new Point(4, 4), texture: fence },
-  ],
-  '4e': [
-    loop(2, 4, (x, y) => ({
-      position: new Point(x * 2 + 4, y * 2),
-      texture: grass,
-    })),
-    { position: new Point(0, 0), texture: fence },
-    { position: new Point(0, 4), texture: fence },
-  ],
-  '4d': [
-    loop(2, 4, (x, y) => ({
-      position: new Point(x * 2, y * 2),
-      texture: grass,
-    })),
-    { position: new Point(4, 0), texture: fence },
-    { position: new Point(4, 4), texture: fence },
-  ],
-  '1': [
-    { position: new Point(0, 2), texture: grass2 },
-    { position: new Point(4, 6), texture: grass2 },
-  ],
-  b: [
-    loop(4, 4, (x, y) => ({
-      position: new Point(x * 2, y * 2),
-      texture: wildGrass,
-    })),
-  ],
-  a: [
-    loop(4, 4, (x, y) => ({
-      position: new Point(x * 2, y * 2),
-      texture: grass,
-    })),
-  ],
-  '31': [
-    loop(4, 4, (x, y) => ({
-      position: new Point(x * 2, y * 2),
-      texture: grass2,
-    })),
-  ],
+const getSegment = (hex: string, block: Texture[]) => {
+  return loop(4, 4, (y, x) => ({ x: x * 8, y: y * 8 })).map((position, i) => {
+    return {
+      texture: block[i],
+      position: position as Point,
+    }
+  })
 }
 
-_ov.segments = mapValues(ovSegments, (value, key) => {
-  return makeSprites(value)
-})
+const makeTexture = (asset: typeof _overworld) => {
+  const { baseTexture } = Texture.fromImage(asset.src)
+  // Seems like pixi do not read b64 image dimensions correctly
+  baseTexture.width = asset.width
+  baseTexture.height = asset.height
+  const getBlockTexture = (hex: string) => {
+    const ids = getTileIds(hex)
+    return ids.map(num => {
+      const px = num * 8
+      return cutTexture(baseTexture)(
+        px % asset.width,
+        Math.floor(px / asset.width) * 8,
+        8,
+        8,
+      )
+    })
+  }
+  return {
+    ...asset,
+    baseTexture,
+    getBlock: (hex: string) => makeSprites(getSegment(hex, getBlockTexture(hex))),
+  }
+}
 
-export const overworld = _ov
+let _overworldObject = makeTexture(_overworld)
+
+export const overworld = _overworldObject

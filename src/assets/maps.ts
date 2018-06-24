@@ -1,15 +1,7 @@
 import _palletTown from 'maps/pallettown.blk'
 import { ImageAsset } from '*.png'
 import { overworld } from './index'
-
-const ascii2hex = (input: string) => {
-  var arr = []
-  for (var i = 0, l = input.length; i < l; i++) {
-    var hex = Number(input.charCodeAt(i)).toString(16)
-    arr.push(hex)
-  }
-  return arr
-}
+import { ascii2hex } from './utils'
 
 const makeMap = (tiles: string, width = 0, height = 0, texture = overworld) => {
   const parsedTiles = ascii2hex(tiles)
