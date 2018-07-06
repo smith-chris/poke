@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react'
 import _overworld from 'gfx/tilesets/overworld.png'
-import _overworldBlockset from 'gfx/blocksets/overworld.bst'
 import { Texture, BaseTexture, Rectangle } from 'pixi.js'
 import { ObjectOf } from 'utils/types'
 import { Sprite } from 'react-pixi-fiber'
@@ -8,14 +7,8 @@ import { loop } from 'utils/render'
 import { Point } from 'utils/pixi'
 import flatten from 'lodash.flatten'
 import mapValues from 'lodash.mapvalues'
-import { ascii2hex } from './utils'
-
-const overworldBlockset = ascii2hex(_overworldBlockset).map(e => parseInt(e, 16))
-
-const getTileIds = (hex: string) => {
-  const startByte = parseInt(hex, 16) * 16
-  return overworldBlockset.slice(startByte, startByte + 16)
-}
+import { parseHexData } from './utils'
+import { getTextureLocationHexes } from './blocksets'
 
 const cutTexture = (baseTexture: BaseTexture) => (
   x = 0,
@@ -38,10 +31,10 @@ const makeSprites = (positions: Array<SpriteDef | Array<SpriteDef>>) =>
     <Sprite key={`${x}x${y}`} texture={texture} position={new Point(x, y)} />
   ))
 
-const getSegment = (hex: string, block: Texture[]) => {
+const getSegment = (hex: number, blocks: Texture[]) => {
   return loop(4, 4, (y, x) => ({ x: x * 8, y: y * 8 })).map((position, i) => {
     return {
-      texture: block[i],
+      texture: blocks[i],
       position: position as Point,
     }
   })
@@ -52,8 +45,8 @@ const makeTexture = (asset: typeof _overworld) => {
   // Seems like pixi do not read b64 image dimensions correctly
   baseTexture.width = asset.width
   baseTexture.height = asset.height
-  const getBlockTexture = (hex: string) => {
-    const ids = getTileIds(hex)
+  const getBlockTexture = (hex: number) => {
+    const ids = getTextureLocationHexes(hex)
     return ids.map(num => {
       const px = num * 8
       return cutTexture(baseTexture)(
@@ -67,7 +60,7 @@ const makeTexture = (asset: typeof _overworld) => {
   return {
     ...asset,
     baseTexture,
-    getBlock: (hex: string) => makeSprites(getSegment(hex, getBlockTexture(hex))),
+    getBlock: (hex: number) => makeSprites(getSegment(hex, getBlockTexture(hex))),
   }
 }
 

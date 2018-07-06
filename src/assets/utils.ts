@@ -1,8 +1,8 @@
-export const ascii2hex = (input: string) => {
-  const arr = []
-  for (let i = 0, l = input.length; i < l; i++) {
-    const hex = Number(input.charCodeAt(i)).toString(16)
-    arr.push(hex)
+export const parseHexData = (input: string) => {
+  const result = []
+  for (let i = 0; i < input.length; i++) {
+    const value = Number(input.charCodeAt(i))
+    result.push(value)
   }
-  return arr
+  return result
 }

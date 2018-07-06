@@ -1,10 +1,10 @@
 import _palletTown from 'maps/pallettown.blk'
 import { ImageAsset } from '*.png'
 import { overworld } from './index'
-import { ascii2hex } from './utils'
+import { parseHexData } from './utils'
 
 const makeMap = (tiles: string, width = 0, height = 0, texture = overworld) => {
-  const parsedTiles = ascii2hex(tiles)
+  const parsedTiles = parseHexData(tiles)
   if (!parsedTiles) {
     throw new Error(`Couldnt parse the tiles (${tiles})`)
   }

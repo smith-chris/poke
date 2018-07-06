@@ -35,7 +35,7 @@ export class PalletTown extends Component<Props> {
               key={`${tile}_${x}x${y}`}
               position={new Point(x * tileSize, y * tileSize)}
             >
-              {segment ? segment : <Placeholder text={tile} />}
+              {segment ? segment : <Placeholder text={tile.toString()} />}
             </Container>
           )
         })}
