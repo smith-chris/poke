@@ -10,6 +10,8 @@ import mapValues from 'lodash.mapvalues'
 import { parseHexData } from './utils'
 import { getTextureLocationHexes } from './blocksets'
 
+type Asset = typeof _overworld
+
 const cutTexture = (baseTexture: BaseTexture) => (
   x = 0,
   y = 0,
@@ -21,16 +23,6 @@ const cutTexture = (baseTexture: BaseTexture) => (
   return tx
 }
 
-type SpriteDef = {
-  texture: Texture
-  position: Point
-}
-
-const makeSprites = (positions: Array<SpriteDef | Array<SpriteDef>>) =>
-  flatten(positions).map(({ texture, position: { x, y } }) => (
-    <Sprite key={`${x}x${y}`} texture={texture} position={new Point(x, y)} />
-  ))
-
 const getSegment = (hex: number, blocks: Texture[]) => {
   return loop(4, 4, (y, x) => ({ x: x * 8, y: y * 8 })).map((position, i) => {
     return {
@@ -40,27 +32,31 @@ const getSegment = (hex: number, blocks: Texture[]) => {
   })
 }
 
-const makeTexture = (asset: typeof _overworld) => {
+export type Segment = ReturnType<typeof getSegment>
+
+const getBlockTexture = (hex: number, baseTexture: BaseTexture) => {
+  const ids = getTextureLocationHexes(hex)
+  return ids.map(num => {
+    const px = num * 8
+    return cutTexture(baseTexture)(
+      px % baseTexture.width,
+      Math.floor(px / baseTexture.width) * 8,
+      8,
+      8,
+    )
+  })
+}
+
+const makeTexture = (asset: Asset) => {
   const { baseTexture } = Texture.fromImage(asset.src)
   // Seems like pixi do not read b64 image dimensions correctly
   baseTexture.width = asset.width
   baseTexture.height = asset.height
-  const getBlockTexture = (hex: number) => {
-    const ids = getTextureLocationHexes(hex)
-    return ids.map(num => {
-      const px = num * 8
-      return cutTexture(baseTexture)(
-        px % asset.width,
-        Math.floor(px / asset.width) * 8,
-        8,
-        8,
-      )
-    })
-  }
+
   return {
     ...asset,
     baseTexture,
-    getBlock: (hex: number) => makeSprites(getSegment(hex, getBlockTexture(hex))),
+    getBlock: (hex: number) => getSegment(hex, getBlockTexture(hex, baseTexture)),
   }
 }
 

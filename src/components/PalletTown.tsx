@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { overworld } from 'assets'
+import { overworld, Segment } from 'assets'
 import { Sprite, Container } from 'react-pixi-fiber'
 import { Point } from 'utils/pixi'
 import { loop } from 'utils/render'
@@ -22,20 +22,29 @@ const Placeholder = ({ text = '' }) => (
   </>
 )
 
+const makeSprites = (positions: Segment) =>
+  positions.map(({ texture, position: { x, y } }) => (
+    <Sprite key={`${x}x${y}`} texture={texture} position={new Point(x, y)} />
+  ))
+
 type Props = {}
 
 export class PalletTown extends Component<Props> {
   render() {
     return (
       <>
-        {palletTown.tiles.map(({ tile, x, y }) => {
-          const segment = palletTown.texture.getBlock(tile)
+        {palletTown.tiles.map(({ blockId, x, y }) => {
+          const segment = palletTown.texture.getBlock(blockId)
           return (
             <Container
-              key={`${tile}_${x}x${y}`}
+              key={`${blockId}_${x}x${y}`}
               position={new Point(x * tileSize, y * tileSize)}
             >
-              {segment ? segment : <Placeholder text={tile.toString()} />}
+              {segment ? (
+                makeSprites(segment)
+              ) : (
+                <Placeholder text={blockId.toString()} />
+              )}
             </Container>
           )
         })}
