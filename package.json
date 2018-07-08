@@ -26,6 +26,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bluebird": "^3.5.20",
+    "@types/keyboardjs": "^2.2.31",
     "@types/lodash.flatten": "^4.4.3",
     "@types/lodash.mapvalues": "^4.6.3",
     "@types/random-js": "^1.0.30",
@@ -43,6 +44,7 @@
     "jss": "^6.0.0",
     "jss-nested": "^3.0.0",
     "jss-vendor-prefixer": "^4.0.0",
+    "keyboardjs": "^2.4.1",
     "lodash.debounce": "^4.0.3",
     "lodash.flatten": "^4.4.0",
     "lodash.mapvalues": "^4.6.0",

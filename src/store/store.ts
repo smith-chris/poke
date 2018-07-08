@@ -1,11 +1,16 @@
 import { composeWithDevTools } from 'redux-devtools-extension'
-import Redux, { createStore, combineReducers, applyMiddleware } from 'redux'
-import { uiReducer, UIState } from './ui'
+import Redux, {
+  createStore,
+  combineReducers,
+  applyMiddleware,
+  bindActionCreators,
+} from 'redux'
+import { gameReducer, GameState, gameActions } from './game'
 import { transformActions } from 'utils/redux'
 
 declare global {
   type StoreState = {
-    readonly ui: UIState
+    readonly game: GameState
   }
 
   type Store = Redux.Store<StoreState>
@@ -14,10 +19,12 @@ declare global {
 }
 
 export const reducers = combineReducers<StoreState>({
-  ui: uiReducer,
+  game: gameReducer,
 })
 
 export const store: Store = createStore(
   reducers,
   composeWithDevTools(applyMiddleware(transformActions)),
 )
+
+export const actions = bindActionCreators(gameActions, store.dispatch)

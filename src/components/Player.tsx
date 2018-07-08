@@ -3,13 +3,13 @@ import { Container, Sprite } from 'react-pixi-fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { gameActions } from 'store/game'
-import { Point } from 'utils/pixi'
 import { store } from 'store/store'
-import { BitmapText } from 'utils/components'
-import RandomGenerator from 'utils/RandomGenerator'
-import { Map } from './Map'
-import { palletTown } from 'assets/maps'
-import { Player } from './Player'
+import { Texture, Rectangle } from 'pixi.js'
+import red from 'gfx/sprites/red.png'
+import { Point } from 'utils/pixi'
+
+const redTexture = Texture.fromImage(red.src)
+redTexture.frame = new Rectangle(0, 0, 16, 16)
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -21,25 +21,17 @@ type DispatchProps = ReturnType<typeof mapDispatchToProps>
 
 type Props = StateProps & DispatchProps
 
-class Game extends Component<Props> {
+class PlayerComponent extends Component<Props> {
   render() {
-    const {
-      game: {
-        player: { position },
-      },
-    } = this.props
     return (
       <>
-        <Container position={new Point(position.x, position.y)}>
-          <Map map={palletTown} />
-        </Container>
-        <Player />
+        <Sprite texture={redTexture} position={new Point(64, 64)} />
       </>
     ) as ReactNode
   }
 }
 
-export default connect(
+export const Player = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Game)
+)(PlayerComponent)

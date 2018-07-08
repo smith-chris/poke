@@ -9,7 +9,7 @@ export const createActionObject = <T extends string, D>(type: T, data?: D) => {
   if (!isTest) {
     console.warn('ACTION', type)
   }
-  if (data) {
+  if (data !== undefined) {
     return { type, data }
   } else {
     return { type }
