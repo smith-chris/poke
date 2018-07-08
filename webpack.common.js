@@ -71,7 +71,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.(xml|blk|bst)$/,
+        test: /\.(xml|blk|bst|asm)$/,
         include: ASSETS_PATH,
         use: [
           {

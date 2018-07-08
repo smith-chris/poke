@@ -2,6 +2,7 @@ import _palletTown from 'maps/pallettown.blk'
 import { ImageAsset } from '*.png'
 import { overworld } from './index'
 import { parseHexData } from './utils'
+import { MAP_CONSTANTS } from 'const/map'
 
 const makeMap = (blockData: string, width = 0, height = 0, texture = overworld) => {
   const tileBlockIds = parseHexData(blockData)
@@ -21,4 +22,4 @@ const makeMap = (blockData: string, width = 0, height = 0, texture = overworld) 
   }
 }
 
-export const palletTown = makeMap(_palletTown, 10, 9)
+export const palletTown = makeMap(_palletTown, MAP_CONSTANTS.PALLET_TOWN.width)

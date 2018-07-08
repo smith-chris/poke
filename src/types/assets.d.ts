@@ -21,3 +21,9 @@ declare module '*.bst' {
 
   export default blockset
 }
+
+declare module '*.asm' {
+  const code: string
+
+  export default code
+}
