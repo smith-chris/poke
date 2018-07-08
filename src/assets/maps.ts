@@ -2,6 +2,8 @@ import _palletTown from 'maps/pallettown.blk'
 import _palletTownConfig from 'data/mapHeaders/pallettown.asm'
 import _agatha from 'maps/agatha.blk'
 import _agathaConfig from 'data/mapHeaders/agatha.asm'
+import _route1 from 'maps/route1.blk'
+import _route1Config from 'data/mapHeaders/route1.asm'
 import { ImageAsset } from '*.png'
 import { parseHexData } from './utils'
 import { MAP_CONSTANTS } from 'const/map'
@@ -37,7 +39,16 @@ const makeMap = (blockData: string, { width = 0 }, tilesetName?: string) => {
 
 export type MapData = ReturnType<typeof makeMap>
 
-export const palletTown = makeMap(_palletTown, MAP_CONSTANTS.PALLET_TOWN)
+export const palletTown = makeMap(
+  _palletTown,
+  MAP_CONSTANTS.PALLET_TOWN,
+  getTilesetName(_palletTownConfig),
+)
+export const route1 = makeMap(
+  _route1,
+  MAP_CONSTANTS.ROUTE_1,
+  getTilesetName(_route1Config),
+)
 export const agatha = makeMap(
   _agatha,
   MAP_CONSTANTS.AGATHAS_ROOM,

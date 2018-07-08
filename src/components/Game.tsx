@@ -10,7 +10,7 @@ import RandomGenerator from 'utils/RandomGenerator'
 import red from 'gfx/sprites/red.png'
 import { Texture, Rectangle } from 'pixi.js'
 import { Map } from './Map'
-import { agatha } from 'assets/maps'
+import { route1 } from 'assets/maps'
 
 const redTexture = Texture.fromImage(red.src)
 redTexture.frame = new Rectangle(0, 0, 16, 16)
@@ -34,7 +34,7 @@ class Game extends Component<Props> {
     } = this.props
     return (
       <>
-        <Map map={agatha} />
+        <Map map={route1} />
       </>
     ) as ReactNode
   }
