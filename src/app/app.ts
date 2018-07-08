@@ -8,9 +8,9 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 const isSafari =
   /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor)
 
-const screenSize = 320
+const screenSize = 128
 const App = new Application(screenSize, screenSize, {
-  backgroundColor: palette.white,
+  backgroundColor: palette.peach,
   antialias: false,
   roundPixels: true,
 })

@@ -80,6 +80,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^22.4.4",
     "lint-staged": "^4.3.0",
+    "magick-loader": "^1.0.0",
     "node-sass": "^4.9.0",
     "postcss-input-style": "^1.0.0",
     "postcss-loader": "^2.1.5",

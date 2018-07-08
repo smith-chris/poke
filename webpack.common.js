@@ -6,7 +6,9 @@ const { WatchIgnorePlugin } = require('webpack')
 const isDev = process.argv.indexOf('-p') === -1
 let removeNull = array => array.filter(e => e !== null)
 
+const STYLES_PATH = [path.resolve('./src/styles')]
 const ASSETS_PATH = [path.resolve('./src/assets'), path.resolve('./poke-assets')]
+const SPRITES_PATH = [path.resolve('./poke-assets/gfx/sprites')]
 
 let urlLoaderOptions = Object.assign(
   {
@@ -21,6 +23,11 @@ let urlLoaderOptions = Object.assign(
         outputPath: 'assets/',
       },
 )
+
+const SIZEOF_LOADER_CONFIG = {
+  loader: 'sizeof-loader',
+  options: urlLoaderOptions,
+}
 
 module.exports = {
   entry: './src/app/index.ts',
@@ -91,14 +98,21 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|jpg|jpeg|gif)$/,
-        include: ASSETS_PATH,
+        test: /\.(png)$/,
+        include: SPRITES_PATH,
         use: [
+          SIZEOF_LOADER_CONFIG,
           {
-            loader: 'sizeof-loader',
-            options: urlLoaderOptions,
+            loader: 'magick-loader',
+            options: '-transparent white',
           },
         ],
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif)$/,
+        include: ASSETS_PATH,
+        exclude: SPRITES_PATH,
+        use: [SIZEOF_LOADER_CONFIG],
       },
       {
         test: /\.(css)$/,
@@ -115,7 +129,7 @@ module.exports = {
           {
             loader: 'sass-loader',
             options: {
-              includePaths: [path.resolve('./src/styles')],
+              includePaths: STYLES_PATH,
             },
           },
         ]),
@@ -141,7 +155,7 @@ module.exports = {
           {
             loader: 'sass-loader',
             options: {
-              includePaths: [path.resolve('./src/styles')],
+              includePaths: STYLES_PATH,
               sourceMap: false,
             },
           },
