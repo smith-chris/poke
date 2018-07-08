@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { overworld, Segment } from 'assets'
+import { Segment } from 'assets/tilesets'
 import { Sprite, Container } from 'react-pixi-fiber'
 import { Point } from 'utils/pixi'
 import { loop } from 'utils/render'
 import { BitmapText } from 'utils/components'
 import { Rectangle } from './Rectangle'
-import { palletTown } from 'assets/maps'
+import { palletTown, MapData } from 'assets/maps'
 const tileSize = 32
 
 const Placeholder = ({ text = '' }) => (
@@ -27,14 +27,17 @@ const makeSprites = (positions: Segment) =>
     <Sprite key={`${x}x${y}`} texture={texture} position={new Point(x, y)} />
   ))
 
-type Props = {}
+type Props = {
+  map?: MapData
+}
 
-export class PalletTown extends Component<Props> {
+export class Map extends Component<Props> {
   render() {
+    const { map = palletTown } = this.props
     return (
       <>
-        {palletTown.tiles.map(({ blockId, x, y }) => {
-          const segment = palletTown.texture.getBlock(blockId)
+        {map.tiles.map(({ blockId, x, y }) => {
+          const segment = map.texture.getBlock(blockId)
           return (
             <Container
               key={`${blockId}_${x}x${y}`}

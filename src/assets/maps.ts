@@ -1,10 +1,24 @@
 import _palletTown from 'maps/pallettown.blk'
+import _palletTownConfig from 'data/mapHeaders/pallettown.asm'
+import _agatha from 'maps/agatha.blk'
+import _agathaConfig from 'data/mapHeaders/agatha.asm'
 import { ImageAsset } from '*.png'
-import { overworld } from './index'
 import { parseHexData } from './utils'
 import { MAP_CONSTANTS } from 'const/map'
+import { TILESETS, DEFAULT_TILESET_NAME } from './tilesets'
 
-const makeMap = (blockData: string, width = 0, height = 0, texture = overworld) => {
+const tilesetNameRegex = /_h:[\s]*db[\ ]*([A-Z_]*)/
+
+const getTilesetName = (input: string) => {
+  const searchResult = tilesetNameRegex.exec(input)
+  if (searchResult && searchResult.length >= 1) {
+    return searchResult[1]
+  }
+  console.warn('Couldnt find tile name in: ', input, searchResult)
+  return DEFAULT_TILESET_NAME
+}
+
+const makeMap = (blockData: string, { width = 0 }, tilesetName?: string) => {
   const tileBlockIds = parseHexData(blockData)
   if (!tileBlockIds) {
     throw new Error(`Couldnt parse the tiles (${blockData})`)
@@ -17,9 +31,15 @@ const makeMap = (blockData: string, width = 0, height = 0, texture = overworld) 
   return {
     tiles,
     width,
-    height,
-    texture,
+    texture: (tilesetName && TILESETS[tilesetName]) || TILESETS[DEFAULT_TILESET_NAME],
   }
 }
 
-export const palletTown = makeMap(_palletTown, MAP_CONSTANTS.PALLET_TOWN.width)
+export type MapData = ReturnType<typeof makeMap>
+
+export const palletTown = makeMap(_palletTown, MAP_CONSTANTS.PALLET_TOWN)
+export const agatha = makeMap(
+  _agatha,
+  MAP_CONSTANTS.AGATHAS_ROOM,
+  getTilesetName(_agathaConfig),
+)

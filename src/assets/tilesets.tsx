@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import _overworld from 'gfx/tilesets/overworld.png'
+import _cemetery from 'gfx/tilesets/cemetery.png'
 import { Texture, BaseTexture, Rectangle } from 'pixi.js'
 import { ObjectOf } from 'utils/types'
 import { Sprite } from 'react-pixi-fiber'
@@ -34,8 +35,12 @@ const getSegment = (hex: number, blocks: Texture[]) => {
 
 export type Segment = ReturnType<typeof getSegment>
 
-const getBlockTexture = (hex: number, baseTexture: BaseTexture) => {
-  const ids = getTextureLocationHexes(hex)
+const getBlockTexture = (
+  hex: number,
+  baseTexture: BaseTexture,
+  blocksetName: string,
+) => {
+  const ids = getTextureLocationHexes(hex, blocksetName)
   return ids.map(num => {
     const px = num * 8
     return cutTexture(baseTexture)(
@@ -47,7 +52,7 @@ const getBlockTexture = (hex: number, baseTexture: BaseTexture) => {
   })
 }
 
-const makeTexture = (asset: Asset) => {
+const makeTexture = (asset: Asset, name: string) => {
   const { baseTexture } = Texture.fromImage(asset.src)
   // Seems like pixi do not read b64 image dimensions correctly
   baseTexture.width = asset.width
@@ -56,10 +61,13 @@ const makeTexture = (asset: Asset) => {
   return {
     ...asset,
     baseTexture,
-    getBlock: (hex: number) => getSegment(hex, getBlockTexture(hex, baseTexture)),
+    getBlock: (hex: number) => getSegment(hex, getBlockTexture(hex, baseTexture, name)),
   }
 }
 
-let _overworldObject = makeTexture(_overworld)
+export const DEFAULT_TILESET_NAME = 'OVERWORLD'
 
-export const overworld = _overworldObject
+export const TILESETS: ObjectOf<ReturnType<typeof makeTexture>> = {
+  [DEFAULT_TILESET_NAME]: makeTexture(_overworld, DEFAULT_TILESET_NAME),
+  CEMETERY: makeTexture(_cemetery, 'CEMETERY'),
+}
