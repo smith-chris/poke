@@ -3,13 +3,14 @@ import { Container, Sprite } from 'react-pixi-fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { gameActions } from 'store/game'
-import { Point } from 'utils/pixi'
+import { Point } from 'utils/point'
 import { store } from 'store/store'
 import { BitmapText } from 'utils/components'
 import RandomGenerator from 'utils/RandomGenerator'
 import { Map } from './Map'
 import { palletTown } from 'assets/maps'
 import { Player } from './Player'
+import { Transition } from './Transition'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -30,9 +31,16 @@ class Game extends Component<Props> {
     } = this.props
     return (
       <>
-        <Container position={new Point(position.x, position.y)}>
-          <Map map={palletTown} />
-        </Container>
+        <Transition
+          from={0}
+          to={-96}
+          speed={0.5}
+          render={y => (
+            <Container position={new Point(32, y)}>
+              <Map map={palletTown} />
+            </Container>
+          )}
+        />
         <Player />
       </>
     ) as ReactNode

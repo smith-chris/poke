@@ -10,7 +10,7 @@ const isSafari =
 
 const screenSize = 144
 const App = new Application(screenSize, screenSize, {
-  backgroundColor: palette.peach,
+  backgroundColor: palette.black,
   antialias: false,
   roundPixels: true,
 })

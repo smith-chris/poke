@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Segment } from 'assets/tilesets'
 import { Sprite, Container } from 'react-pixi-fiber'
-import { Point } from 'utils/pixi'
+import { Point } from 'utils/point'
 import { loop } from 'utils/render'
 import { BitmapText } from 'utils/components'
 import { Rectangle } from './Rectangle'

@@ -1,6 +1,6 @@
 import { CustomPIXIComponent } from 'react-pixi-fiber'
 import { Graphics } from 'pixi.js'
-import { Point } from 'utils/pixi'
+import { Point } from 'utils/point'
 import { palette } from 'styles/palette'
 
 type Rect = {

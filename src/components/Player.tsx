@@ -6,7 +6,7 @@ import { gameActions } from 'store/game'
 import { store } from 'store/store'
 import { Texture, Rectangle } from 'pixi.js'
 import red from 'gfx/sprites/red.png'
-import { Point } from 'utils/pixi'
+import { Point } from 'utils/point'
 
 const redTexture = Texture.fromImage(red.src)
 redTexture.frame = new Rectangle(0, 0, 16, 16)
