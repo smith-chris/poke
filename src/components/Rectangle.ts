@@ -1,5 +1,5 @@
 import { CustomPIXIComponent } from 'react-pixi-fiber'
-import { Graphics } from 'pixi.js'
+import { Graphics, Container } from 'pixi.js'
 import { Point } from 'utils/point'
 import { palette } from 'styles/palette'
 
@@ -56,4 +56,4 @@ const behavior = {
     }
   },
 }
-export const Rectangle = CustomPIXIComponent<Props>(behavior, 'Rectangle')
+export const Rectangle = CustomPIXIComponent<Props, Container>(behavior, 'Rectangle')

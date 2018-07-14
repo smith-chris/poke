@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent, Component } from 'react'
 import { Segment } from 'assets/tilesets'
 import { Sprite, Container } from 'react-pixi-fiber'
 import { Point } from 'utils/point'
@@ -27,31 +27,16 @@ const makeSprites = (positions: Segment) =>
     <Sprite key={`${x}x${y}`} texture={texture} position={new Point(x, y)} />
   ))
 
-type Props = {
-  map?: MapData
-}
-
-export class Map extends Component<Props> {
-  render() {
-    const { map = palletTown } = this.props
+export const getMap = (map = palletTown) => {
+  return map.tiles.map(({ blockId, x, y }) => {
+    const segment = map.texture.getBlock(blockId)
     return (
-      <>
-        {map.tiles.map(({ blockId, x, y }) => {
-          const segment = map.texture.getBlock(blockId)
-          return (
-            <Container
-              key={`${blockId}_${x}x${y}`}
-              position={new Point(x * tileSize, y * tileSize)}
-            >
-              {segment ? (
-                makeSprites(segment)
-              ) : (
-                <Placeholder text={blockId.toString()} />
-              )}
-            </Container>
-          )
-        })}
-      </>
+      <Container
+        key={`${blockId}_${x}x${y}`}
+        position={new Point(x * tileSize, y * tileSize)}
+      >
+        {segment ? makeSprites(segment) : <Placeholder text={blockId.toString()} />}
+      </Container>
     )
-  }
+  })
 }

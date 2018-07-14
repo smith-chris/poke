@@ -7,10 +7,12 @@ import { Point } from 'utils/point'
 import { store } from 'store/store'
 import { BitmapText } from 'utils/components'
 import RandomGenerator from 'utils/RandomGenerator'
-import { Map } from './Map'
+import { getMap } from './Map'
 import { palletTown } from 'assets/maps'
 import { Player } from './Player'
 import { Transition } from './Transition'
+
+const MAP_COMPONENT = getMap(palletTown)
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -45,17 +47,15 @@ class Game extends Component<Props> {
           <Transition
             from={getMapPosition(player.position)}
             to={getMapPosition(player.destination)}
-            speed={0.5}
+            speed={1}
             onFinish={moveEnd}
             render={position => (
-              <Container position={position}>
-                <Map map={palletTown} />
-              </Container>
+              <Container position={position}>{MAP_COMPONENT}</Container>
             )}
           />
         ) : (
           <Container position={getMapPosition(player.position)}>
-            <Map map={palletTown} />
+            {MAP_COMPONENT}
           </Container>
         )}
         <Player />
