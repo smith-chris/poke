@@ -1,26 +1,33 @@
 import { ActionCreator, data, ActionsUnion, Action } from 'utils/redux'
 import { Point } from 'pixi.js'
-import { move } from './gameTransforms/move'
+import { getNextPosition } from './gameTransforms/move'
 import { assertNever } from 'utils/other'
+import { pointsEqual } from 'utils/pixi'
 
 export type GameState = {
+  controls: {
+    move?: Direction
+  }
   player: {
     position: Point
+    destination?: Point
   }
 }
 
-const initialState: GameState = { player: { position: new Point() } }
+const initialState: GameState = { player: { position: new Point() }, controls: {} }
 
 export enum Direction {
-  N,
-  E,
-  W,
-  S,
+  N = 'N',
+  E = 'E',
+  W = 'W',
+  S = 'S',
 }
 
 export const gameActions = {
-  move: ActionCreator('move', data as Direction),
-  test: ActionCreator('test'),
+  moveStart: ActionCreator('moveStart', data as Direction),
+  moveEnd: ActionCreator('moveEnd'),
+  moveKeyPress: ActionCreator('moveKeyPress', data as Direction),
+  moveKeyRelease: ActionCreator('moveKeyRelease'),
 }
 
 export type GameAction = ActionsUnion<typeof gameActions>
@@ -30,15 +37,59 @@ export const gameReducer = (
   action: GameAction,
 ): GameState => {
   switch (action.type) {
-    case 'move':
+    case 'moveKeyPress': {
+      return {
+        ...state,
+        controls: {
+          ...state.controls,
+          move: action.data,
+        },
+      }
+    }
+    case 'moveKeyRelease': {
+      return {
+        ...state,
+        controls: {
+          ...state.controls,
+          move: undefined,
+        },
+      }
+    }
+    case 'moveStart': {
+      const { player } = state
+      const destination = getNextPosition(action.data, player.position)
+      if (player.destination) {
+        return state
+      }
+      if (!pointsEqual(destination, player.position)) {
+        return {
+          ...state,
+          player: {
+            ...player,
+            destination,
+          },
+        }
+      } else {
+        return state
+      }
+    }
+    case 'moveEnd': {
+      const { player, controls } = state
+      if (!player.destination) {
+        return state
+      }
+      let newDestination = undefined
+      if (controls.move !== undefined) {
+        newDestination = getNextPosition(controls.move, player.destination)
+      }
       return {
         ...state,
         player: {
-          position: move(action.data, state.player.position),
+          position: player.destination,
+          destination: newDestination,
         },
       }
-    case 'test':
-      return state
+    }
     default: {
       return assertNever(action, { state })
     }

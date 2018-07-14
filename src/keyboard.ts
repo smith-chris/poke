@@ -1,19 +1,45 @@
 import keyboardjs from 'keyboardjs'
-import { actions } from 'store/store'
+import { actions, store } from 'store/store'
 import { Direction } from 'store/game'
 
-keyboardjs.bind('up', () => {
-  actions.move(Direction.N)
-})
+const moveQueue = new Map()
 
-keyboardjs.bind('down', () => {
-  actions.move(Direction.S)
-})
-
-keyboardjs.bind('left', () => {
-  actions.move(Direction.W)
-})
-
-keyboardjs.bind('right', () => {
-  actions.move(Direction.E)
+Object.entries({
+  up: Direction.N,
+  down: Direction.S,
+  left: Direction.W,
+  right: Direction.E,
+}).forEach(([keyName, direction]) => {
+  keyboardjs.bind(
+    keyName,
+    e => {
+      if (e) {
+        e.preventRepeat()
+      }
+      const {
+        game: { controls, player },
+      } = store.getState()
+      if (controls.move === undefined) {
+        actions.moveKeyPress(direction)
+        if (player.destination === undefined) {
+          actions.moveStart(direction)
+        }
+      } else {
+        moveQueue.set(keyName, direction)
+      }
+    },
+    () => {
+      if (store.getState().game.controls.move === direction) {
+        if (moveQueue.size > 0) {
+          const [key, value]: [string, Direction] = moveQueue.entries().next().value
+          actions.moveKeyPress(value)
+          moveQueue.delete(key)
+        } else {
+          actions.moveKeyRelease()
+        }
+      } else {
+        moveQueue.delete(keyName)
+      }
+    },
+  )
 })
