@@ -2,7 +2,7 @@ import React, { Component, ReactNode } from 'react'
 import { Container, Sprite } from 'react-pixi-fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { gameActions } from 'store/game'
+import { gameActions, Direction } from 'store/game'
 import { Point } from 'utils/point'
 import { store } from 'store/store'
 import { BitmapText } from 'utils/components'
@@ -11,6 +11,15 @@ import { getMap } from './Map'
 import { palletTown } from 'assets/maps'
 import { Player } from './Player'
 import { Transition } from './Transition'
+import { getNextPosition } from 'store/gameTransforms/move'
+
+// WIP: The map name should be stored in redux
+export const CURRENT_MAP = palletTown
+
+export const canMove = (position: Point, direction: Direction) => {
+  const { x, y } = getNextPosition(direction, position)
+  return Boolean(CURRENT_MAP.collisions[`${x}_${y}`])
+}
 
 const MAP_COMPONENT = getMap(palletTown)
 

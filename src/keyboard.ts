@@ -1,6 +1,7 @@
 import keyboardjs from 'keyboardjs'
 import { actions, store } from 'store/store'
 import { Direction } from 'store/game'
+import { canMove } from 'components/Game'
 
 const moveQueue = new Map()
 
@@ -21,7 +22,7 @@ Object.entries({
       } = store.getState()
       if (controls.move === undefined) {
         actions.moveKeyPress(direction)
-        if (player.destination === undefined) {
+        if (player.destination === undefined && canMove(player.position, direction)) {
           actions.moveStart(direction)
         }
       } else {

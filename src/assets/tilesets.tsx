@@ -68,6 +68,7 @@ const makeTexture = (asset: Asset, name: string) => {
     baseTexture,
     getBlock: (hex: number) => getSegment(hex, getBlockTexture(hex, baseTexture, name)),
     getBlockCollisions: (hex: number) =>
+      // WIP: Collisions data should be based on 'name' param
       getTextureLocationHexes(hex, name).map(id => overworldCollisions.includes(id)),
   }
 }

@@ -30,34 +30,15 @@ const makeSprites = (positions: Segment) =>
   ))
 
 export const getMap = (map = palletTown) => {
-  return (
-    <>
-      {map.tiles.map(({ blockId, x, y }) => {
-        const segment = map.texture.getBlock(blockId)
-        return (
-          <Container
-            key={`${blockId}_${x}x${y}`}
-            position={new Point(x * tileSize, y * tileSize)}
-          >
-            {segment ? makeSprites(segment) : <Placeholder text={blockId.toString()} />}
-          </Container>
-        )
-      })}
-      {Object.entries(map.collisions).map(([pos, value]) => {
-        const [x, y] = pos.split('_')
-        return (
-          value && (
-            <Rectangle
-              key={pos}
-              position={new Point(x * 16, y * 16)}
-              width={16}
-              height={16}
-              color="green"
-              alpha={0.4}
-            />
-          )
-        )
-      })}
-    </>
-  )
+  return map.tiles.map(({ blockId, x, y }) => {
+    const segment = map.texture.getBlock(blockId)
+    return (
+      <Container
+        key={`${blockId}_${x}x${y}`}
+        position={new Point(x * tileSize, y * tileSize)}
+      >
+        {segment ? makeSprites(segment) : <Placeholder text={blockId.toString()} />}
+      </Container>
+    )
+  })
 }

@@ -3,6 +3,7 @@ import { Point } from 'pixi.js'
 import { getNextPosition } from './gameTransforms/move'
 import { assertNever } from 'utils/other'
 import { pointsEqual } from 'utils/pixi'
+import { canMove } from 'components/Game'
 
 export type GameState = {
   controls: {
@@ -15,7 +16,7 @@ export type GameState = {
 }
 
 const initialState: GameState = {
-  player: { position: new Point(13, 13) },
+  player: { position: new Point(12, 12) },
   controls: {},
 }
 
@@ -61,9 +62,6 @@ export const gameReducer = (
     case 'moveStart': {
       const { player } = state
       const destination = getNextPosition(action.data, player.position)
-      if (player.destination) {
-        return state
-      }
       if (!pointsEqual(destination, player.position)) {
         return {
           ...state,
@@ -82,7 +80,7 @@ export const gameReducer = (
         return state
       }
       let newDestination = undefined
-      if (controls.move !== undefined) {
+      if (controls.move !== undefined && canMove(player.destination, controls.move)) {
         newDestination = getNextPosition(controls.move, player.destination)
       }
       return {

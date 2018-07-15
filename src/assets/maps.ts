@@ -8,6 +8,7 @@ import { ImageAsset } from '*.png'
 import { parseHexData } from './utils'
 import { MAP_CONSTANTS } from 'const/map'
 import { TILESETS, DEFAULT_TILESET_NAME } from './tilesets'
+import { ObjectOf } from 'utils/types'
 
 const tilesetNameRegex = /_h:[\s]*db[\ ]*([A-Z_]*)/
 
@@ -33,7 +34,7 @@ const makeMap = (blockData: string, { width = 0 }, tilesetName?: string) => {
   const texture =
     (tilesetName && TILESETS[tilesetName]) || TILESETS[DEFAULT_TILESET_NAME]
 
-  let collisions = {}
+  let collisions: ObjectOf<boolean> = {}
 
   tiles.forEach(({ x, y, blockId }) => {
     // each block is 32x32 px which means it consists of 4 collisions
