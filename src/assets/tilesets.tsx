@@ -27,16 +27,12 @@ const cutTexture = (baseTexture: BaseTexture) => (
 import _overworldCollisions from 'gfx/tilesets/overworld.tilecoll'
 import { palette } from 'styles/palette'
 
-let overworldCollisions = parseHexData(_overworldCollisions)
-  .slice(0, -1)
-  .filter(n => ![51, 84].includes(n))
-overworldCollisions.push(3)
+const overworldCollisions = parseHexData(_overworldCollisions).slice(0, -1)
 
 const getSegment = (hex: number, blocks: ReturnType<typeof getBlockTexture>) => {
   return loop(4, 4, (y, x) => ({ x: x * 8, y: y * 8 })).map((position, i) => {
     return {
-      collides: overworldCollisions.includes(blocks[i].id),
-      texture: blocks[i].texture,
+      texture: blocks[i],
       position: position as Point,
     }
   })
@@ -52,15 +48,12 @@ const getBlockTexture = (
   const ids = getTextureLocationHexes(hex, blocksetName)
   return ids.map(num => {
     const px = num * 8
-    return {
-      texture: cutTexture(baseTexture)(
-        px % baseTexture.width,
-        Math.floor(px / baseTexture.width) * 8,
-        8,
-        8,
-      ),
-      id: num,
-    }
+    return cutTexture(baseTexture)(
+      px % baseTexture.width,
+      Math.floor(px / baseTexture.width) * 8,
+      8,
+      8,
+    )
   })
 }
 
@@ -74,6 +67,8 @@ const makeTexture = (asset: Asset, name: string) => {
     ...asset,
     baseTexture,
     getBlock: (hex: number) => getSegment(hex, getBlockTexture(hex, baseTexture, name)),
+    getBlockCollisions: (hex: number) =>
+      getTextureLocationHexes(hex, name).map(id => overworldCollisions.includes(id)),
   }
 }
 
@@ -83,26 +78,3 @@ export const TILESETS: ObjectOf<ReturnType<typeof makeTexture>> = {
   [DEFAULT_TILESET_NAME]: makeTexture(_overworld, DEFAULT_TILESET_NAME),
   CEMETERY: makeTexture(_cemetery, 'CEMETERY'),
 }
-
-// const OT = Texture.fromImage(_overworld.src)
-// export const TEST = (
-//   <>
-//     <Sprite texture={OT} />
-//     {overworldCollisions
-//       .map(px => ({
-//         x: (px * 8) % 128,
-//         y: Math.floor((px * 8) / 128) * 8,
-//       }))
-//       .filter(({ x, y }) => x <= 128 - 8 && y <= 48 - 8)
-//       .map(p => (
-//         <CustomRectangle
-//           key={`${p.x}x${p.y}`}
-//           position={p}
-//           width={8}
-//           height={8}
-//           color="green"
-//           alpha={0.4}
-//         />
-//       ))}
-//   </>
-// )

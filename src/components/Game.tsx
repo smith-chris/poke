@@ -11,7 +11,6 @@ import { getMap } from './Map'
 import { palletTown } from 'assets/maps'
 import { Player } from './Player'
 import { Transition } from './Transition'
-import { TEST } from 'assets/tilesets'
 
 const MAP_COMPONENT = getMap(palletTown)
 

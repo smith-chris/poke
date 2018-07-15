@@ -30,10 +30,30 @@ const makeMap = (blockData: string, { width = 0 }, tilesetName?: string) => {
     x: i % width,
     y: Math.floor(i / width),
   }))
+  const texture =
+    (tilesetName && TILESETS[tilesetName]) || TILESETS[DEFAULT_TILESET_NAME]
+
+  let collisions = {}
+
+  tiles.forEach(({ x, y, blockId }) => {
+    // each block is 32x32 px which means it consists of 4 collisions
+    const segment = texture.getBlockCollisions(blockId)
+    const baseX = x * 2
+    const baseY = y * 2
+
+    collisions = {
+      ...collisions,
+      [`${baseX}_${baseY}`]: segment[4],
+      [`${baseX + 1}_${baseY}`]: segment[6],
+      [`${baseX}_${baseY + 1}`]: segment[12],
+      [`${baseX + 1}_${baseY + 1}`]: segment[14],
+    }
+  })
   return {
     tiles,
     width,
-    texture: (tilesetName && TILESETS[tilesetName]) || TILESETS[DEFAULT_TILESET_NAME],
+    texture,
+    collisions,
   }
 }
 
