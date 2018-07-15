@@ -1,4 +1,4 @@
-import React, { PureComponent, Component } from 'react'
+import React, { PureComponent, Component, Fragment } from 'react'
 import { Segment } from 'assets/tilesets'
 import { Sprite, Container } from 'react-pixi-fiber'
 import { Point } from 'utils/point'
@@ -23,8 +23,13 @@ const Placeholder = ({ text = '' }) => (
 )
 
 const makeSprites = (positions: Segment) =>
-  positions.map(({ texture, position: { x, y } }) => (
-    <Sprite key={`${x}x${y}`} texture={texture} position={new Point(x, y)} />
+  positions.map(({ texture, position, collides }) => (
+    <Fragment key={`${position.x}x${position.y}`}>
+      <Sprite texture={texture} position={position} />
+      {collides && (
+        <Rectangle position={position} width={8} height={8} color="green" alpha={0.4} />
+      )}
+    </Fragment>
   ))
 
 export const getMap = (map = palletTown) => {

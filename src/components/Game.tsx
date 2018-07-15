@@ -11,6 +11,7 @@ import { getMap } from './Map'
 import { palletTown } from 'assets/maps'
 import { Player } from './Player'
 import { Transition } from './Transition'
+import { TEST } from 'assets/tilesets'
 
 const MAP_COMPONENT = getMap(palletTown)
 
@@ -54,11 +55,12 @@ class Game extends Component<Props> {
             )}
           />
         ) : (
-          <Container position={getMapPosition(player.position)}>
+          <Container position={new Point(0, 0) || getMapPosition(player.position)}>
             {MAP_COMPONENT}
           </Container>
         )}
         <Player />
+        {TEST}
       </>
     ) as ReactNode
   }

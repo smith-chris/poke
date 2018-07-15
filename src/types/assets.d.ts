@@ -27,3 +27,9 @@ declare module '*.asm' {
 
   export default code
 }
+
+declare module '*.tilecoll' {
+  const collisions: string
+
+  export default collisions
+}

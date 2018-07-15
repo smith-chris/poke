@@ -14,7 +14,10 @@ export type GameState = {
   }
 }
 
-const initialState: GameState = { player: { position: new Point() }, controls: {} }
+const initialState: GameState = {
+  player: { position: new Point(13, 13) },
+  controls: {},
+}
 
 export enum Direction {
   N = 'N',
