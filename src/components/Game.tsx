@@ -55,12 +55,11 @@ class Game extends Component<Props> {
             )}
           />
         ) : (
-          <Container position={new Point(0, 0) || getMapPosition(player.position)}>
+          <Container position={getMapPosition(player.position)}>
             {MAP_COMPONENT}
           </Container>
         )}
         <Player />
-        {TEST}
       </>
     ) as ReactNode
   }

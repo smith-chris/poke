@@ -27,7 +27,10 @@ const cutTexture = (baseTexture: BaseTexture) => (
 import _overworldCollisions from 'gfx/tilesets/overworld.tilecoll'
 import { palette } from 'styles/palette'
 
-const overworldCollisions = parseHexData(_overworldCollisions).slice(0, -1)
+let overworldCollisions = parseHexData(_overworldCollisions)
+  .slice(0, -1)
+  .filter(n => ![51, 84].includes(n))
+overworldCollisions.push(3)
 
 const getSegment = (hex: number, blocks: ReturnType<typeof getBlockTexture>) => {
   return loop(4, 4, (y, x) => ({ x: x * 8, y: y * 8 })).map((position, i) => {
@@ -81,25 +84,25 @@ export const TILESETS: ObjectOf<ReturnType<typeof makeTexture>> = {
   CEMETERY: makeTexture(_cemetery, 'CEMETERY'),
 }
 
-const OT = Texture.fromImage(_overworld.src)
-export const TEST = (
-  <>
-    <Sprite texture={OT} />
-    {overworldCollisions
-      .map(px => ({
-        x: (px * 8) % 128,
-        y: Math.floor((px * 8) / 128) * 8,
-      }))
-      .filter(({ x, y }) => x <= 128 - 8 && y <= 48 - 8)
-      .map(p => (
-        <CustomRectangle
-          key={`${p.x}x${p.y}`}
-          position={p}
-          width={8}
-          height={8}
-          color="green"
-          alpha={0.4}
-        />
-      ))}
-  </>
-)
+// const OT = Texture.fromImage(_overworld.src)
+// export const TEST = (
+//   <>
+//     <Sprite texture={OT} />
+//     {overworldCollisions
+//       .map(px => ({
+//         x: (px * 8) % 128,
+//         y: Math.floor((px * 8) / 128) * 8,
+//       }))
+//       .filter(({ x, y }) => x <= 128 - 8 && y <= 48 - 8)
+//       .map(p => (
+//         <CustomRectangle
+//           key={`${p.x}x${p.y}`}
+//           position={p}
+//           width={8}
+//           height={8}
+//           color="green"
+//           alpha={0.4}
+//         />
+//       ))}
+//   </>
+// )
