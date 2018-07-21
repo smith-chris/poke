@@ -55,8 +55,12 @@ const defaultState = {
 
 class PlayerComponent extends Component<Props, typeof defaultState> {
   state = defaultState
-  componentWillReceiveProps({ game: { controls } }: Props) {
-    if (controls.move) {
+  componentWillReceiveProps({ game: { controls, player } }: Props) {
+    if (player.direction) {
+      this.setState({
+        direction: player.direction,
+      })
+    } else if (controls.move) {
       this.setState({
         direction: controls.move,
       })

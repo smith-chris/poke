@@ -4,21 +4,27 @@ import { getNextPosition } from './gameTransforms/move'
 import { assertNever } from 'utils/other'
 import { pointsEqual } from 'utils/pixi'
 import { canMove } from 'components/Game'
+import { Extend } from 'utils/types'
 
-export type GameState = {
-  controls: {
-    move?: Direction
-  }
+const initialState = {
   player: {
-    position: Point
-    destination?: Point
-  }
-}
-
-const initialState: GameState = {
-  player: { position: new Point(12, 12) },
+    position: new Point(12, 12),
+  },
   controls: {},
 }
+
+export type GameState = Extend<
+  typeof initialState,
+  {
+    player: {
+      destination?: Point
+      direction?: Direction
+    }
+    controls: {
+      move?: Direction
+    }
+  }
+>
 
 export enum Direction {
   N = 'N',
@@ -68,6 +74,7 @@ export const gameReducer = (
           player: {
             ...player,
             destination,
+            direction: action.data,
           },
         }
       } else {
@@ -80,14 +87,17 @@ export const gameReducer = (
         return state
       }
       let newDestination = undefined
+      let newDirection = undefined
       if (controls.move !== undefined && canMove(player.destination, controls.move)) {
         newDestination = getNextPosition(controls.move, player.destination)
+        newDirection = controls.move
       }
       return {
         ...state,
         player: {
           position: player.destination,
           destination: newDestination,
+          direction: newDirection,
         },
       }
     }
