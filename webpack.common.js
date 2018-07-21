@@ -104,7 +104,8 @@ module.exports = {
           SIZEOF_LOADER_CONFIG,
           {
             loader: 'magick-loader',
-            options: '-transparent white',
+            options:
+              '-transparent white -fill white -opaque rgb(170,170,170) -fill rgb(170,170,170) -opaque rgb(85,85,85)',
           },
         ],
       },
