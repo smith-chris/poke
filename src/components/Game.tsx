@@ -33,6 +33,10 @@ type DispatchProps = ReturnType<typeof mapDispatchToProps>
 
 type Props = StateProps & DispatchProps
 
+const MOVE_SPEED = 1
+export const MOVE_DISTANCE = 16
+export const MOVE_TICKS = Math.round(MOVE_DISTANCE / MOVE_SPEED)
+
 const MAP_CENTER = {
   x: 64,
   y: 64,
@@ -56,7 +60,7 @@ class Game extends Component<Props> {
           <Transition
             from={getMapPosition(player.position)}
             to={getMapPosition(player.destination)}
-            speed={1}
+            speed={MOVE_SPEED}
             onFinish={moveEnd}
             render={position => (
               <Container position={position}>{MAP_COMPONENT}</Container>

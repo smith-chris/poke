@@ -7,20 +7,25 @@ type Props = {
   from: Point
   to: Point
   speed?: number
-  onFinish?: () => void
+  loop?: boolean
+  onFinish?: (ticks: number) => void
+  onLoop?: (ticks: number) => void
 }
 
 type State = {
   current: Point
 }
 
-export class Transition extends Component<Props, State> {
+const defaultState = {
+  current: new Point(0, 0),
+  ticks: 0,
+}
+
+export class Transition extends Component<Props, typeof defaultState> {
   ticker: ticker.Ticker
   tickerCallback: () => void
 
-  state = {
-    current: new Point(0, 0),
-  }
+  state = defaultState
 
   componentWillReceiveProps(newProps: Props) {
     if (
@@ -34,20 +39,21 @@ export class Transition extends Component<Props, State> {
   }
 
   startTransition = (props: Props) => {
-    const { from, to, speed = 1, onFinish } = props
-    let current = new Point(from.x, from.y)
-    if (current) {
-      this.setState({ current })
-    }
-
+    const { from, to, speed = 1, loop, onFinish, onLoop } = props
+    let current = new Point(0)
     let stepX = 0
-    if (from.x !== to.x) {
-      stepX = from.x < to.x ? speed : -speed
-    }
     let stepY = 0
-    if (from.y !== to.y) {
-      stepY = from.y < to.y ? speed : -speed
+    const init = () => {
+      current = new Point(from.x, from.y)
+      if (from.x !== to.x) {
+        stepX = from.x < to.x ? speed : -speed
+      }
+      if (from.y !== to.y) {
+        stepY = from.y < to.y ? speed : -speed
+      }
     }
+    init()
+    this.setState({ current, ticks: 0 })
 
     this.tickerCallback = () => {
       if (current === undefined || current === null) {
@@ -55,6 +61,7 @@ export class Transition extends Component<Props, State> {
         this.ticker.stop()
         return
       }
+      const { ticks } = this.state
       current.x += stepX
       const xFinished = Math.abs(to.x - current.x) < Math.abs(stepX)
       if (xFinished) {
@@ -69,13 +76,21 @@ export class Transition extends Component<Props, State> {
       }
       this.setState({
         current: roundPoint(current),
+        ticks: ticks + 1,
       })
       if (stepY === 0 && stepX === 0) {
-        this.ticker.stop()
-        if (typeof onFinish === 'function') {
-          onFinish()
+        if (loop) {
+          init()
+          if (typeof onLoop === 'function') {
+            onLoop(ticks + 1)
+          }
+        } else {
+          this.ticker.stop()
+          if (typeof onFinish === 'function') {
+            onFinish(ticks + 1)
+          }
+          return
         }
-        return
       }
     }
     this.ticker.add(this.tickerCallback)
