@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react'
-import { Container, Sprite } from 'react-pixi-fiber'
+import { Container, Sprite } from 'utils/fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { gameActions } from 'store/game'
