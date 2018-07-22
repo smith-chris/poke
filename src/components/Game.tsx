@@ -1,12 +1,9 @@
 import React, { Component, ReactNode } from 'react'
-import { Container, Sprite } from 'react-pixi-fiber'
+import { Container } from 'react-pixi-fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { gameActions, Direction } from 'store/game'
 import { Point } from 'utils/point'
-import { store } from 'store/store'
-import { BitmapText } from 'utils/components'
-import RandomGenerator from 'utils/RandomGenerator'
 import { getMap } from './getMap'
 import { palletTown } from 'assets/maps'
 import { Player } from './Player'
@@ -46,9 +43,6 @@ const getMapPosition = (player: Point) =>
   new Point(MAP_CENTER.x - player.x * 16, MAP_CENTER.y - player.y * 16)
 
 class Game extends Component<Props> {
-  handleMapTransitionFinish = () => {
-    this.props.moveEnd()
-  }
   render() {
     const {
       game: { player },

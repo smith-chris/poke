@@ -1,4 +1,4 @@
-import { ActionCreator, data, ActionsUnion, Action } from 'utils/redux'
+import { ActionCreator, data, ActionsUnion } from 'utils/redux'
 import { Point } from 'pixi.js'
 import { getNextPosition } from './gameTransforms/move'
 import { assertNever } from 'utils/other'

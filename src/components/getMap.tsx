@@ -1,11 +1,11 @@
-import React, { PureComponent, Component, Fragment } from 'react'
+import React from 'react'
 import { Segment } from 'assets/tilesets'
 import { Sprite, Container } from 'react-pixi-fiber'
 import { Point } from 'utils/point'
-import { loop } from 'utils/render'
 import { BitmapText } from 'utils/components'
 import { Rectangle } from './Rectangle'
-import { palletTown, MapData } from 'assets/maps'
+import { palletTown } from 'assets/maps'
+import { Flower } from './Flower'
 const tileSize = 32
 
 const Placeholder = ({ text = '' }) => (
@@ -23,14 +23,14 @@ const Placeholder = ({ text = '' }) => (
 )
 
 const renderSegment = (positions: Segment) =>
-  positions.map(({ texture, position, isFlower }) => (
-    <Sprite
-      key={`${position.x}x${position.y}`}
-      texture={texture}
-      position={position}
-      alpha={isFlower ? 0.66 : 1}
-    />
-  ))
+  positions.map(({ texture, position, isFlower }) => {
+    const props = {
+      key: `${position.x}x${position.y}`,
+      texture,
+      position,
+    }
+    return isFlower ? <Flower {...props} /> : <Sprite {...props} />
+  })
 
 export const getMap = (map = palletTown) => {
   return map.tiles.map(({ blockId, x, y }) => {

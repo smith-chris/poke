@@ -1,15 +1,12 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 import _overworld from 'gfx/tilesets/overworld.png'
 import _cemetery from 'gfx/tilesets/cemetery.png'
 import { Texture, BaseTexture, Rectangle } from 'pixi.js'
 import { ObjectOf } from 'utils/types'
-import { Sprite } from 'react-pixi-fiber'
 import { loop } from 'utils/render'
 import { Point } from 'utils/point'
-import mapValues from 'lodash.mapvalues'
 import { parseHexData } from './utils'
 import { getTextureLocationHexes } from './blocksets'
-import { Rectangle as CustomRectangle } from '../components/Rectangle'
 
 type Asset = typeof _overworld
 

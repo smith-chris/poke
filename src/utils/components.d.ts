@@ -1,5 +1,4 @@
 import { StatelessComponent } from 'react'
-import { Point } from './point'
 import { BitmapTextProperties } from 'react-pixi-fiber'
 import { palette } from 'styles/palette'
 
