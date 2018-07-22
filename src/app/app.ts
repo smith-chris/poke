@@ -8,8 +8,8 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 const isSafari =
   /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor)
 
-const screenSize = 144
-const App = new Application(screenSize, screenSize, {
+export const SCREEN_SIZE = 144
+const App = new Application(SCREEN_SIZE, SCREEN_SIZE, {
   backgroundColor: palette.black,
   antialias: false,
   roundPixels: true,
@@ -39,9 +39,9 @@ if (!appElement) {
     canvasHolderElement.style.height = `${smaller}px`
     if (isSafari) {
       let canvasSize
-      canvasSize = getClosestMultiplication(screenSize, canvasElement.offsetWidth)
+      canvasSize = getClosestMultiplication(SCREEN_SIZE, canvasElement.offsetWidth)
       App.renderer.resize(canvasSize, canvasSize)
-      App.stage.scale.set(canvasSize / screenSize)
+      App.stage.scale.set(canvasSize / SCREEN_SIZE)
     }
   }
   resize()
