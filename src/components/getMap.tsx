@@ -22,11 +22,14 @@ const Placeholder = ({ text = '' }) => (
   </>
 )
 
-const makeSprites = (positions: Segment) =>
-  positions.map(({ texture, position }) => (
-    <Fragment key={`${position.x}x${position.y}`}>
-      <Sprite texture={texture} position={position} />
-    </Fragment>
+const renderSegment = (positions: Segment) =>
+  positions.map(({ texture, position, isFlower }) => (
+    <Sprite
+      key={`${position.x}x${position.y}`}
+      texture={texture}
+      position={position}
+      alpha={isFlower ? 0.66 : 1}
+    />
   ))
 
 export const getMap = (map = palletTown) => {
@@ -37,7 +40,7 @@ export const getMap = (map = palletTown) => {
         key={`${blockId}_${x}x${y}`}
         position={new Point(x * tileSize, y * tileSize)}
       >
-        {segment ? makeSprites(segment) : <Placeholder text={blockId.toString()} />}
+        {segment ? renderSegment(segment) : <Placeholder text={blockId.toString()} />}
       </Container>
     )
   })

@@ -32,7 +32,7 @@ const overworldCollisions = parseHexData(_overworldCollisions).slice(0, -1)
 const getSegment = (hex: number, blocks: ReturnType<typeof getBlockTexture>) => {
   return loop(4, 4, (y, x) => ({ x: x * 8, y: y * 8 })).map((position, i) => {
     return {
-      texture: blocks[i],
+      ...blocks[i],
       position: position as Point,
     }
   })
@@ -48,12 +48,15 @@ const getBlockTexture = (
   const ids = getTextureLocationHexes(hex, blocksetName)
   return ids.map(num => {
     const px = num * 8
-    return cutTexture(baseTexture)(
-      px % baseTexture.width,
-      Math.floor(px / baseTexture.width) * 8,
-      8,
-      8,
-    )
+    return {
+      texture: cutTexture(baseTexture)(
+        px % baseTexture.width,
+        Math.floor(px / baseTexture.width) * 8,
+        8,
+        8,
+      ),
+      isFlower: blocksetName === 'OVERWORLD' && num === 3,
+    }
   })
 }
 
