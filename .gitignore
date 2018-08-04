@@ -5,3 +5,4 @@ poke-assets/
 node_modules/
 dist
 *.sass.d.ts
+*.mov
