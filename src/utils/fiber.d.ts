@@ -22,3 +22,9 @@ export class Sprite extends Component<SpriteProps> {}
 
 export type TilingSpriteProps = TilingSpriteProperties
 export class TilingSprite extends Component<TilingSpriteProps> {}
+
+export function render(
+  pixiElement: JSX.Element | PIXI.DisplayObject | PIXI.DisplayObject[],
+  stage: PIXI.Container,
+  callback?: Function,
+): void

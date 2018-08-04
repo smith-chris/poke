@@ -1,6 +1,5 @@
 import { Application, Texture } from 'pixi.js'
 import styles from './app.sass'
-import 'assets/fonts/fonts.js'
 import { palette } from 'styles/palette'
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
@@ -8,7 +7,7 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 const isSafari =
   /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor)
 
-export const SCREEN_SIZE = 144
+export const SCREEN_SIZE = 128
 const App = new Application(SCREEN_SIZE, SCREEN_SIZE, {
   backgroundColor: palette.black,
   antialias: false,

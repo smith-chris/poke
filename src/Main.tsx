@@ -1,14 +1,16 @@
 import React from 'react'
-import { stage } from 'app/app'
-import { store } from 'store/store'
-import { render } from 'react-pixi-fiber'
-import Game from 'components/Game'
+import { Texture, Point } from 'pixi.js'
 import { Provider } from 'react-redux'
-import './keyboard'
+import { store } from 'store/store'
+import { stage } from 'app/app'
+import { Sprite, render } from 'utils/fiber'
+import bunny from 'assets/bunny.png'
+
+const bunnyTexture = Texture.fromImage(bunny.src)
 
 render(
   <Provider store={store}>
-    <Game />
+    <Sprite texture={bunnyTexture} anchor={0.5} position={new Point(64, 64)} />
   </Provider>,
   stage,
 )
