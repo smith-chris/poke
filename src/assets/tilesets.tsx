@@ -37,6 +37,21 @@ const getSegment = (hex: number, blocks: ReturnType<typeof getBlockTexture>) => 
 
 export type Segment = ReturnType<typeof getSegment>
 
+const getTileType = (blocksetName: string, id: number) => {
+  if (blocksetName === 'OVERWORLD') {
+    switch (id) {
+      case 3:
+        return 'flower'
+      case 20:
+        return 'water'
+      default:
+        return undefined
+    }
+  }
+}
+
+type TileType = ReturnType<typeof getTileType>
+
 const getBlockTexture = (
   hex: number,
   baseTexture: BaseTexture,
@@ -52,7 +67,7 @@ const getBlockTexture = (
         8,
         8,
       ),
-      isFlower: blocksetName === 'OVERWORLD' && num === 3,
+      type: getTileType(blocksetName, num) as TileType,
     }
   })
 }
@@ -66,6 +81,7 @@ const makeTexture = (asset: Asset, name: string) => {
   return {
     ...asset,
     baseTexture,
+    cutTexture: cutTexture(baseTexture),
     getBlock: (hex: number) => getSegment(hex, getBlockTexture(hex, baseTexture, name)),
     getBlockCollisions: (hex: number) =>
       // WIP: Collisions data should be based on 'name' param

@@ -8,7 +8,7 @@ import { Extend } from 'utils/types'
 
 const initialState = {
   player: {
-    position: new Point(12, 12),
+    position: new Point(10, 12),
   },
   controls: {},
 }

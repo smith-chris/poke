@@ -1,1 +1,1 @@
-export { Container, Sprite } from 'react-pixi-fiber'
+export { Container, Sprite, TilingSprite } from 'react-pixi-fiber'

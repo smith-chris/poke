@@ -6,6 +6,7 @@ import { BitmapText } from 'utils/components'
 import { Rectangle } from './Rectangle'
 import { palletTown } from 'assets/maps'
 import { Flower } from './Flower'
+import { Water } from './Water'
 const tileSize = 32
 
 const Placeholder = ({ text = '' }) => (
@@ -23,13 +24,20 @@ const Placeholder = ({ text = '' }) => (
 )
 
 const renderSegment = (positions: Segment) =>
-  positions.map(({ texture, position, isFlower }) => {
+  positions.map(({ texture, position, type }) => {
     const props = {
       key: `${position.x}x${position.y}`,
       texture,
       position,
     }
-    return isFlower ? <Flower {...props} /> : <Sprite {...props} />
+    switch (type) {
+      case 'flower':
+        return <Flower {...props} />
+      case 'water':
+        return <Water {...props} />
+      default:
+        return <Sprite {...props} />
+    }
   })
 
 export const getMap = (map = palletTown) => {
