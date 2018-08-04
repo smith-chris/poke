@@ -50,21 +50,15 @@ class Game extends Component<Props> {
     } = this.props
     return (
       <>
-        {player.destination ? (
-          <Transition
-            from={getMapPosition(player.position)}
-            to={getMapPosition(player.destination)}
-            speed={MOVE_SPEED}
-            onFinish={moveEnd}
-            render={position => (
-              <Container position={position}>{MAP_COMPONENT}</Container>
-            )}
-          />
-        ) : (
-          <Container position={getMapPosition(player.position)}>
-            {MAP_COMPONENT}
-          </Container>
-        )}
+        <Transition
+          from={getMapPosition(player.position)}
+          to={getMapPosition(player.destination || player.position)}
+          speed={MOVE_SPEED}
+          onFinish={moveEnd}
+          render={position => (
+            <Container position={position}>{MAP_COMPONENT}</Container>
+          )}
+        />
         <Player />
       </>
     ) as ReactNode

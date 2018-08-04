@@ -12,20 +12,17 @@ type Props = {
   onLoop?: (ticks: number) => void
 }
 
-type State = {
-  current: Point
-}
-
 const defaultState = {
-  current: new Point(0, 0),
   ticks: 0,
 }
 
-export class Transition extends Component<Props, typeof defaultState> {
+type State = typeof defaultState & { current?: Point }
+
+export class Transition extends Component<Props, State> {
   ticker: ticker.Ticker
   tickerCallback: () => void
 
-  state = defaultState
+  state: State = defaultState
 
   componentWillReceiveProps(newProps: Props) {
     if (
@@ -103,6 +100,7 @@ export class Transition extends Component<Props, typeof defaultState> {
   }
 
   componentDidMount() {
+    const { from } = this.props
     this.ticker = new ticker.Ticker()
     if (this.canTransition(this.props)) {
       this.startTransition(this.props)
@@ -114,9 +112,9 @@ export class Transition extends Component<Props, typeof defaultState> {
   }
 
   render() {
-    const { render } = this.props
+    const { render, from } = this.props
     const { current } = this.state
 
-    return render(current)
+    return render(current || from)
   }
 }
