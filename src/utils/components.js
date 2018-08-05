@@ -1,6 +1,5 @@
 import React from 'react'
 import { BitmapText as PixiBitmapText } from 'react-pixi-fiber'
-import { palette } from 'styles/palette'
 
 export const BitmapText = ({ color, ...rest }) => {
   if (!rest.text) {
@@ -10,7 +9,7 @@ export const BitmapText = ({ color, ...rest }) => {
   rest.text = rest.text.toString()
   const style = {
     font: '4px pico-bitmap-font',
-    tint: palette[color ? color : 'black'],
+    tint: color ? color : 0x000,
   }
   return <PixiBitmapText style={style} {...rest} />
 }
