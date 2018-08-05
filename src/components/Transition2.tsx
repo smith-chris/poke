@@ -1,15 +1,27 @@
 import { Component, ReactNode } from 'react'
 import { ticker } from 'pixi.js'
 
-export type Frames<T> = Array<[number, T]>
+export type Steps<T> = Array<[number, T]>
+export type Stepper<T> = (info: number) => [T | undefined, boolean]
 
-type Props<T> = {
+type BaseProps<T> = {
   render: (data: T, ms: number) => ReactNode
-  frames: Frames<T>
+  useDeltaTime?: boolean
+  useTicks?: boolean
   loop?: boolean
   onFinish?: (ms: number) => void
   onLoop?: (ms: number) => void
 }
+
+type Props<T> =
+  | ({
+      stepper: Stepper<T>
+      steps?: Steps<T>
+    } & BaseProps<T>)
+  | ({
+      stepper?: Stepper<T>
+      steps: Steps<T>
+    } & BaseProps<T>)
 
 type State<T> = { data?: T }
 
@@ -19,20 +31,21 @@ export class Transition2<T> extends Component<Props<T>, State<T>> {
 
   state: State<T> = {}
 
-  elapsedTime = 0
+  elapsed = 0
 
   propsDiffer = (newProps: Props<T>) => {
-    const { frames } = this.props
-    return frames !== newProps.frames
+    const { steps, stepper } = this.props
+    return steps !== newProps.steps || stepper !== newProps.stepper
   }
 
   canTransition(props: Props<T>) {
-    const { frames } = props
-    return frames && frames.length > 0 && frames[0].length > 1
+    const { steps, stepper } = props
+    const hasSteps = steps && steps.length > 0 && steps[0].length > 1
+    return hasSteps || typeof stepper === 'function'
   }
 
   shouldComponentUpdate(newProps: Props<T>, newState: State<T>) {
-    return this.propsDiffer(newProps) || this.state !== newState
+    return this.propsDiffer(newProps) || this.state.data !== newState.data
   }
 
   componentWillReceiveProps(newProps: Props<T>) {
@@ -42,42 +55,73 @@ export class Transition2<T> extends Component<Props<T>, State<T>> {
     }
   }
 
-  startTransition = (props: Props<T>) => {
-    const { frames, loop, onFinish, onLoop } = props
+  makeGetData = (props: Props<T>): Stepper<T> => {
+    const { steps, stepper } = props
 
-    let currentFrameIndex = 0
-    let [threshold, data] = frames[currentFrameIndex]
+    if (typeof stepper === 'function') {
+      return stepper
+    } else if (steps) {
+      let currentFrameIndex = 0
+      let [threshold, data] = steps[currentFrameIndex]
+
+      return (elapsed: number) => {
+        if (elapsed > threshold) {
+          currentFrameIndex++
+          if (currentFrameIndex > steps.length - 1) {
+            currentFrameIndex = 0
+            threshold = steps[0][0]
+            data = steps[0][1]
+            return [data, true]
+          } else {
+            threshold += steps[currentFrameIndex][0]
+            data = steps[currentFrameIndex][1]
+          }
+        }
+        return [data, false]
+      }
+    } else {
+      console.warn('No steps & no stepper to make getData')
+      return () => [undefined, true]
+    }
+  }
+
+  startTransition = (props: Props<T>) => {
+    const { useDeltaTime, useTicks, loop, onFinish, onLoop } = props
+
+    const getData = this.makeGetData(props)
+    this.elapsed = 0
     this.setState({
-      data,
+      data: getData(0)[0],
     })
 
     this.tickerCallback = () => {
-      this.elapsedTime += this.ticker.elapsedMS
+      if (useDeltaTime) {
+        this.elapsed += this.ticker.deltaTime
+      } else if (useTicks) {
+        this.elapsed++
+      } else {
+        this.elapsed += this.ticker.elapsedMS
+      }
 
-      if (this.elapsedTime > threshold) {
-        currentFrameIndex++
-        if (currentFrameIndex > frames.length - 1) {
+      const [data, done] = getData(this.elapsed)
+
+      if (data !== undefined) {
+        if (done) {
           if (loop) {
             if (typeof onLoop === 'function') {
-              onLoop(this.elapsedTime)
+              onLoop(this.elapsed)
             }
-            this.elapsedTime = 0
-            currentFrameIndex = 0
-            threshold = frames[0][0]
-            data = frames[0][1]
+            this.elapsed = 0
             this.setState({ data })
           } else {
             this.ticker.stop()
             if (typeof onFinish === 'function') {
-              onFinish(this.elapsedTime)
+              onFinish(this.elapsed)
             }
             return
           }
         } else {
-          threshold += frames[currentFrameIndex][0]
-          this.setState({
-            data: frames[currentFrameIndex][1],
-          })
+          this.setState({ data })
         }
       }
     }
@@ -104,6 +148,6 @@ export class Transition2<T> extends Component<Props<T>, State<T>> {
       return null
     }
 
-    return render(data, this.elapsedTime)
+    return render(data, this.elapsed)
   }
 }

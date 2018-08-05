@@ -22,7 +22,6 @@ const Placeholder = ({ text = '' }) => (
     />
   </>
 )
-
 const renderSegment = (positions: Segment) =>
   positions.map(({ texture, position, type }) => {
     const props = {

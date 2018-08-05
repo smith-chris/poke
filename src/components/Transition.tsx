@@ -51,6 +51,7 @@ export class Transition extends Component<Props, State> {
     }
     init()
     this.setState({ current, ticks: 0 })
+    let et = 0
 
     this.tickerCallback = () => {
       if (current === undefined || current === null) {

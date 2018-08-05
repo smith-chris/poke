@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react'
-import {  Sprite } from 'utils/fiber'
+import { Sprite } from 'utils/fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { gameActions } from 'store/game'
@@ -7,8 +7,7 @@ import { Texture, Rectangle } from 'pixi.js'
 import red from 'gfx/sprites/red.png'
 import { Point } from 'utils/point'
 import { assertNever } from 'utils/other'
-import { Transition } from './Transition'
-import { MOVE_TICKS, MOVE_DISTANCE } from './Game'
+import { Transition2, Stepper } from './Transition2'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -35,20 +34,27 @@ const [texS, texS2, texN, texN2, texW, texW2] = [0, 48, 16, 64, 32, 80].map(y =>
   return result
 })
 
-const choosePlayerTexture = (px: number, tex: Texture, tex2: Texture) =>
-  px > 8 ? tex2 : tex
+const choosePlayerTexture = (altTexture: boolean, tex: Texture, tex2: Texture) =>
+  altTexture ? tex2 : tex
 
-const getPlayerSpriteProps = (direction: Direction, px: number, flipX?: boolean) => {
+const getPlayerSpriteProps = (
+  direction: Direction,
+  altTexture: boolean,
+  flipX?: boolean,
+) => {
   const scale = flipX ? new Point(-1, 1) : new Point(1, 1)
   switch (direction) {
     case Direction.N:
-      return { texture: choosePlayerTexture(px, texN, texN2), scale }
+      return { texture: choosePlayerTexture(altTexture, texN, texN2), scale }
     case Direction.E:
-      return { texture: choosePlayerTexture(px, texW, texW2), scale: new Point(-1, 1) }
+      return {
+        texture: choosePlayerTexture(altTexture, texW, texW2),
+        scale: new Point(-1, 1),
+      }
     case Direction.W:
-      return { texture: choosePlayerTexture(px, texW, texW2) }
+      return { texture: choosePlayerTexture(altTexture, texW, texW2) }
     case Direction.S:
-      return { texture: choosePlayerTexture(px, texS, texS2), scale }
+      return { texture: choosePlayerTexture(altTexture, texS, texS2), scale }
     default:
       return assertNever(direction)
   }
@@ -94,30 +100,28 @@ class PlayerComponent extends Component<Props, typeof defaultState> {
     })
   }
 
+  stepper: Stepper<boolean> = (tick: number) => [tick >= 8, tick >= 16]
+
   render() {
     const { direction, animate, flipX } = this.state
 
     return (animate ? (
-      <Transition
-        from={new Point(0)}
-        to={new Point(MOVE_TICKS - 1)}
+      <Transition2
+        stepper={this.stepper}
+        useTicks
         loop
         onLoop={this.handleLoop}
-        render={({ x }) => {
+        render={altTexture => {
           return (
             <Sprite
               {...spriteBaseProps}
-              {...getPlayerSpriteProps(
-                direction,
-                Math.round(MOVE_DISTANCE * (x / (MOVE_TICKS - 1))),
-                flipX,
-              )}
+              {...getPlayerSpriteProps(direction, altTexture, flipX)}
             />
           )
         }}
       />
     ) : (
-      <Sprite {...spriteBaseProps} {...getPlayerSpriteProps(direction, 0)} />
+      <Sprite {...spriteBaseProps} {...getPlayerSpriteProps(direction, false)} />
     )) as ReactNode
   }
 }
