@@ -8,6 +8,7 @@ import red from 'gfx/sprites/red.png'
 import { Point } from 'utils/point'
 import { assertNever } from 'utils/other'
 import { Transition2, Stepper } from './Transition2'
+import { TILE_SIZE } from 'assets/const'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -100,7 +101,10 @@ class PlayerComponent extends Component<Props, typeof defaultState> {
     })
   }
 
-  stepper: Stepper<boolean> = (tick: number) => ({ data: tick >= 8, done: tick >= 16 })
+  stepper: Stepper<boolean> = (tick: number) => ({
+    data: tick >= 8,
+    done: tick >= TILE_SIZE,
+  })
 
   render() {
     const { direction, animate, flipX } = this.state
@@ -111,14 +115,12 @@ class PlayerComponent extends Component<Props, typeof defaultState> {
         useTicks
         loop
         onLoop={this.handleLoop}
-        render={data => {
-          return (
-            <Sprite
-              {...spriteBaseProps}
-              {...getPlayerSpriteProps(direction, data, flipX)}
-            />
-          )
-        }}
+        render={data => (
+          <Sprite
+            {...spriteBaseProps}
+            {...getPlayerSpriteProps(direction, data, flipX)}
+          />
+        )}
       />
     ) : (
       <Sprite {...spriteBaseProps} {...getPlayerSpriteProps(direction, false)} />

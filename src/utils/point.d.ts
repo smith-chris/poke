@@ -1,1 +1,3 @@
-export class Point extends PIXI.Point {}
+export class Point extends PIXI.Point {
+  static ZERO: Point
+}

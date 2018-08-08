@@ -22,9 +22,7 @@ export class Flower extends Component<SpriteProps> {
       <Transition2
         steps={STEPS}
         loop
-        render={texture => {
-          return <Sprite {...this.props} texture={texture} />
-        }}
+        render={texture => <Sprite {...this.props} texture={texture} />}
       />
     )
   }

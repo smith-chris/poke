@@ -3,12 +3,16 @@ import { TilingSprite, TilingSpriteProps } from 'utils/fiber'
 import { Point } from 'utils/point'
 import { TILESETS } from 'assets/tilesets'
 import { Transition2, Steps } from './Transition2'
-
-const TILE_SIZE = 8
+import { TEXTURE_SIZE } from 'assets/const'
 
 const { OVERWORLD } = TILESETS
 
-const water = OVERWORLD.cutTexture(4 * TILE_SIZE, 1 * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+const water = OVERWORLD.cutTexture(
+  4 * TEXTURE_SIZE,
+  1 * TEXTURE_SIZE,
+  TEXTURE_SIZE,
+  TEXTURE_SIZE,
+)
 
 const STEP_DURATION = 350
 
@@ -28,8 +32,8 @@ export class Water extends Component<TilingSpriteProps> {
               {...this.props}
               tilePosition={new Point(x, 0)}
               texture={water}
-              width={TILE_SIZE}
-              height={TILE_SIZE}
+              width={TEXTURE_SIZE}
+              height={TEXTURE_SIZE}
             />
           )
         }}

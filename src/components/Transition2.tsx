@@ -2,7 +2,8 @@ import { Component, ReactNode } from 'react'
 import { ticker } from 'pixi.js'
 
 export type Steps<T> = Array<[number, T]>
-export type Stepper<T> = (info: number) => { data?: T; done: boolean }
+// When stepper function returns done=true the data is still used for one last render!
+export type Stepper<T> = (elapsed: number) => { data?: T; done: boolean }
 
 type BaseProps<T> = {
   render: (data: T, ms: number) => ReactNode
@@ -55,7 +56,7 @@ export class Transition2<T> extends Component<Props<T>, State<T>> {
     }
   }
 
-  makeGetData = (props: Props<T>): Stepper<T> => {
+  getStepper = (props: Props<T>): Stepper<T> => {
     const { steps, stepper } = props
 
     if (typeof stepper === 'function') {
@@ -89,10 +90,10 @@ export class Transition2<T> extends Component<Props<T>, State<T>> {
   startTransition = (props: Props<T>) => {
     const { useDeltaTime, useTicks, loop, onFinish, onLoop } = props
 
-    const getData = this.makeGetData(props)
+    const stepper = this.getStepper(props)
     this.elapsed = 0
     this.setState({
-      data: getData(0).data,
+      data: stepper(0).data,
     })
 
     this.tickerCallback = () => {
@@ -104,7 +105,7 @@ export class Transition2<T> extends Component<Props<T>, State<T>> {
         this.elapsed += this.ticker.elapsedMS
       }
 
-      const { data, done } = getData(this.elapsed)
+      const { data, done } = stepper(this.elapsed)
 
       if (data !== undefined) {
         if (done) {
