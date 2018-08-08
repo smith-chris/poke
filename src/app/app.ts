@@ -1,6 +1,6 @@
 import { Application, Texture } from 'pixi.js'
 import styles from './app.sass'
-import 'assets/fonts/fonts.js'
+import 'assets/fonts/fonts'
 import { palette } from 'styles/palette'
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST

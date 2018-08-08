@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { TilingSprite, TilingSpriteProps } from 'utils/fiber'
 import { Point } from 'utils/point'
 import { TILESETS } from 'assets/tilesets'
-import { Transition2, Steps } from './Transition2'
+import { Transition, Steps } from './Transition'
 import { TEXTURE_SIZE } from 'assets/const'
 
 const { OVERWORLD } = TILESETS
@@ -23,7 +23,7 @@ const STEPS: Steps<number> = [-2, -1, 0, 1, 2, 1, 0, -1].map(
 export class Water extends Component<TilingSpriteProps> {
   render() {
     return (
-      <Transition2
+      <Transition
         steps={STEPS}
         loop
         render={x => {

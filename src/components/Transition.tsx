@@ -1,93 +1,129 @@
-import React, { Component, ReactNode } from 'react'
-import { Point, ticker } from 'pixi.js'
-import { roundPoint, pointsEqual } from 'utils/pixi'
+import { Component, ReactNode } from 'react'
+import { ticker } from 'pixi.js'
 
-type Props = {
-  render: (position: Point) => ReactNode
-  from: Point
-  to: Point
-  speed?: number
+export type Steps<T> = Array<[number, T]>
+// When stepper function returns done=true the data is still used for one last render!
+export type Stepper<T> = (elapsed: number) => { data?: T; done: boolean }
+
+type BaseProps<T> = {
+  render: (data: T, ms: number) => ReactNode
+  useDeltaTime?: boolean
+  useTicks?: boolean
   loop?: boolean
-  onFinish?: (ticks: number) => void
-  onLoop?: (ticks: number) => void
+  onFinish?: (ms: number) => void
+  onLoop?: (ms: number) => void
 }
 
-const defaultState = {
-  ticks: 0,
-}
+type Props<T> =
+  | ({
+      stepper: Stepper<T>
+      steps?: Steps<T>
+    } & BaseProps<T>)
+  | ({
+      stepper?: Stepper<T>
+      steps: Steps<T>
+    } & BaseProps<T>)
 
-type State = typeof defaultState & { current?: Point }
+type State<T> = { data?: T }
 
-export class Transition extends Component<Props, State> {
+export class Transition<T> extends Component<Props<T>, State<T>> {
   ticker: ticker.Ticker
   tickerCallback: () => void
 
-  state: State = defaultState
+  state: State<T> = {}
 
-  componentWillReceiveProps(newProps: Props) {
-    if (
-      this.canTransition(newProps) &&
-      (!pointsEqual(newProps.from, this.props.from) ||
-        !pointsEqual(newProps.to, this.props.to))
-    ) {
+  elapsed = 0
+
+  propsDiffer = (newProps: Props<T>) => {
+    const { steps, stepper } = this.props
+    return steps !== newProps.steps || stepper !== newProps.stepper
+  }
+
+  canTransition(props: Props<T>) {
+    const { steps, stepper } = props
+    const hasSteps = steps && steps.length > 0 && steps[0].length > 1
+    return hasSteps || typeof stepper === 'function'
+  }
+
+  shouldComponentUpdate(newProps: Props<T>, newState: State<T>) {
+    return this.propsDiffer(newProps) || this.state.data !== newState.data
+  }
+
+  componentWillReceiveProps(newProps: Props<T>) {
+    if (this.canTransition(newProps) && this.propsDiffer(newProps)) {
       this.ticker.remove(this.tickerCallback)
       this.startTransition(newProps)
     }
   }
 
-  startTransition = (props: Props) => {
-    const { from, to, speed = 1, loop, onFinish, onLoop } = props
-    let current = new Point(0)
-    let stepX = 0
-    let stepY = 0
-    const init = () => {
-      current = new Point(from.x, from.y)
-      if (from.x !== to.x) {
-        stepX = from.x < to.x ? speed : -speed
+  getStepper = (props: Props<T>): Stepper<T> => {
+    const { steps, stepper } = props
+
+    if (typeof stepper === 'function') {
+      return stepper
+    } else if (steps) {
+      let currentFrameIndex = 0
+      let [threshold, data] = steps[currentFrameIndex]
+
+      return (elapsed: number) => {
+        if (elapsed > threshold) {
+          currentFrameIndex++
+          if (currentFrameIndex > steps.length - 1) {
+            currentFrameIndex = 0
+            threshold = steps[0][0]
+            data = steps[0][1]
+
+            return { data, done: true }
+          } else {
+            threshold += steps[currentFrameIndex][0]
+            data = steps[currentFrameIndex][1]
+          }
+        }
+        return { data, done: false }
       }
-      if (from.y !== to.y) {
-        stepY = from.y < to.y ? speed : -speed
-      }
+    } else {
+      console.warn('No steps & no stepper to make getData')
+      return () => ({ done: true })
     }
-    init()
-    this.setState({ current, ticks: 0 })
-    let et = 0
+  }
+
+  startTransition = (props: Props<T>) => {
+    const { useDeltaTime, useTicks, loop, onFinish, onLoop } = props
+
+    const stepper = this.getStepper(props)
+    this.elapsed = 0
+    this.setState({
+      data: stepper(0).data,
+    })
 
     this.tickerCallback = () => {
-      if (current === undefined || current === null) {
-        console.warn('Current is undefined, stopping...')
-        this.ticker.stop()
-        return
+      if (useDeltaTime) {
+        this.elapsed += this.ticker.deltaTime
+      } else if (useTicks) {
+        this.elapsed++
+      } else {
+        this.elapsed += this.ticker.elapsedMS
       }
-      const { ticks } = this.state
-      current.x += stepX
-      const xFinished = Math.abs(to.x - current.x) < Math.abs(stepX)
-      if (xFinished) {
-        stepX = 0
-        current.x = to.x
-      }
-      current.y += stepY
-      const yFinished = Math.abs(to.y - current.y) < Math.abs(stepY)
-      if (yFinished) {
-        stepY = 0
-        current.y = to.y
-      }
-      this.setState({
-        current: roundPoint(current),
-        ticks: ticks + 1,
-      })
-      if (stepY === 0 && stepX === 0) {
-        if (loop) {
-          init()
-          if (typeof onLoop === 'function') {
-            onLoop(ticks + 1)
+
+      const { data, done } = stepper(this.elapsed)
+
+      if (data !== undefined) {
+        if (done) {
+          if (loop) {
+            if (typeof onLoop === 'function') {
+              onLoop(this.elapsed)
+            }
+            this.elapsed = 0
+            this.setState({ data })
+          } else {
+            this.ticker.stop()
+            if (typeof onFinish === 'function') {
+              onFinish(this.elapsed)
+            }
+            return
           }
         } else {
-          this.ticker.stop()
-          if (typeof onFinish === 'function') {
-            onFinish(ticks + 1)
-          }
-          return
+          this.setState({ data })
         }
       }
     }
@@ -95,13 +131,7 @@ export class Transition extends Component<Props, State> {
     this.ticker.start()
   }
 
-  canTransition(props: Props) {
-    const { from, to } = props
-    return from !== undefined && to !== undefined && !pointsEqual(from, to)
-  }
-
   componentDidMount() {
-    const { from } = this.props
     this.ticker = new ticker.Ticker()
     if (this.canTransition(this.props)) {
       this.startTransition(this.props)
@@ -113,9 +143,13 @@ export class Transition extends Component<Props, State> {
   }
 
   render() {
-    const { render, from } = this.props
-    const { current } = this.state
+    const { render } = this.props
+    const { data } = this.state
 
-    return render(current || from)
+    if (data === undefined || data === null) {
+      return null
+    }
+
+    return render(data, this.elapsed)
   }
 }

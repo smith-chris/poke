@@ -7,7 +7,7 @@ import { Texture, Rectangle } from 'pixi.js'
 import red from 'gfx/sprites/red.png'
 import { Point } from 'utils/point'
 import { assertNever } from 'utils/other'
-import { Transition2, Stepper } from './Transition2'
+import { Transition, Stepper } from './Transition'
 import { TILE_SIZE } from 'assets/const'
 
 const mapStateToProps = (state: StoreState) => state
@@ -110,7 +110,7 @@ class PlayerComponent extends Component<Props, typeof defaultState> {
     const { direction, animate, flipX } = this.state
 
     return (animate ? (
-      <Transition2
+      <Transition
         stepper={this.stepper}
         useTicks
         loop

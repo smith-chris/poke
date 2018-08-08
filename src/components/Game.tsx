@@ -7,11 +7,11 @@ import { Point } from 'utils/point'
 import { getMap } from './getMap'
 import { palletTown } from 'assets/maps'
 import { Player } from './Player'
-import { Transition } from './Transition'
 import { getNextPosition } from 'store/gameTransforms/move'
-import { Transition2 } from './Transition2'
-import { ticker } from 'app/app'
+import { Transition } from './Transition'
 import { TILE_SIZE } from 'assets/const'
+import { SCREEN_SIZE } from 'app/app'
+import { createPointStepper } from 'utils/transition'
 
 // WIP: The map name should be stored in redux
 export const CURRENT_MAP = palletTown
@@ -33,35 +33,15 @@ type DispatchProps = ReturnType<typeof mapDispatchToProps>
 
 type Props = StateProps & DispatchProps
 
-const MOVE_SPEED = 1
 export const MOVE_DISTANCE = TILE_SIZE
-export const MOVE_TICKS = Math.round(MOVE_DISTANCE / MOVE_SPEED)
 
 const MAP_CENTER = {
-  x: 64,
-  y: 64,
+  x: SCREEN_SIZE / 2 - TILE_SIZE / 2,
+  y: SCREEN_SIZE / 2 - TILE_SIZE / 2,
 }
 
 const getMapPosition = (player: Point) =>
   new Point(MAP_CENTER.x - player.x * 16, MAP_CENTER.y - player.y * 16)
-
-type CreatePointStepperParams = {
-  from: Point
-  to: Point
-  duration: number
-}
-
-const createPointStepper = ({ from, to, duration }: CreatePointStepperParams) => {
-  const diffX = from.x - to.x
-  const diffY = from.y - to.y
-  return (elapsed: number) => {
-    const progress = elapsed / duration
-    return {
-      data: new Point(from.x - diffX * progress, from.y - diffY * progress),
-      done: elapsed >= duration,
-    }
-  }
-}
 
 class Game extends Component<Props> {
   shouldComponentUpdate({
@@ -83,7 +63,7 @@ class Game extends Component<Props> {
     } = this.props
     return (
       <>
-        <Transition2
+        <Transition
           stepper={createPointStepper({
             from: getMapPosition(player.position),
             to: getMapPosition(player.destination || player.position),
