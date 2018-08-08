@@ -2,7 +2,7 @@ import { Component, ReactNode } from 'react'
 import { ticker } from 'pixi.js'
 
 export type Steps<T> = Array<[number, T]>
-export type Stepper<T> = (info: number) => [T | undefined, boolean]
+export type Stepper<T> = (info: number) => { data?: T; done: boolean }
 
 type BaseProps<T> = {
   render: (data: T, ms: number) => ReactNode
@@ -71,17 +71,18 @@ export class Transition2<T> extends Component<Props<T>, State<T>> {
             currentFrameIndex = 0
             threshold = steps[0][0]
             data = steps[0][1]
-            return [data, true]
+
+            return { data, done: true }
           } else {
             threshold += steps[currentFrameIndex][0]
             data = steps[currentFrameIndex][1]
           }
         }
-        return [data, false]
+        return { data, done: false }
       }
     } else {
       console.warn('No steps & no stepper to make getData')
-      return () => [undefined, true]
+      return () => ({ done: true })
     }
   }
 
@@ -91,7 +92,7 @@ export class Transition2<T> extends Component<Props<T>, State<T>> {
     const getData = this.makeGetData(props)
     this.elapsed = 0
     this.setState({
-      data: getData(0)[0],
+      data: getData(0).data,
     })
 
     this.tickerCallback = () => {
@@ -103,7 +104,7 @@ export class Transition2<T> extends Component<Props<T>, State<T>> {
         this.elapsed += this.ticker.elapsedMS
       }
 
-      const [data, done] = getData(this.elapsed)
+      const { data, done } = getData(this.elapsed)
 
       if (data !== undefined) {
         if (done) {

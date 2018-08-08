@@ -100,7 +100,7 @@ class PlayerComponent extends Component<Props, typeof defaultState> {
     })
   }
 
-  stepper: Stepper<boolean> = (tick: number) => [tick >= 8, tick >= 16]
+  stepper: Stepper<boolean> = (tick: number) => ({ data: tick >= 8, done: tick >= 16 })
 
   render() {
     const { direction, animate, flipX } = this.state
@@ -111,11 +111,11 @@ class PlayerComponent extends Component<Props, typeof defaultState> {
         useTicks
         loop
         onLoop={this.handleLoop}
-        render={altTexture => {
+        render={data => {
           return (
             <Sprite
               {...spriteBaseProps}
-              {...getPlayerSpriteProps(direction, altTexture, flipX)}
+              {...getPlayerSpriteProps(direction, data, flipX)}
             />
           )
         }}

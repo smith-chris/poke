@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { TilingSprite, TilingSpriteProps } from 'utils/fiber'
 import { Point } from 'utils/point'
 import { TILESETS } from 'assets/tilesets'
-import { Transition2 } from './Transition2'
+import { Transition2, Steps } from './Transition2'
 
 const TILE_SIZE = 8
 
@@ -12,7 +12,7 @@ const water = OVERWORLD.cutTexture(4 * TILE_SIZE, 1 * TILE_SIZE, TILE_SIZE, TILE
 
 const STEP_DURATION = 350
 
-const STEPS = [-2, -1, 0, 1, 2, 1, 0, -1].map(
+const STEPS: Steps<number> = [-2, -1, 0, 1, 2, 1, 0, -1].map(
   x => [STEP_DURATION, x] as [number, number],
 )
 
