@@ -73,8 +73,20 @@ const spriteBaseProps = {
   scale: new Point(1, 1),
 }
 
-class PlayerComponent extends Component<Props, typeof defaultState> {
+const shallowDiff = <T extends {}>(a: T, b: T) => {
+  for (const key in a) {
+    if (a[key] !== b[key]) {
+      return true
+    }
+  }
+  return false
+}
+
+type State = typeof defaultState
+
+class PlayerComponent extends Component<Props, State> {
   state = defaultState
+
   componentWillReceiveProps({ game: { controls, player } }: Props) {
     if (player.direction) {
       this.setState({
@@ -95,6 +107,10 @@ class PlayerComponent extends Component<Props, typeof defaultState> {
     }
   }
 
+  shouldComponentUpdate(_: Props, newState: State) {
+    return shallowDiff(this.state, newState)
+  }
+
   handleLoop = () => {
     this.setState({
       flipX: !this.state.flipX,
@@ -109,9 +125,9 @@ class PlayerComponent extends Component<Props, typeof defaultState> {
   render() {
     const { direction, animate, flipX } = this.state
 
-    return (animate ? (
+    return (
       <Transition
-        stepper={this.stepper}
+        stepper={animate ? this.stepper : { data: false, forceUpdate: true }}
         useTicks
         loop
         onLoop={this.handleLoop}
@@ -122,9 +138,7 @@ class PlayerComponent extends Component<Props, typeof defaultState> {
           />
         )}
       />
-    ) : (
-      <Sprite {...spriteBaseProps} {...getPlayerSpriteProps(direction, false)} />
-    )) as ReactNode
+    )
   }
 }
 

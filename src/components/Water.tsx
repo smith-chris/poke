@@ -26,17 +26,15 @@ export class Water extends Component<TilingSpriteProps> {
       <Transition
         steps={STEPS}
         loop
-        render={x => {
-          return (
-            <TilingSprite
-              {...this.props}
-              tilePosition={new Point(x, 0)}
-              texture={water}
-              width={TEXTURE_SIZE}
-              height={TEXTURE_SIZE}
-            />
-          )
-        }}
+        render={x => (
+          <TilingSprite
+            {...this.props}
+            tilePosition={new Point(x, 0)}
+            texture={water}
+            width={TEXTURE_SIZE}
+            height={TEXTURE_SIZE}
+          />
+        )}
       />
     )
   }

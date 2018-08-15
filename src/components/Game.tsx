@@ -61,14 +61,19 @@ class Game extends Component<Props> {
       game: { player },
       moveEnd,
     } = this.props
+
+    const stepper = player.destination
+      ? createPointStepper({
+          from: getMapPosition(player.position),
+          to: getMapPosition(player.destination),
+          duration: TILE_SIZE,
+        })
+      : { data: getMapPosition(player.position) }
+
     return (
       <>
         <Transition
-          stepper={createPointStepper({
-            from: getMapPosition(player.position),
-            to: getMapPosition(player.destination || player.position),
-            duration: TILE_SIZE,
-          })}
+          stepper={stepper}
           useTicks
           onFinish={moveEnd}
           render={position => (

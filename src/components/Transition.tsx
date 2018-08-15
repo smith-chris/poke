@@ -3,7 +3,9 @@ import { ticker } from 'pixi.js'
 
 export type Steps<T> = Array<[number, T]>
 // When stepper function returns done=true the data is still used for one last render!
-export type Stepper<T> = (elapsed: number) => { data?: T; done: boolean }
+export type Stepper<T> =
+  | ((elapsed: number) => { data?: T; done: boolean })
+  | { data: T; forceUpdate?: boolean }
 
 type BaseProps<T> = {
   render: (data: T, ms: number) => ReactNode
@@ -42,11 +44,11 @@ export class Transition<T> extends Component<Props<T>, State<T>> {
   canTransition(props: Props<T>) {
     const { steps, stepper } = props
     const hasSteps = steps && steps.length > 0 && steps[0].length > 1
-    return hasSteps || typeof stepper === 'function'
+    return hasSteps || stepper !== undefined
   }
 
-  shouldComponentUpdate(newProps: Props<T>, newState: State<T>) {
-    return this.propsDiffer(newProps) || this.state.data !== newState.data
+  shouldComponentUpdate(_: Props<T>, newState: State<T>) {
+    return this.state.data !== newState.data
   }
 
   componentWillReceiveProps(newProps: Props<T>) {
@@ -59,7 +61,7 @@ export class Transition<T> extends Component<Props<T>, State<T>> {
   getStepper = (props: Props<T>): Stepper<T> => {
     const { steps, stepper } = props
 
-    if (typeof stepper === 'function') {
+    if (stepper !== undefined) {
       return stepper
     } else if (steps) {
       let currentFrameIndex = 0
@@ -87,14 +89,25 @@ export class Transition<T> extends Component<Props<T>, State<T>> {
     }
   }
 
+  setData = (data?: T) => {
+    if (data !== this.state.data) {
+      this.setState({ data })
+    }
+  }
+
   startTransition = (props: Props<T>) => {
     const { useDeltaTime, useTicks, loop, onFinish, onLoop } = props
 
     const stepper = this.getStepper(props)
+    if ('data' in stepper) {
+      this.setData(stepper.data)
+      if (stepper.forceUpdate) {
+        this.forceUpdate()
+      }
+      return
+    }
     this.elapsed = 0
-    this.setState({
-      data: stepper(0).data,
-    })
+    this.setData(stepper(0).data)
 
     this.tickerCallback = () => {
       if (useDeltaTime) {
@@ -114,7 +127,7 @@ export class Transition<T> extends Component<Props<T>, State<T>> {
               onLoop(this.elapsed)
             }
             this.elapsed = 0
-            this.setState({ data })
+            this.setData(data)
           } else {
             this.ticker.stop()
             if (typeof onFinish === 'function') {
@@ -123,7 +136,7 @@ export class Transition<T> extends Component<Props<T>, State<T>> {
             return
           }
         } else {
-          this.setState({ data })
+          this.setData(data)
         }
       }
     }
@@ -146,7 +159,7 @@ export class Transition<T> extends Component<Props<T>, State<T>> {
     const { render } = this.props
     const { data } = this.state
 
-    if (data === undefined || data === null) {
+    if (data === undefined) {
       return null
     }
 
