@@ -7,18 +7,18 @@ import { Rectangle } from './Rectangle'
 import { palletTown } from 'assets/maps'
 import { Flower } from './Flower'
 import { Water } from './Water'
-const tileSize = 32
+import { BLOCK_SIZE } from 'assets/const'
 
 const Placeholder = ({ text = '' }) => (
   <>
-    <Rectangle width={tileSize} height={tileSize} color="lightGray" />
-    <Rectangle x={1} y={1} width={tileSize - 2} height={tileSize - 2} color="red" />
+    <Rectangle width={BLOCK_SIZE} height={BLOCK_SIZE} color="lightGray" />
+    <Rectangle x={1} y={1} width={BLOCK_SIZE - 2} height={BLOCK_SIZE - 2} color="red" />
     <BitmapText
       color="white"
       text={text}
       anchor={0.5}
       scale={new Point(2, 2)}
-      position={new Point(tileSize / 2, tileSize / 2)}
+      position={new Point(BLOCK_SIZE / 2, BLOCK_SIZE / 2)}
     />
   </>
 )
@@ -46,7 +46,7 @@ export const getMap = (map = palletTown) => {
     return (
       <Container
         key={`${blockId}_${x}x${y}`}
-        position={new Point(x * tileSize, y * tileSize)}
+        position={new Point(x * BLOCK_SIZE, y * BLOCK_SIZE)}
       >
         {segment ? renderSegment(segment) : <Placeholder text={blockId.toString()} />}
       </Container>
