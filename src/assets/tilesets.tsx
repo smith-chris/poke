@@ -1,12 +1,12 @@
-import React from 'react'
 import _overworld from 'gfx/tilesets/overworld.png'
+import _overworldCollisions from 'gfx/tilesets/overworld.tilecoll'
 import _cemetery from 'gfx/tilesets/cemetery.png'
 import { Texture, BaseTexture, Rectangle } from 'pixi.js'
 import { ObjectOf } from 'utils/types'
 import { loop } from 'utils/render'
 import { Point } from 'utils/point'
 import { parseHexData } from './utils'
-import { getTextureLocationHexes } from './blocksets'
+import { getTextureLocationHexes, blocksetData } from './blocksets'
 
 type Asset = typeof _overworld
 
@@ -21,12 +21,9 @@ const cutTexture = (baseTexture: BaseTexture) => (
   return tx
 }
 
-import _overworldCollisions from 'gfx/tilesets/overworld.tilecoll'
-import { palette } from 'styles/palette'
+const overworldCollisions = parseHexData(_overworldCollisions.slice(0, -1))
 
-const overworldCollisions = parseHexData(_overworldCollisions).slice(0, -1)
-
-const getSegment = (hex: number, blocks: ReturnType<typeof getBlockTexture>) => {
+const getSegment = (hex: number, blocks: ReturnType<typeof getBlockTextures>) => {
   return loop(4, 4, (y, x) => ({ x: x * 8, y: y * 8 })).map((position, i) => {
     return {
       ...blocks[i],
@@ -52,7 +49,7 @@ const getTileType = (blocksetName: string, id: number) => {
 
 type TileType = ReturnType<typeof getTileType>
 
-const getBlockTexture = (
+const getBlockTextures = (
   hex: number,
   baseTexture: BaseTexture,
   blocksetName: string,
@@ -82,7 +79,8 @@ const makeTexture = (asset: Asset, name: string) => {
     ...asset,
     baseTexture,
     cutTexture: cutTexture(baseTexture),
-    getBlock: (hex: number) => getSegment(hex, getBlockTexture(hex, baseTexture, name)),
+    getBlock: (hex: number) =>
+      getSegment(hex, getBlockTextures(hex, baseTexture, name)),
     getBlockCollisions: (hex: number) =>
       // WIP: Collisions data should be based on 'name' param
       getTextureLocationHexes(hex, name).map(id => overworldCollisions.includes(id)),
@@ -95,3 +93,12 @@ export const TILESETS: ObjectOf<ReturnType<typeof makeTexture>> = {
   [DEFAULT_TILESET_NAME]: makeTexture(_overworld, DEFAULT_TILESET_NAME),
   CEMETERY: makeTexture(_cemetery, 'CEMETERY'),
 }
+// console.log(TILESETS.OVERWORLD)
+export const tilesetData = {
+  overworld: {
+    collisions: _overworldCollisions.slice(0, -1),
+    blockset: blocksetData.overworld,
+  },
+}
+
+export type TilesetsData = ObjectOf<typeof tilesetData.overworld>

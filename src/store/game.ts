@@ -4,27 +4,35 @@ import { getNextPosition } from './gameTransforms/move'
 import { assertNever } from 'utils/other'
 import { pointsEqual } from 'utils/pixi'
 import { canMove } from 'components/Game'
-import { Extend } from 'utils/types'
+import { MapsData } from 'assets/maps'
+import { TilesetsData } from 'assets/tilesets'
+import { loadMapTransform, LoadedMap } from './gameTransforms/loadMap'
 
-const initialState = {
-  player: {
-    position: new Point(10, 12),
-  },
-  controls: {},
+type MapRenderingData = {
+  maps: MapsData
+  tilesets: TilesetsData
 }
 
-export type GameState = Extend<
-  typeof initialState,
-  {
-    player: {
-      destination?: Point
-      direction?: Direction
-    }
-    controls: {
-      move?: Direction
-    }
+export type GameState = {
+  player: {
+    destination?: Point
+    direction?: Direction
+    position: Point
   }
->
+  controls: {
+    move?: Direction
+  }
+  currentMap?: LoadedMap
+} & MapRenderingData
+
+const initialState: GameState = {
+  player: {
+    position: new Point(12, 12),
+  },
+  controls: {},
+  maps: {},
+  tilesets: {},
+}
 
 export enum Direction {
   N = 'N',
@@ -34,10 +42,12 @@ export enum Direction {
 }
 
 export const gameActions = {
-  moveStart: ActionCreator('moveStart', data as Direction),
-  moveEnd: ActionCreator('moveEnd'),
-  moveKeyPress: ActionCreator('moveKeyPress', data as Direction),
-  moveKeyRelease: ActionCreator('moveKeyRelease'),
+  moveKeyPress: ActionCreator('MoveKeyPress', data as Direction),
+  moveKeyRelease: ActionCreator('MoveKeyRelease'),
+  moveStart: ActionCreator('MoveStart', data as Direction),
+  moveEnd: ActionCreator('MoveEnd'),
+  initialise: ActionCreator('Initialise', data as MapRenderingData),
+  loadMap: ActionCreator('LoadMap', data as string),
 }
 
 export type GameAction = ActionsUnion<typeof gameActions>
@@ -47,7 +57,19 @@ export const gameReducer = (
   action: GameAction,
 ): GameState => {
   switch (action.type) {
-    case 'moveKeyPress': {
+    case 'Initialise': {
+      return {
+        ...state,
+        ...action.data,
+      }
+    }
+    case 'LoadMap': {
+      return {
+        ...state,
+        currentMap: loadMapTransform(state, action.data),
+      }
+    }
+    case 'MoveKeyPress': {
       return {
         ...state,
         controls: {
@@ -56,7 +78,7 @@ export const gameReducer = (
         },
       }
     }
-    case 'moveKeyRelease': {
+    case 'MoveKeyRelease': {
       return {
         ...state,
         controls: {
@@ -65,7 +87,7 @@ export const gameReducer = (
         },
       }
     }
-    case 'moveStart': {
+    case 'MoveStart': {
       const { player } = state
       const destination = getNextPosition(action.data, player.position)
       if (!pointsEqual(destination, player.position)) {
@@ -81,7 +103,7 @@ export const gameReducer = (
         return state
       }
     }
-    case 'moveEnd': {
+    case 'MoveEnd': {
       const { player, controls } = state
       if (!player.destination) {
         return state

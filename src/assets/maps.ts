@@ -57,7 +57,7 @@ const makeMap = (blockData: string, { width = 0 }, tilesetName?: string) => {
   }
 }
 
-export type MapData = ReturnType<typeof makeMap>
+// export type MapData = ReturnType<typeof makeMap>
 
 export const palletTown = makeMap(
   _palletTown,
@@ -74,3 +74,11 @@ export const agatha = makeMap(
   MAP_CONSTANTS.AGATHAS_ROOM,
   getTilesetName(_agathaConfig),
 )
+export const mapsData = {
+  palletTown: {
+    blocksData: _palletTown,
+    size: MAP_CONSTANTS.PALLET_TOWN,
+    tilesetName: getTilesetName(_palletTownConfig).toLowerCase(),
+  },
+}
+export type MapsData = ObjectOf<typeof mapsData.palletTown>
