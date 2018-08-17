@@ -104,13 +104,16 @@ export const gameReducer = (
       }
     }
     case 'MoveEnd': {
-      const { player, controls } = state
-      if (!player.destination) {
+      const { player, controls, currentMap } = state
+      if (!player.destination || !currentMap) {
         return state
       }
       let newDestination = undefined
       let newDirection = undefined
-      if (controls.move !== undefined && canMove(player.destination, controls.move)) {
+      if (
+        controls.move !== undefined &&
+        canMove(player.destination, controls.move, currentMap.collisions)
+      ) {
         newDestination = getNextPosition(controls.move, player.destination)
         newDirection = controls.move
       }

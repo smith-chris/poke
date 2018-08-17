@@ -9,11 +9,15 @@ const moveQueue = new Map()
 
 const handleKeyPress = (direction: Direction, keyName?: string) => {
   const {
-    game: { controls, player },
+    game: { controls, player, currentMap },
   } = store.getState()
   if (controls.move === undefined) {
     actions.moveKeyPress(direction)
-    if (player.destination === undefined && canMove(player.position, direction)) {
+    if (
+      player.destination === undefined &&
+      currentMap &&
+      canMove(player.position, direction, currentMap.collisions)
+    ) {
       actions.moveStart(direction)
     }
   } else if (keyName) {

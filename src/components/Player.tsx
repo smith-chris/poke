@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react'
+import React, { Component } from 'react'
 import { Sprite } from 'utils/fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'

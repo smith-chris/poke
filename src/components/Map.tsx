@@ -1,24 +1,23 @@
 import React, { Component } from 'react'
-import { Container } from 'react-pixi-fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { gameActions, Direction, GameState } from 'store/game'
 import { Point } from 'utils/point'
-import { palletTown } from 'assets/maps'
 import { getNextPosition } from 'store/gameTransforms/move'
 import { Transition } from './Transition'
 import { TILE_SIZE } from 'assets/const'
 import { SCREEN_SIZE } from 'app/app'
 import { createPointStepper } from 'utils/transition'
-import { Sprite } from 'utils/fiber'
+import { Sprite, Container } from 'utils/fiber'
 import { TILESETS } from 'assets/tilesets'
 
-// WIP: The map name should be stored in redux
-export const CURRENT_MAP = palletTown
-
-export const canMove = (position: Point, direction: Direction) => {
+export const canMove = (
+  position: Point,
+  direction: Direction,
+  collisions: boolean[][],
+) => {
   const { x, y } = getNextPosition(direction, position)
-  return Boolean(CURRENT_MAP.collisions[`${x}_${y}`])
+  return collisions[x][y]
 }
 
 const mapStateToProps = (state: StoreState) => state

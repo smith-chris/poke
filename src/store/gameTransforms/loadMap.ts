@@ -52,10 +52,10 @@ export const loadMapTransform = (state: GameState, mapName: string) => {
     // Each block has 2x2 collisions
     const baseX = x * 2
     const baseY = y * 2
-    parsedCollisions[baseX][baseY] = !collisions.includes(textureIds[4])
-    parsedCollisions[baseX + 1][baseY] = !collisions.includes(textureIds[6])
-    parsedCollisions[baseX][baseY + 1] = !collisions.includes(textureIds[12])
-    parsedCollisions[baseX + 1][baseY + 1] = !collisions.includes(textureIds[14])
+    parsedCollisions[baseX][baseY] = collisions.includes(textureIds[4])
+    parsedCollisions[baseX + 1][baseY] = collisions.includes(textureIds[6])
+    parsedCollisions[baseX][baseY + 1] = collisions.includes(textureIds[12])
+    parsedCollisions[baseX + 1][baseY + 1] = collisions.includes(textureIds[14])
   })
   return {
     textureIds: parsedTextureIds,
