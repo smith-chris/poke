@@ -10,6 +10,8 @@ import { SCREEN_SIZE } from 'app/app'
 import { createPointStepper } from 'utils/transition'
 import { Sprite, Container } from 'utils/fiber'
 import { TILESETS } from 'assets/tilesets'
+import { Flower } from './Flower'
+import { Water } from './Water'
 
 export const canMove = (
   position: Point,
@@ -44,21 +46,35 @@ const makeMap = (game: GameState) => {
   if (!game.currentMap) {
     return null
   }
+
   const result: JSX.Element[] = []
   game.currentMap.textureIds.forEach((row, x) => {
     row.forEach((textureId, y) => {
-      result.push(
-        <Sprite
-          key={`${x}x${y}`}
-          position={new Point(x * 8, y * 8)}
-          texture={TILESETS.OVERWORLD.cutTexture(
-            (textureId % 16) * 8,
-            Math.floor(textureId / 16) * 8,
-            8,
-            8,
-          )}
-        />,
-      )
+      const componentProps = {
+        key: `${x}x${y}`,
+        position: new Point(x * 8, y * 8),
+      }
+
+      switch (textureId) {
+        case 3:
+          result.push(<Flower {...componentProps} />)
+          break
+        case 20:
+          result.push(<Water {...componentProps} />)
+          break
+        default:
+          result.push(
+            <Sprite
+              {...componentProps}
+              texture={TILESETS.OVERWORLD.cutTexture(
+                (textureId % 16) * 8,
+                Math.floor(textureId / 16) * 8,
+                8,
+                8,
+              )}
+            />,
+          )
+      }
     })
   })
   return result

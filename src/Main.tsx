@@ -5,12 +5,12 @@ import { store, actions } from 'store/store'
 import { render } from 'react-pixi-fiber'
 import { Provider } from 'react-redux'
 import { mapsData } from 'assets/maps'
-import { tilesetData } from 'assets/tilesets'
+import { tilesetsData } from 'assets/tilesets'
 import 'keyboard'
 
 actions.initialise({
   maps: mapsData,
-  tilesets: tilesetData,
+  tilesets: tilesetsData,
 })
 
 actions.loadMap('palletTown')

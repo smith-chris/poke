@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TilingSprite, TilingSpriteProps } from 'utils/fiber'
+import { TilingSprite, TilingSpriteProps, Omit } from 'utils/fiber'
 import { Point } from 'utils/point'
 import { TILESETS } from 'assets/tilesets'
 import { Transition, Steps } from './Transition'
@@ -20,7 +20,7 @@ const STEPS: Steps<number> = [-2, -1, 0, 1, 2, 1, 0, -1].map(
   x => [STEP_DURATION, x] as [number, number],
 )
 
-export class Water extends Component<TilingSpriteProps> {
+export class Water extends Component<Omit<TilingSpriteProps, 'texture'>> {
   render() {
     return (
       <Transition
