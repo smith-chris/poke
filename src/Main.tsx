@@ -1,5 +1,5 @@
 import React from 'react'
-import Game from 'components/Game'
+import { Game } from 'components/Game'
 import { stage } from 'app/app'
 import { store, actions } from 'store/store'
 import { render } from 'react-pixi-fiber'
