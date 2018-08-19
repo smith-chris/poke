@@ -42,43 +42,84 @@ const MAP_CENTER = {
 const getMapPosition = (player: Point) =>
   new Point(MAP_CENTER.x - player.x * 16, MAP_CENTER.y - player.y * 16)
 
-const makeMap = (game: GameState) => {
+let makeMap = (game: GameState) => {
   if (!game.currentMap) {
     return null
   }
 
-  const result: JSX.Element[] = []
-  game.currentMap.textureIds.forEach((row, x) => {
-    row.forEach((textureId, y) => {
-      const componentProps = {
-        key: `${x}x${y}`,
-        position: new Point(x * 8, y * 8),
-      }
+  return game.currentMap.blocks.map(({ x, y, textures }, i) => {
+    return (
+      <Container key={`${x}x${y}`} position={new Point(x * 32, y * 32)}>
+        {textures.map((row, textureX) => {
+          return row.map((textureId, textureY) => {
+            const componentProps = {
+              key: `${x}x${y}_${textureX}x${textureY}`,
+              position: new Point(textureX * 8, textureY * 8),
+            }
 
-      switch (textureId) {
-        case 3:
-          result.push(<Flower {...componentProps} />)
-          break
-        case 20:
-          result.push(<Water {...componentProps} />)
-          break
-        default:
-          result.push(
-            <Sprite
-              {...componentProps}
-              texture={TILESETS.OVERWORLD.cutTexture(
-                (textureId % 16) * 8,
-                Math.floor(textureId / 16) * 8,
-                8,
-                8,
-              )}
-            />,
-          )
-      }
-    })
+            switch (textureId) {
+              case 3:
+                return <Flower {...componentProps} />
+              case 20:
+                return <Water {...componentProps} />
+              default:
+                return (
+                  <Sprite
+                    {...componentProps}
+                    texture={TILESETS.OVERWORLD.cutTexture(
+                      (textureId % 16) * 8,
+                      Math.floor(textureId / 16) * 8,
+                      8,
+                      8,
+                    )}
+                  />
+                )
+            }
+          })
+        })}
+      </Container>
+    )
   })
-  return result
 }
+
+// Uncomment this to see huge performance drop!!!
+// makeMap = (game: GameState) => {
+//   if (!game.currentMap) {
+//     return null
+//   }
+
+//   const result: JSX.Element[] = []
+//   game.currentMap.textureIds.forEach((row, x) => {
+//     row.forEach((textureId, y) => {
+//       const componentProps = {
+//         key: `${x}x${y}`,
+//         position: new Point(x * 8, y * 8),
+//       }
+
+//       switch (textureId) {
+//         case 3:
+//           result.push(<Flower {...componentProps} />)
+//           break
+//         case 20:
+//           result.push(<Water {...componentProps} />)
+//           break
+//         default:
+//           result.push(
+//             <Sprite
+//               {...componentProps}
+//               texture={TILESETS.OVERWORLD.cutTexture(
+//                 (textureId % 16) * 8,
+//                 Math.floor(textureId / 16) * 8,
+//                 8,
+//                 8,
+//               )}
+//             />,
+//           )
+//       }
+//     })
+//   })
+//   return result
+// }
 
 type State = { map: ReturnType<typeof makeMap> }
 
