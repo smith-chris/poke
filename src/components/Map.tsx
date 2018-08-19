@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { gameActions, Direction, GameState } from 'store/game'
+import { gameActions, Direction } from 'store/game'
 import { Point } from 'utils/point'
 import { getNextPosition } from 'store/gameTransforms/move'
 import { Transition } from './Transition'
@@ -12,6 +12,7 @@ import { Sprite, Container } from 'utils/fiber'
 import { TILESETS } from 'assets/tilesets'
 import { Flower } from './Flower'
 import { Water } from './Water'
+import { Rectangle } from 'pixi.js'
 
 export const canMove = (
   position: Point,
@@ -39,93 +40,55 @@ const MAP_CENTER = {
   y: SCREEN_SIZE / 2 - TILE_SIZE / 2,
 }
 
+const pointInRectangle = (rect: Rectangle, x: number, y: number) =>
+  x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+
 const getMapPosition = (player: Point) =>
   new Point(MAP_CENTER.x - player.x * 16, MAP_CENTER.y - player.y * 16)
+const makeMap = (textureIds: number[][], slice: Rectangle) => {
+  const result: JSX.Element[] = []
+  textureIds.forEach((row, x) => {
+    row.forEach((textureId, y) => {
+      if (!pointInRectangle(slice, x, y)) {
+        return
+      }
+      const componentProps = {
+        key: `${x}x${y}`,
+        position: new Point(x * 8, y * 8),
+      }
 
-let makeMap = (game: GameState) => {
-  if (!game.currentMap) {
-    return null
-  }
-
-  return game.currentMap.blocks.map(({ x, y, textures }, i) => {
-    return (
-      <Container key={`${x}x${y}`} position={new Point(x * 32, y * 32)}>
-        {textures.map((row, textureX) => {
-          return row.map((textureId, textureY) => {
-            const componentProps = {
-              key: `${x}x${y}_${textureX}x${textureY}`,
-              position: new Point(textureX * 8, textureY * 8),
-            }
-
-            switch (textureId) {
-              case 3:
-                return <Flower {...componentProps} />
-              case 20:
-                return <Water {...componentProps} />
-              default:
-                return (
-                  <Sprite
-                    {...componentProps}
-                    texture={TILESETS.OVERWORLD.cutTexture(
-                      (textureId % 16) * 8,
-                      Math.floor(textureId / 16) * 8,
-                      8,
-                      8,
-                    )}
-                  />
-                )
-            }
-          })
-        })}
-      </Container>
-    )
+      switch (textureId) {
+        case 3:
+          result.push(<Flower {...componentProps} />)
+          break
+        case 20:
+          result.push(<Water {...componentProps} />)
+          break
+        default:
+          result.push(
+            <Sprite
+              {...componentProps}
+              texture={TILESETS.OVERWORLD.cutTexture(
+                (textureId % 16) * 8,
+                Math.floor(textureId / 16) * 8,
+                8,
+                8,
+              )}
+            />,
+          )
+      }
+    })
   })
+  return result
 }
 
-// Uncomment this to see huge performance drop!!!
-// makeMap = (game: GameState) => {
-//   if (!game.currentMap) {
-//     return null
-//   }
-
-//   const result: JSX.Element[] = []
-//   game.currentMap.textureIds.forEach((row, x) => {
-//     row.forEach((textureId, y) => {
-//       const componentProps = {
-//         key: `${x}x${y}`,
-//         position: new Point(x * 8, y * 8),
-//       }
-
-//       switch (textureId) {
-//         case 3:
-//           result.push(<Flower {...componentProps} />)
-//           break
-//         case 20:
-//           result.push(<Water {...componentProps} />)
-//           break
-//         default:
-//           result.push(
-//             <Sprite
-//               {...componentProps}
-//               texture={TILESETS.OVERWORLD.cutTexture(
-//                 (textureId % 16) * 8,
-//                 Math.floor(textureId / 16) * 8,
-//                 8,
-//                 8,
-//               )}
-//             />,
-//           )
-//       }
-//     })
-//   })
-//   return result
-// }
+const SLICE_SIZE = 22
 
 type State = { map: ReturnType<typeof makeMap> }
 
 class MapComponent extends Component<Props, State> {
   state = {
-    map: null,
+    map: [],
   }
   shouldComponentUpdate(
     {
@@ -146,16 +109,30 @@ class MapComponent extends Component<Props, State> {
       this.state !== newState
     )
   }
-  componentWillMount() {
-    this.setState({
-      map: makeMap(this.props.game),
-    })
+  setMap = ({ game: { currentMap, player } }: Props) => {
+    if (currentMap) {
+      this.setState({
+        map: makeMap(
+          currentMap.textureIds,
+          new Rectangle(
+            player.position.x * 2 + 1 - SLICE_SIZE / 2,
+            player.position.y * 2 + 1 - SLICE_SIZE / 2,
+            SLICE_SIZE - 1,
+            SLICE_SIZE - 1,
+          ),
+        ),
+      })
+    }
   }
-  componentWillReceiveProps({ game: newGame }: Props) {
-    const { game } = this.props
-
-    if (game.currentMap !== newGame.currentMap && newGame.currentMap) {
-      this.setState({ map: makeMap(newGame) })
+  componentWillMount() {
+    this.setMap(this.props)
+  }
+  componentWillReceiveProps(newProps: Props) {
+    const {
+      game: { currentMap, player },
+    } = newProps
+    if (currentMap && this.props.game.player.position !== player.position) {
+      this.setMap(newProps)
     }
   }
   render() {
