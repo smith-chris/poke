@@ -1,5 +1,5 @@
 import React from 'react'
-import { BitmapText as PixiBitmapText } from 'react-pixi-fiber'
+import { BitmapText as PixiBitmapText } from '@inlet/react-pixi'
 import { palette } from 'styles/palette'
 
 export const BitmapText = ({ color, ...rest }) => {
