@@ -1,11 +1,11 @@
 import React from 'react'
-import { Game } from 'components/Game'
 import { stage } from 'app/app'
 import { store, actions } from 'store/store'
-import { render } from 'react-pixi-fiber'
+import { render } from '@inlet/react-pixi'
 import { Provider } from 'react-redux'
 import { mapsData } from 'assets/maps'
 import { tilesetsData } from 'assets/tilesets'
+import { Game } from 'components/Game'
 import 'keyboard'
 
 actions.initialise({

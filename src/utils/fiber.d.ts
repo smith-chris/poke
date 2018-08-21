@@ -4,7 +4,7 @@ import {
   ContainerProperties,
   SpriteProperties,
   TilingSpriteProperties,
-} from 'react-pixi-fiber'
+} from '@inlet/react-pixi'
 import { Point } from './point'
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
