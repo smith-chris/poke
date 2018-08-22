@@ -9,6 +9,7 @@ import { Point } from 'utils/point'
 import { assertNever } from 'utils/other'
 import { Transition, Stepper } from './Transition'
 import { TILE_SIZE } from 'assets/const'
+import { SCREEN_SIZE } from 'app/app'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -67,8 +68,8 @@ const defaultState = {
   flipX: false,
 }
 
-const spriteBaseProps = {
-  position: new Point(64 + 8, 64 + 8),
+const playerBaseProps = {
+  position: new Point(SCREEN_SIZE / 2, SCREEN_SIZE / 2),
   anchor: new Point(0.5, 0.5),
   scale: new Point(1, 1),
 }
@@ -133,7 +134,7 @@ class PlayerComponent extends Component<Props, State> {
         onLoop={this.handleLoop}
         render={data => (
           <Sprite
-            {...spriteBaseProps}
+            {...playerBaseProps}
             {...getPlayerSpriteProps(direction, data, flipX)}
           />
         )}

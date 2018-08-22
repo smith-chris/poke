@@ -82,7 +82,7 @@ const makeMap = (textureIds: number[][], slice: Rectangle) => {
   return result
 }
 
-const SLICE_SIZE = 22
+const SLICE_SIZE = SCREEN_SIZE / 8 + 4
 
 type State = { map: ReturnType<typeof makeMap> }
 
