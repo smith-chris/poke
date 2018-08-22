@@ -68,4 +68,20 @@ describe('makeStepper', () => {
     assert({ elapsed: 1, data: 'c' })
     assert({ elapsed: 350, data: 'a', done: true })
   })
+
+  it('should make stepper from stepperFunc', () => {
+    const assert = createStepperAssert(
+      makeStepper({
+        steppingFunction: (tick: number) => ({
+          data: tick >= 8,
+          done: tick >= 16,
+        }),
+      }),
+    )
+
+    assert({ elapsed: 1, data: false })
+    assert({ elapsed: 6, data: false })
+    assert({ elapsed: 1, data: true })
+    assert({ elapsed: 8, data: true, done: true })
+  })
 })

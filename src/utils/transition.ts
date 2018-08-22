@@ -37,8 +37,15 @@ export type StepperFunc<T> = ((
 })
 
 export const makeStepper = <T>(input: MakeStepperInput<T>): StepperFunc<T> => {
-  if (input.steppingFunction) {
-    return () => ({ data: {} as T, done: true, elapsed: 0 })
+  if (typeof input.steppingFunction === 'function') {
+    const { steppingFunction } = input
+    let elapsed = 0
+    return time => {
+      elapsed += time
+      const result = steppingFunction(elapsed) as ReturnType<StepperFunc<T>>
+      result.elapsed = elapsed
+      return result
+    }
   } else {
     const steps = getSteps(input)
     let currentStep = 0
