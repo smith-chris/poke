@@ -1,6 +1,6 @@
-import { makeStepper, StepperFunc } from './transition'
+import { makeStepper, StepperFunc, makeStepperFromSteps, evenSteps } from './transition'
 
-const createStepperAssert = <T>(stepper: StepperFunc<T>) => {
+const makeStepperAssert = <T>(stepper: StepperFunc<T>) => {
   let totalElapsed = 0
   return ({
     elapsed,
@@ -22,13 +22,24 @@ const createStepperAssert = <T>(stepper: StepperFunc<T>) => {
 }
 
 describe('makeStepper', () => {
-  it('should make equal interval stepper correctly', () => {
-    const assert = createStepperAssert(
-      makeStepper({
-        stepsData: [-2, 0, 3],
-        stepDuration: 350,
-      }),
+  it('should make stepper from stepperFunc', () => {
+    const assert = makeStepperAssert(
+      makeStepper((tick: number) => ({
+        data: tick >= 8,
+        done: tick >= 16,
+      })),
     )
+
+    assert({ elapsed: 1, data: false })
+    assert({ elapsed: 6, data: false })
+    assert({ elapsed: 1, data: true })
+    assert({ elapsed: 8, data: true, done: true })
+  })
+})
+
+describe('makeStepperFromSteps', () => {
+  it('should make equal interval stepper correctly', () => {
+    const assert = makeStepperAssert(makeStepperFromSteps(evenSteps([-2, 0, 3], 350)))
 
     assert({ elapsed: 0, data: -2 })
     assert({ elapsed: 1, data: -2 })
@@ -39,11 +50,8 @@ describe('makeStepper', () => {
   })
 
   it('should make equal interval stepper correctly - more complicated example', () => {
-    const assert = createStepperAssert(
-      makeStepper({
-        stepsData: [-2, -1, 0, 1, 2, 1, 0, -1],
-        stepDuration: 350,
-      }),
+    const assert = makeStepperAssert(
+      makeStepperFromSteps(evenSteps([-2, -1, 0, 1, 2, 1, 0, -1], 350)),
     )
 
     assert({ elapsed: 349, data: -2 })
@@ -56,10 +64,8 @@ describe('makeStepper', () => {
   })
 
   it('should make custom interval stepper correctly', () => {
-    const assert = createStepperAssert(
-      makeStepper({
-        steps: [[700, 'a'], [350, 'b'], [350, 'c']],
-      }),
+    const assert = makeStepperAssert(
+      makeStepperFromSteps([[700, 'a'], [350, 'b'], [350, 'c']]),
     )
 
     assert({ elapsed: 349, data: 'a' })
@@ -67,21 +73,5 @@ describe('makeStepper', () => {
     assert({ elapsed: 349, data: 'b' })
     assert({ elapsed: 1, data: 'c' })
     assert({ elapsed: 350, data: 'a', done: true })
-  })
-
-  it('should make stepper from stepperFunc', () => {
-    const assert = createStepperAssert(
-      makeStepper({
-        steppingFunction: (tick: number) => ({
-          data: tick >= 8,
-          done: tick >= 16,
-        }),
-      }),
-    )
-
-    assert({ elapsed: 1, data: false })
-    assert({ elapsed: 6, data: false })
-    assert({ elapsed: 1, data: true })
-    assert({ elapsed: 8, data: true, done: true })
   })
 })

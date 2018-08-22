@@ -1,32 +1,5 @@
 import { Point } from './point'
-import { Steps, Stepper } from 'components/Transition'
-
-type MakeStepperOptions = {
-  useTicks?: boolean
-  useDeltaTime?: boolean
-}
-
-type MakeStepperInput<T> =
-  | ({
-      steps: Steps<T>
-      stepsData?: T[]
-      stepDuration?: number
-      steppingFunction?: Stepper<T>
-    } & MakeStepperOptions)
-  | ({
-      steps?: Steps<T>
-      stepsData: T[]
-      stepDuration: number
-      steppingFunction?: Stepper<T>
-    } & MakeStepperOptions)
-  | ({
-      steps?: Steps<T>
-      stepsData?: T[]
-      stepDuration?: number
-      steppingFunction: Stepper<T>
-    } & MakeStepperOptions)
-
-export type StepTime = { deltaTime?: number; elapsedMS?: number }
+import { Steps } from 'components/Transition'
 
 export type StepperFunc<T> = ((
   time: number,
@@ -36,9 +9,7 @@ export type StepperFunc<T> = ((
   elapsed: number
 })
 
-export const makeStepper = <T>(input: MakeStepperInput<T>): StepperFunc<T> => {
-  if (typeof input.steppingFunction === 'function') {
-    const { steppingFunction } = input
+export const makeStepper = <T>(steppingFunction:  ((elapsed: number) => { data?: T; done: boolean })): StepperFunc<T> => {
     let elapsed = 0
     return time => {
       elapsed += time
@@ -46,41 +17,33 @@ export const makeStepper = <T>(input: MakeStepperInput<T>): StepperFunc<T> => {
       result.elapsed = elapsed
       return result
     }
-  } else {
-    const steps = getSteps(input)
-    let currentStep = 0
-    let elapsed = 0
-    let [threshold, data] = steps[currentStep]
+  }
+}
 
-    return time => {
-      elapsed += time
-      while (elapsed >= threshold) {
-        currentStep++
-        if (currentStep > steps.length - 1) {
-          currentStep = 0
-          threshold = steps[0][0]
-          data = steps[0][1]
-          return { data, done: true, elapsed }
-        } else {
-          threshold += steps[currentStep][0]
-          data = steps[currentStep][1]
-        }
+export const makeStepperFromSteps = <T>(steps: Steps<T>): StepperFunc<T> => {
+  let currentStep = 0
+  let elapsed = 0
+  let [threshold, data] = steps[currentStep]
+
+  return time => {
+    elapsed += time
+    while (elapsed >= threshold) {
+      currentStep++
+      if (currentStep > steps.length - 1) {
+        currentStep = 0
+        threshold = steps[0][0]
+        data = steps[0][1]
+        return { data, done: true, elapsed }
+      } else {
+        threshold += steps[currentStep][0]
+        data = steps[currentStep][1]
       }
-      return { data, done: false, elapsed }
     }
+    return { data, done: false, elapsed }
   }
 }
 
-const getSteps = <T>(input: MakeStepperInput<T>) => {
-  if (input.steps) {
-    return input.steps
-  } else if (input.stepsData && input.stepDuration !== undefined) {
-    return input.stepsData.map(data => [input.stepDuration, data] as [number, T])
-  } else {
-    console.warn('No steps or stepsData', input)
-    return []
-  }
-}
+export const evenSteps = <T>(values: T[], interval: number) => values.map(data => [interval, data] as [number, T])
 
 type CreatePointStepperParams = {
   from: Point
