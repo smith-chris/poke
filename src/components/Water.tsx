@@ -4,6 +4,8 @@ import { Point } from 'utils/point'
 import { TILESETS } from 'assets/tilesets'
 import { Transition, Steps } from './Transition'
 import { TEXTURE_SIZE } from 'assets/const'
+import { withTransition, TransitionProps } from 'utils/withTransition'
+import { makeStepperFromSteps, evenSteps } from 'utils/transition'
 
 const { OVERWORLD } = TILESETS
 
@@ -14,28 +16,20 @@ const water = OVERWORLD.cutTexture(
   TEXTURE_SIZE,
 )
 
-const STEP_DURATION = 350
+const stepper = makeStepperFromSteps(evenSteps([-2, -1, 0, 1, 2, 1, 0, -1], 350))
 
-const STEPS: Steps<number> = [-2, -1, 0, 1, 2, 1, 0, -1].map(
-  x => [STEP_DURATION, x] as [number, number],
-)
+type Props = Omit<TilingSpriteProps, 'texture'> & TransitionProps<number>
 
-export class Water extends Component<Omit<TilingSpriteProps, 'texture'>> {
-  render() {
+export const Water = withTransition(stepper, { loop: true }, 'Water')(
+  (props: Props) => {
     return (
-      <Transition
-        steps={STEPS}
-        loop
-        render={x => (
-          <TilingSprite
-            {...this.props}
-            tilePosition={new Point(x, 0)}
-            texture={water}
-            width={TEXTURE_SIZE}
-            height={TEXTURE_SIZE}
-          />
-        )}
+      <TilingSprite
+        {...props}
+        tilePosition={new Point(props.data, 0)}
+        texture={water}
+        width={TEXTURE_SIZE}
+        height={TEXTURE_SIZE}
       />
     )
-  }
-}
+  },
+)

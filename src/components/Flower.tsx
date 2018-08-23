@@ -19,10 +19,6 @@ const stepper = makeStepperFromSteps([[700, flower1], [350, flower2], [350, flow
 
 type Props = Omit<SpriteProps, 'texture'> & TransitionProps<Texture>
 
-export const Flower = withTransition(stepper, { loop: true })(
-  class extends Component<Props> {
-    render() {
-      return <Sprite {...this.props} texture={this.props.data} />
-    }
-  },
+export const Flower = withTransition(stepper, { loop: true }, 'Flower')(
+  (props: Props) => <Sprite {...props} texture={props.data} />,
 )

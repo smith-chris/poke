@@ -1,5 +1,5 @@
 import { Stepper } from 'utils/transition'
-import React, { Component, ReactType } from 'react'
+import React, { Component, ReactType, ComponentType } from 'react'
 import { Omit } from './fiber'
 import { ticker } from 'pixi.js'
 
@@ -15,9 +15,13 @@ export type TransitionProps<T> = {
 
 type State<T> = Partial<TransitionProps<T>>
 
+const getName = (prefix: string, component: ComponentType) =>
+  `${prefix}(${component.displayName || component.name})`
+
 export function withTransition<T>(
   stepper: Stepper<T>,
   { useDeltaTime, useTicks, loop }: TransitionOptions = {},
+  displayName?: string,
 ) {
   const Ticker = new ticker.Ticker()
 
@@ -74,10 +78,13 @@ export function withTransition<T>(
     AllProps extends TransitionProps<T>,
     Props = Omit<AllProps, keyof TransitionProps<T>>
   >(
-    Target: ReactType<AllProps>,
+    Target: ComponentType<AllProps>,
   ) => {
+    if (displayName) {
+      Target.displayName = displayName
+    }
     return class extends Component<Props, State<T>> {
-      static displayName = `WithTransition(${'Flower'})`
+      static displayName = getName('WithTransition', Target)
 
       ticker: ticker.Ticker
       tickerCallback: () => void
