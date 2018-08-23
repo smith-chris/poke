@@ -1,14 +1,18 @@
 import { Point } from './point'
-import { Steps } from 'components/Transition'
 import { Omit } from './fiber'
 
-export interface StepperFunc<T = {}> {
+export type Steps<T> = Array<[number, T]>
+
+export type StepperReturn<T> = {
+  data: T
+  done: boolean
+  elapsed: number
+}
+
+export type Stepper<T = {}> = {
   id: string
-  (time: number): {
-    data: T
-    done: boolean
-    elapsed: number
-  }
+  next: (time: number) => StepperReturn<T>
+  reset: () => void
 }
 
 const getId = (() => {
@@ -16,30 +20,28 @@ const getId = (() => {
   return () => String(id++)
 })()
 
-const withId = <T extends { id: string }>(input: Omit<T, 'id'>) => {
-  const result = input as T
-  result.id = getId()
-  return result
-}
-
 export const makeStepper = <T>(
   steppingFunction: ((elapsed: number) => { data?: T; done: boolean }),
-): StepperFunc<T> => {
+): Stepper<T> => {
   let elapsed = 0
-  return withId((time: number) => {
+  const next = (time: number) => {
     elapsed += time
-    const stepper = steppingFunction(elapsed) as ReturnType<StepperFunc<T>>
+    const stepper = steppingFunction(elapsed) as StepperReturn<T>
     stepper.elapsed = elapsed
     return stepper
-  })
+  }
+  const reset = () => {
+    elapsed = 0
+  }
+  return { next, reset, id: getId() }
 }
 
-export const makeStepperFromSteps = <T>(steps: Steps<T>): StepperFunc<T> => {
+export const makeStepperFromSteps = <T>(steps: Steps<T>): Stepper<T> => {
   let currentStep = 0
   let elapsed = 0
   let [threshold, data] = steps[currentStep]
 
-  return withId((time: number) => {
+  const next = (time: number) => {
     elapsed += time
     while (elapsed >= threshold) {
       currentStep++
@@ -54,7 +56,11 @@ export const makeStepperFromSteps = <T>(steps: Steps<T>): StepperFunc<T> => {
       }
     }
     return { data, done: false, elapsed }
-  })
+  }
+  const reset = () => {
+    elapsed = 0
+  }
+  return { next, reset, id: getId() }
 }
 
 export const evenSteps = <T>(values: T[], interval: number) =>
