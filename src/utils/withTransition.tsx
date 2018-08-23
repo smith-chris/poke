@@ -74,7 +74,7 @@ export function withTransition<T>(
     AllProps extends TransitionProps<T>,
     Props = Omit<AllProps, keyof TransitionProps<T>>
   >(
-    Cmpn: ReactType<AllProps>,
+    Target: ReactType<AllProps>,
   ) => {
     return class extends Component<Props, State<T>> {
       static displayName = `WithTransition(${'Flower'})`
@@ -103,7 +103,7 @@ export function withTransition<T>(
       }
 
       render() {
-        return <Cmpn {...this.props} data={stepper.next(0).data} />
+        return <Target {...this.props} data={stepper.next(0).data} />
       }
     }
   }
