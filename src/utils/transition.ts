@@ -1,23 +1,37 @@
 import { Point } from './point'
 import { Steps } from 'components/Transition'
+import { Omit } from './fiber'
 
-export type StepperFunc<T> = ((
-  time: number,
-) => {
-  data: T
-  done: boolean
-  elapsed: number
-})
-
-export const makeStepper = <T>(steppingFunction:  ((elapsed: number) => { data?: T; done: boolean })): StepperFunc<T> => {
-    let elapsed = 0
-    return time => {
-      elapsed += time
-      const result = steppingFunction(elapsed) as ReturnType<StepperFunc<T>>
-      result.elapsed = elapsed
-      return result
-    }
+export interface StepperFunc<T = {}> {
+  id: string
+  (time: number): {
+    data: T
+    done: boolean
+    elapsed: number
   }
+}
+
+const getId = (() => {
+  let id = 0
+  return () => String(id++)
+})()
+
+const withId = <T extends { id: string }>(input: Omit<T, 'id'>) => {
+  const result = input as T
+  result.id = getId()
+  return result
+}
+
+export const makeStepper = <T>(
+  steppingFunction: ((elapsed: number) => { data?: T; done: boolean }),
+): StepperFunc<T> => {
+  let elapsed = 0
+  return withId((time: number) => {
+    elapsed += time
+    const stepper = steppingFunction(elapsed) as ReturnType<StepperFunc<T>>
+    stepper.elapsed = elapsed
+    return stepper
+  })
 }
 
 export const makeStepperFromSteps = <T>(steps: Steps<T>): StepperFunc<T> => {
@@ -25,7 +39,7 @@ export const makeStepperFromSteps = <T>(steps: Steps<T>): StepperFunc<T> => {
   let elapsed = 0
   let [threshold, data] = steps[currentStep]
 
-  return time => {
+  return withId((time: number) => {
     elapsed += time
     while (elapsed >= threshold) {
       currentStep++
@@ -40,10 +54,11 @@ export const makeStepperFromSteps = <T>(steps: Steps<T>): StepperFunc<T> => {
       }
     }
     return { data, done: false, elapsed }
-  }
+  })
 }
 
-export const evenSteps = <T>(values: T[], interval: number) => values.map(data => [interval, data] as [number, T])
+export const evenSteps = <T>(values: T[], interval: number) =>
+  values.map(data => [interval, data] as [number, T])
 
 type CreatePointStepperParams = {
   from: Point
