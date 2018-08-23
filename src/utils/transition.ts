@@ -1,5 +1,6 @@
 import { Point } from './point'
 import { Omit } from './fiber'
+import React, { Component, ReactType, ComponentClass } from 'react'
 
 export type Steps<T> = Array<[number, T]>
 
