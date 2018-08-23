@@ -1,6 +1,6 @@
-import { makeStepper, StepperFunc, makeStepperFromSteps, evenSteps } from './transition'
+import { makeStepper, Stepper, makeStepperFromSteps, evenSteps } from './transition'
 
-const makeStepperAssert = <T>(stepper: StepperFunc<T>) => {
+const makeStepperAssert = <T>(stepper: Stepper<T>) => {
   let totalElapsed = 0
   return ({
     elapsed,
@@ -12,7 +12,7 @@ const makeStepperAssert = <T>(stepper: StepperFunc<T>) => {
     data: T
   }) => {
     totalElapsed += elapsed
-    const res = stepper(elapsed)
+    const res = stepper.next(elapsed)
     expect({ done: res.done, data: res.data, elapsed: res.elapsed }).toEqual({
       done,
       data,
