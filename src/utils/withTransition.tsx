@@ -19,7 +19,7 @@ export type TransitionProps<T> = {
   }
 }
 
-type State<T> = Partial<TransitionProps<T>>
+type State<T> = Pick<TransitionProps<T>, 'data'>
 
 const getName = (prefix: string, component: ComponentType) =>
   `${prefix}(${component.displayName || component.name})`
@@ -116,13 +116,13 @@ export function withTransition<T, S = {}>(
       ticker: ticker.Ticker
       tickerCallback: () => void
 
-      state: State<T> = {}
+      state: State<T> = { data: stepper.next(0).data }
 
       shouldComponentUpdate(newProps: Props, newState: State<T>) {
         return this.state.data !== newState.data || this.props !== newProps
       }
 
-      setData = (data?: T) => {
+      setData = (data: T) => {
         if (data !== this.state.data) {
           this.setState({ data })
         }
@@ -139,9 +139,7 @@ export function withTransition<T, S = {}>(
       }
 
       render() {
-        return (
-          <Target {...this.props} data={stepper.next(0).data} transition={transition} />
-        )
+        return <Target {...this.props} data={this.state.data} transition={transition} />
       }
     }
   }

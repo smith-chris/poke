@@ -62,6 +62,7 @@ export const Player = connect(
   withTransition(stepper, {
     loop: true,
     useTicks: true,
+    onLoop: ({ flipX = false }: { flipX?: boolean }) => ({ flipX: !flipX }),
   })(
     class extends Component<Props, State> {
       static displayName = 'Player'
