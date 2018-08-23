@@ -3,14 +3,20 @@ import React, { Component, ReactType, ComponentType } from 'react'
 import { Omit } from './fiber'
 import { ticker } from 'pixi.js'
 
-type TransitionOptions = {
+type TransitionOptions<S> = {
   useDeltaTime?: boolean
   useTicks?: boolean
   loop?: boolean
+  onLoop?: (inupt: S) => S
 }
 
 export type TransitionProps<T> = {
   data: T
+  transition: {
+    stop: () => void
+    start: () => void
+    reset: () => void
+  }
 }
 
 type State<T> = Partial<TransitionProps<T>>
@@ -18,9 +24,9 @@ type State<T> = Partial<TransitionProps<T>>
 const getName = (prefix: string, component: ComponentType) =>
   `${prefix}(${component.displayName || component.name})`
 
-export function withTransition<T>(
+export function withTransition<T, S = {}>(
   stepper: Stepper<T>,
-  { useDeltaTime, useTicks, loop }: TransitionOptions = {},
+  { useDeltaTime, useTicks, loop, onLoop }: TransitionOptions<S> = {},
   displayName?: string,
 ) {
   const Ticker = new ticker.Ticker()
@@ -74,6 +80,27 @@ export function withTransition<T>(
   }
   Ticker.add(tickerCallback)
 
+  const transition = {
+    start: () => {
+      if (!Ticker.started) {
+        stepper.reset()
+        Ticker.start()
+        const { data } = stepper.next(0)
+        listeners.forEach(cb => cb(data))
+      }
+    },
+    reset: () => {
+      stepper.reset()
+      const { data } = stepper.next(0)
+      listeners.forEach(cb => cb(data))
+    },
+    stop: () => {
+      if (Ticker.started) {
+        Ticker.stop()
+      }
+    },
+  }
+
   return <
     AllProps extends TransitionProps<T>,
     Props = Omit<AllProps, keyof TransitionProps<T>>
@@ -91,8 +118,8 @@ export function withTransition<T>(
 
       state: State<T> = {}
 
-      shouldComponentUpdate(_: Props, newState: State<T>) {
-        return this.state.data !== newState.data
+      shouldComponentUpdate(newProps: Props, newState: State<T>) {
+        return this.state.data !== newState.data || this.props !== newProps
       }
 
       setData = (data?: T) => {
@@ -100,6 +127,8 @@ export function withTransition<T>(
           this.setState({ data })
         }
       }
+
+      onLoop = () => {}
 
       componentDidMount() {
         addListener(this.setData)
@@ -110,7 +139,9 @@ export function withTransition<T>(
       }
 
       render() {
-        return <Target {...this.props} data={stepper.next(0).data} />
+        return (
+          <Target {...this.props} data={stepper.next(0).data} transition={transition} />
+        )
       }
     }
   }

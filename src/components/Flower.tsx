@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Sprite, SpriteProps, Omit } from 'utils/fiber'
 import { Texture } from 'pixi.js'
 import _flower1 from 'gfx/tilesets/flower/flower1.png'
@@ -15,10 +15,14 @@ const [flower1, flower2, flower3] = [_flower1, _flower2, _flower3].map(tx =>
   Texture.fromImage(tx.src),
 )
 
-const stepper = makeStepperFromSteps([[700, flower1], [350, flower2], [350, flower3]])
+const withFlowerTransition = withTransition(
+  makeStepperFromSteps([[700, flower1], [350, flower2], [350, flower3]]),
+  { loop: true },
+  'Flower',
+)
 
 type Props = Omit<SpriteProps, 'texture'> & TransitionProps<Texture>
 
-export const Flower = withTransition(stepper, { loop: true }, 'Flower')(
-  (props: Props) => <Sprite {...props} texture={props.data} />,
-)
+export const Flower = withFlowerTransition((props: Props) => (
+  <Sprite {...props} texture={props.data} />
+))

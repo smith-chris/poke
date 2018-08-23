@@ -3,23 +3,12 @@ import { Sprite } from 'utils/fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { gameActions } from 'store/game'
-import { Texture, Rectangle } from 'pixi.js'
-import red from 'gfx/sprites/red.png'
 import { Point } from 'utils/point'
-import { assertNever } from 'utils/other'
-import { Transition, Stepper } from './Transition'
 import { TILE_SIZE } from 'assets/const'
 import { SCREEN_SIZE } from 'app/app'
-
-const mapStateToProps = (state: StoreState) => state
-type StateProps = ReturnType<typeof mapStateToProps>
-
-const mapDispatchToProps = (dispatch: Dispatch) => {
-  return bindActionCreators({ ...gameActions }, dispatch)
-}
-type DispatchProps = ReturnType<typeof mapDispatchToProps>
-
-type Props = StateProps & DispatchProps
+import { withTransition, TransitionProps } from 'utils/withTransition'
+import { makeStepper } from 'utils/transition'
+import { getPlayerSpriteProps } from './getPlayerTexture'
 
 // Figure out later why the fuck importing it from 'store/game' breaks the build
 export enum Direction {
@@ -29,42 +18,8 @@ export enum Direction {
   S = 'S',
 }
 
-const baseTexture = Texture.fromImage(red.src).baseTexture
-const [texS, texS2, texN, texN2, texW, texW2] = [0, 48, 16, 64, 32, 80].map(y => {
-  const result = new Texture(baseTexture)
-  result.frame = new Rectangle(0, y, 16, 16)
-  return result
-})
-
-const choosePlayerTexture = (altTexture: boolean, tex: Texture, tex2: Texture) =>
-  altTexture ? tex2 : tex
-
-const getPlayerSpriteProps = (
-  direction: Direction,
-  altTexture: boolean,
-  flipX?: boolean,
-) => {
-  const scale = flipX ? new Point(-1, 1) : new Point(1, 1)
-  switch (direction) {
-    case Direction.N:
-      return { texture: choosePlayerTexture(altTexture, texN, texN2), scale }
-    case Direction.E:
-      return {
-        texture: choosePlayerTexture(altTexture, texW, texW2),
-        scale: new Point(-1, 1),
-      }
-    case Direction.W:
-      return { texture: choosePlayerTexture(altTexture, texW, texW2) }
-    case Direction.S:
-      return { texture: choosePlayerTexture(altTexture, texS, texS2), scale }
-    default:
-      return assertNever(direction)
-  }
-}
-
 const defaultState = {
   direction: Direction.S,
-  animate: false,
   flipX: false,
 }
 
@@ -83,67 +38,75 @@ const shallowDiff = <T extends {}>(a: T, b: T) => {
   return false
 }
 
+const mapStateToProps = (state: StoreState) => state
+type StateProps = ReturnType<typeof mapStateToProps>
+
+const mapDispatchToProps = (dispatch: Dispatch) => {
+  return bindActionCreators({ ...gameActions }, dispatch)
+}
+type DispatchProps = ReturnType<typeof mapDispatchToProps>
+
+type Props = StateProps & DispatchProps & TransitionProps<boolean>
+
 type State = typeof defaultState
 
-class PlayerComponent extends Component<Props, State> {
-  state = defaultState
-
-  componentWillReceiveProps({ game: { controls, player } }: Props) {
-    if (player.direction) {
-      this.setState({
-        direction: player.direction,
-        animate: true,
-      })
-    } else if (controls.move) {
-      this.setState({
-        direction: controls.move,
-        animate: false,
-        flipX: false,
-      })
-    } else {
-      this.setState({
-        animate: false,
-        flipX: false,
-      })
-    }
-  }
-
-  shouldComponentUpdate(_: Props, newState: State) {
-    return shallowDiff(this.state, newState)
-  }
-
-  handleLoop = () => {
-    this.setState({
-      flipX: !this.state.flipX,
-    })
-  }
-
-  stepper: Stepper<boolean> = (tick: number) => ({
-    data: tick >= 8,
-    done: tick >= TILE_SIZE,
-  })
-
-  render() {
-    const { direction, animate, flipX } = this.state
-
-    return (
-      <Transition
-        stepper={animate ? this.stepper : { data: false, forceUpdate: true }}
-        useTicks
-        loop
-        onLoop={this.handleLoop}
-        render={data => (
-          <Sprite
-            {...playerBaseProps}
-            {...getPlayerSpriteProps(direction, data, flipX)}
-          />
-        )}
-      />
-    )
-  }
-}
+const stepper = makeStepper((tick: number) => ({
+  data: tick >= 8,
+  done: tick >= TILE_SIZE,
+}))
 
 export const Player = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(PlayerComponent)
+)(
+  withTransition(stepper, {
+    loop: true,
+    useTicks: true,
+  })(
+    class extends Component<Props, State> {
+      static displayName = 'Player'
+      state = defaultState
+
+      componentWillReceiveProps({ game: { controls, player }, transition }: Props) {
+        if (player.direction) {
+          this.setState({
+            direction: player.direction,
+          })
+          transition.start()
+        } else if (controls.move) {
+          this.setState({
+            direction: controls.move,
+            flipX: false,
+          })
+          transition.reset()
+        } else {
+          this.setState({
+            flipX: false,
+          })
+          transition.reset()
+        }
+      }
+
+      shouldComponentUpdate(newProps: Props, newState: State) {
+        return shallowDiff(this.state, newState) || this.props !== newProps
+      }
+
+      onLoop = () => {
+        this.setState({
+          flipX: !this.state.flipX,
+        })
+      }
+
+      render() {
+        const { direction, flipX } = this.state
+
+        return (
+          <Sprite
+            {...playerBaseProps}
+            {...getPlayerSpriteProps(direction, this.props.data, flipX)}
+          />
+        )
+      }
+    },
+  ),
+)
