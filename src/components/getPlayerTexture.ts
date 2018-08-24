@@ -1,15 +1,8 @@
 import { Texture, Rectangle } from 'pixi.js'
-import red from 'gfx/sprites/red.png'
 import { assertNever } from 'utils/other'
 import { Point } from 'utils/point'
-
-// Figure out later why the fuck importing it from 'store/game' breaks the build
-export enum Direction {
-  N = 'N',
-  E = 'E',
-  W = 'W',
-  S = 'S',
-}
+import { Direction } from 'store/game'
+import red from 'gfx/sprites/red.png'
 
 const baseTexture = Texture.fromImage(red.src).baseTexture
 const [texS, texS2, texN, texN2, texW, texW2] = [0, 48, 16, 64, 32, 80].map(y => {

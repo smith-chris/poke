@@ -1,11 +1,11 @@
 import React from 'react'
 import { Sprite, SpriteProps, Omit } from 'utils/fiber'
 import { Texture } from 'pixi.js'
+import { makeStepperFromSteps } from 'utils/transition'
+import { withTransition, TransitionProps } from 'utils/withTransition'
 import _flower1 from 'gfx/tilesets/flower/flower1.png'
 import _flower2 from 'gfx/tilesets/flower/flower2.png'
 import _flower3 from 'gfx/tilesets/flower/flower3.png'
-import { makeStepperFromSteps } from 'utils/transition'
-import { withTransition, TransitionProps } from 'utils/withTransition'
 
 // Animation goes like this
 // flower1 - 700ms - flower2 - 350ms - flower3 - 350ms - flower1... and so on

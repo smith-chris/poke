@@ -1,12 +1,12 @@
-import { composeWithDevTools } from 'redux-devtools-extension'
 import Redux, {
   createStore,
   combineReducers,
   applyMiddleware,
   bindActionCreators,
 } from 'redux'
-import { gameReducer, GameState, gameActions } from './game'
+import { composeWithDevTools } from 'redux-devtools-extension'
 import { transformActions } from 'utils/redux'
+import { gameReducer, GameState, gameActions } from './game'
 
 declare global {
   type StoreState = {

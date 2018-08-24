@@ -1,5 +1,4 @@
 import { ObjectOf } from 'utils/types'
-
 import map_constants from 'constants/map_constants.asm'
 
 const getMatches = (input: string, regex: RegExp) => {

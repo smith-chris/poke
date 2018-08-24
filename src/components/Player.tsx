@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Sprite } from 'utils/fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { gameActions } from 'store/game'
+import { gameActions, Direction } from 'store/game'
 import { Point } from 'utils/point'
 import { Transition } from 'utils/withTransition'
 import { makeStepper } from 'utils/transition'
@@ -19,14 +19,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 type DispatchProps = ReturnType<typeof mapDispatchToProps>
 
 type Props = StateProps & DispatchProps
-
-// Figure out later why the fuck importing it from 'store/game' breaks the build
-export enum Direction {
-  N = 'N',
-  E = 'E',
-  W = 'W',
-  S = 'S',
-}
 
 const defaultState = {
   direction: Direction.S,
