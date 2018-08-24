@@ -1,5 +1,5 @@
 import { Stepper } from 'utils/transition'
-import React, { Component, ReactType, ComponentType } from 'react'
+import React, { Component, ComponentType, ReactNode } from 'react'
 import { Omit } from './fiber'
 import { ticker } from 'pixi.js'
 
@@ -19,30 +19,30 @@ export type TransitionProps<T> = {
   }
 }
 
-type State<T> = Pick<TransitionProps<T>, 'data'>
+type WithTransitionState<T> = Pick<TransitionProps<T>, 'data'>
 
 const getName = (prefix: string, component: ComponentType) =>
   `${prefix}(${component.displayName || component.name})`
 
+type Listener<T> = (data: T) => void
+
 export function withTransition<T, S = {}>(
   stepper: Stepper<T>,
-  { useDeltaTime, useTicks, loop, onLoop }: TransitionOptions<S> = {},
+  { useDeltaTime, useTicks, loop }: TransitionOptions<S> = {},
   displayName?: string,
 ) {
   const Ticker = new ticker.Ticker()
 
-  type Listener = (data: T) => void
+  const listeners: Listener<T>[] = []
 
-  const listeners: Listener[] = []
-
-  const addListener = (listener: Listener) => {
+  const addListener = (listener: Listener<T>) => {
     listeners.push(listener)
     if (listeners.length === 1) {
       Ticker.start()
     }
   }
 
-  const removeListener = (listener: Listener) => {
+  const removeListener = (listener: Listener<T>) => {
     const i = listeners.indexOf(listener)
     if (i >= 0) {
       listeners.splice(i, 1)
@@ -110,15 +110,15 @@ export function withTransition<T, S = {}>(
     if (displayName) {
       Target.displayName = displayName
     }
-    return class extends Component<Props, State<T>> {
+    return class extends Component<Props, WithTransitionState<T>> {
       static displayName = getName('WithTransition', Target)
 
       ticker: ticker.Ticker
       tickerCallback: () => void
 
-      state: State<T> = { data: stepper.next(0).data }
+      state: WithTransitionState<T> = { data: stepper.next(0).data }
 
-      shouldComponentUpdate(newProps: Props, newState: State<T>) {
+      shouldComponentUpdate(newProps: Props, newState: WithTransitionState<T>) {
         return this.state.data !== newState.data || this.props !== newProps
       }
 
@@ -127,8 +127,6 @@ export function withTransition<T, S = {}>(
           this.setState({ data })
         }
       }
-
-      onLoop = () => {}
 
       componentDidMount() {
         addListener(this.setData)
@@ -142,5 +140,115 @@ export function withTransition<T, S = {}>(
         return <Target {...this.props} data={this.state.data} transition={transition} />
       }
     }
+  }
+}
+
+type TranProps<T> = {
+  render: (data?: T) => ReactNode
+  useDeltaTime?: boolean
+  useTicks?: boolean
+  loop?: boolean
+  onFinish?: () => void
+  onLoop?: () => void
+  stepper?: Stepper<T>
+}
+
+type TranState<T> = { data?: T }
+
+// This is temporary and will be refactored to share functionality with withTransition
+export class Transition<T> extends Component<TranProps<T>, TranState<T>> {
+  ticker = new ticker.Ticker()
+  tickerCallback: () => void
+
+  state: TranState<T> = {}
+
+  propsDiffer = (newProps: TranProps<T>) => {
+    const { stepper } = this.props
+    return stepper !== newProps.stepper
+  }
+
+  canTransition(props: TranProps<T>) {
+    const { stepper } = props
+    return stepper !== undefined
+  }
+
+  componentWillReceiveProps(newProps: TranProps<T>) {
+    if (this.props.stepper !== newProps.stepper) {
+      this.ticker.remove(this.tickerCallback)
+      if (newProps.stepper !== undefined) {
+        this.startTransition(newProps)
+      } else {
+        // We want no data if stepper is undefined
+        this.setData(undefined)
+      }
+    }
+  }
+
+  setData = (data?: T) => {
+    if (data !== this.state.data) {
+      this.setState({ data })
+    }
+  }
+
+  startTransition = (props: TranProps<T>) => {
+    const { useDeltaTime, useTicks, loop, onFinish, onLoop, stepper } = props
+
+    if (!stepper) {
+      this.setData(undefined)
+      return
+    }
+
+    this.setData(stepper.next(0).data)
+
+    this.tickerCallback = () => {
+      let elapsed
+      if (useDeltaTime) {
+        elapsed = this.ticker.deltaTime
+      } else if (useTicks) {
+        elapsed = 1
+      } else {
+        elapsed = this.ticker.elapsedMS
+      }
+
+      const { data, done } = stepper.next(elapsed)
+
+      if (data !== undefined) {
+        if (done) {
+          if (loop) {
+            stepper.reset()
+            this.setData(data)
+            if (typeof onLoop === 'function') {
+              onLoop()
+            }
+          } else {
+            this.ticker.stop()
+            if (typeof onFinish === 'function') {
+              onFinish()
+            }
+            return
+          }
+        } else {
+          this.setData(data)
+        }
+      }
+    }
+    this.ticker.add(this.tickerCallback)
+    this.ticker.start()
+  }
+
+  componentDidMount() {
+    if (this.canTransition(this.props)) {
+      this.startTransition(this.props)
+    }
+  }
+
+  componentWillUnmount() {
+    this.ticker.destroy()
+  }
+
+  render() {
+    const { render } = this.props
+    const { data } = this.state
+    return render(data)
   }
 }

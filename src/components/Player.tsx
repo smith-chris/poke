@@ -4,11 +4,21 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { gameActions } from 'store/game'
 import { Point } from 'utils/point'
+import { Transition } from 'utils/withTransition'
+import { makeStepper } from 'utils/transition'
 import { TILE_SIZE } from 'assets/const'
 import { SCREEN_SIZE } from 'app/app'
-import { withTransition, TransitionProps } from 'utils/withTransition'
-import { makeStepper } from 'utils/transition'
 import { getPlayerSpriteProps } from './getPlayerTexture'
+
+const mapStateToProps = (state: StoreState) => state
+type StateProps = ReturnType<typeof mapStateToProps>
+
+const mapDispatchToProps = (dispatch: Dispatch) => {
+  return bindActionCreators({ ...gameActions }, dispatch)
+}
+type DispatchProps = ReturnType<typeof mapDispatchToProps>
+
+type Props = StateProps & DispatchProps
 
 // Figure out later why the fuck importing it from 'store/game' breaks the build
 export enum Direction {
@@ -20,6 +30,7 @@ export enum Direction {
 
 const defaultState = {
   direction: Direction.S,
+  animate: false,
   flipX: false,
 }
 
@@ -38,76 +49,69 @@ const shallowDiff = <T extends {}>(a: T, b: T) => {
   return false
 }
 
-const mapStateToProps = (state: StoreState) => state
-type StateProps = ReturnType<typeof mapStateToProps>
-
-const mapDispatchToProps = (dispatch: Dispatch) => {
-  return bindActionCreators({ ...gameActions }, dispatch)
-}
-type DispatchProps = ReturnType<typeof mapDispatchToProps>
-
-type Props = StateProps & DispatchProps & TransitionProps<boolean>
-
 type State = typeof defaultState
 
-const stepper = makeStepper((tick: number) => ({
-  data: tick >= 8,
-  done: tick >= TILE_SIZE,
-}))
+class PlayerComponent extends Component<Props, State> {
+  state = defaultState
+
+  stepper = makeStepper((tick: number) => ({
+    data: tick >= 8,
+    done: tick >= TILE_SIZE,
+  }))
+
+  componentWillReceiveProps({ game: { controls, player } }: Props) {
+    if (player.direction) {
+      this.setState({
+        direction: player.direction,
+        animate: true,
+      })
+    } else if (controls.move) {
+      this.stepper.reset()
+      this.setState({
+        direction: controls.move,
+        animate: false,
+        flipX: false,
+      })
+    } else {
+      this.stepper.reset()
+      this.setState({
+        animate: false,
+        flipX: false,
+      })
+    }
+  }
+
+  shouldComponentUpdate(_: Props, newState: State) {
+    return shallowDiff(this.state, newState)
+  }
+
+  handleLoop = () => {
+    this.setState({
+      flipX: !this.state.flipX,
+    })
+  }
+
+  render() {
+    const { animate, direction, flipX } = this.state
+
+    return (
+      <Transition
+        stepper={animate ? this.stepper : undefined}
+        useTicks
+        loop
+        onLoop={this.handleLoop}
+        render={(altTexture = false) => (
+          <Sprite
+            {...playerBaseProps}
+            {...getPlayerSpriteProps(direction, altTexture, flipX)}
+          />
+        )}
+      />
+    )
+  }
+}
 
 export const Player = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(
-  withTransition(stepper, {
-    loop: true,
-    useTicks: true,
-    onLoop: ({ flipX = false }: { flipX?: boolean }) => ({ flipX: !flipX }),
-  })(
-    class extends Component<Props, State> {
-      static displayName = 'Player'
-      state = defaultState
-
-      componentWillReceiveProps({ game: { controls, player }, transition }: Props) {
-        if (player.direction) {
-          this.setState({
-            direction: player.direction,
-          })
-          transition.start()
-        } else if (controls.move) {
-          this.setState({
-            direction: controls.move,
-            flipX: false,
-          })
-          transition.reset()
-        } else {
-          this.setState({
-            flipX: false,
-          })
-          transition.reset()
-        }
-      }
-
-      shouldComponentUpdate(newProps: Props, newState: State) {
-        return shallowDiff(this.state, newState) || this.props !== newProps
-      }
-
-      onLoop = () => {
-        this.setState({
-          flipX: !this.state.flipX,
-        })
-      }
-
-      render() {
-        const { direction, flipX } = this.state
-
-        return (
-          <Sprite
-            {...playerBaseProps}
-            {...getPlayerSpriteProps(direction, this.props.data, flipX)}
-          />
-        )
-      }
-    },
-  ),
-)
+)(PlayerComponent)
