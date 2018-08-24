@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { gameActions, Direction } from 'store/game'
 import { Point } from 'utils/point'
 import { getNextPosition } from 'store/gameTransforms/move'
-import { Transition } from './Transition'
+import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
 import { SCREEN_SIZE } from 'app/app'
 import { createPointStepper } from 'utils/transition'
@@ -151,14 +151,16 @@ class MapComponent extends Component<Props, State> {
           to: getMapPosition(player.destination),
           duration: TILE_SIZE,
         })
-      : { data: getMapPosition(player.position) }
+      : undefined
 
     return (
       <Transition
         stepper={stepper}
         useTicks
         onFinish={moveEnd}
-        render={position => <Container position={position}>{map}</Container>}
+        render={(position = getMapPosition(player.position)) => (
+          <Container position={position}>{map}</Container>
+        )}
       />
     )
   }

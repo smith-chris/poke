@@ -80,11 +80,11 @@ export const createPointStepper = ({
 }: CreatePointStepperParams) => {
   const diffX = from.x - to.x
   const diffY = from.y - to.y
-  return (elapsed: number) => {
+  return makeStepper((elapsed: number) => {
     const progress = elapsed / duration
     return {
       data: new Point(from.x - diffX * progress, from.y - diffY * progress),
       done: elapsed >= duration,
     }
-  }
+  })
 }
