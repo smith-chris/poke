@@ -3,10 +3,10 @@ import { Point } from 'pixi.js'
 import { getNextPosition } from './gameTransforms/move'
 import { assertNever } from 'utils/other'
 import { pointsEqual } from 'utils/pixi'
-import { canMove } from 'components/Map'
 import { MapsData } from 'assets/maps'
 import { TilesetsData } from 'assets/tilesets'
 import { loadMapTransform, LoadedMap } from './gameTransforms/loadMap'
+import { canMove } from './gameUtils'
 
 type MapRenderingData = {
   maps: MapsData

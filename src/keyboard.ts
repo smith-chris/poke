@@ -1,9 +1,9 @@
 import keyboardjs from 'keyboardjs'
 import { actions, store } from 'store/store'
 import { Direction } from 'store/game'
-import { canMove } from 'components/Map'
 import { stage, SCREEN_SIZE } from 'app/app'
 import { Point } from 'utils/point'
+import { canMove } from 'store/gameUtils'
 
 const moveQueue = new Map()
 

@@ -14,15 +14,6 @@ import { Flower } from './Flower'
 import { Water } from './Water'
 import { Rectangle } from 'pixi.js'
 
-export const canMove = (
-  position: Point,
-  direction: Direction,
-  collisions: boolean[][],
-) => {
-  const { x, y } = getNextPosition(direction, position)
-  return collisions[x][y]
-}
-
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
 
