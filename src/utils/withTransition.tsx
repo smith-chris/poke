@@ -198,6 +198,7 @@ export class Transition<T> extends Component<TranProps<T>, TranState<T>> {
       return
     }
 
+    stepper.reset()
     this.setData(stepper.next(0).data)
 
     this.tickerCallback = () => {

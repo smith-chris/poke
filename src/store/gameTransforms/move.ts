@@ -30,23 +30,31 @@ export const movePlayerStart = (position: Point, direction: Direction) => {
   return {}
 }
 
-export const movePlayerEnd = ({ player, currentMap, controls }: GameState) => {
+export const movePlayerContinue = ({ player, currentMap, controls }: GameState) => {
   if (!player.destination || !currentMap) {
     return {}
   }
 
-  let newDestination = undefined
-  let newDirection = undefined
   if (
     controls.move !== undefined &&
     canMove(player.destination, controls.move, currentMap.collisions)
   ) {
-    newDestination = getNextPosition(player.destination, controls.move)
-    newDirection = controls.move
+    return {
+      position: player.destination,
+      destination: getNextPosition(player.destination, controls.move),
+      direction: controls.move,
+    }
+  } else {
+    return {}
+  }
+}
+
+export const movePlayerEnd = ({ player }: GameState) => {
+  if (!player.destination) {
+    return player
   }
   return {
     position: player.destination,
-    destination: newDestination,
-    direction: newDirection,
+    direction: player.direction,
   }
 }

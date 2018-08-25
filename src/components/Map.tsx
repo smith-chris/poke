@@ -129,10 +129,21 @@ class MapComponent extends Component<Props, State> {
       this.setMap(newProps)
     }
   }
+  handleAnimationFinish = () => {
+    const {
+      moveEnd,
+      moveContinue,
+      game: { controls },
+    } = this.props
+    if (controls.move) {
+      moveContinue()
+    } else {
+      moveEnd()
+    }
+  }
   render() {
     const {
       game: { player },
-      moveEnd,
     } = this.props
     const { map } = this.state
     if (!map) {
@@ -151,7 +162,7 @@ class MapComponent extends Component<Props, State> {
       <Transition
         stepper={stepper}
         useTicks
-        onFinish={moveEnd}
+        onFinish={this.handleAnimationFinish}
         render={(position = getMapPosition(player.position)) => (
           <Container position={position}>{map}</Container>
         )}

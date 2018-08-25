@@ -1,6 +1,10 @@
 import { Point } from 'utils/point'
 import { ActionCreator, data, ActionsUnion } from 'utils/redux'
-import { movePlayerStart, movePlayerEnd } from 'store/gameTransforms/move'
+import {
+  movePlayerStart,
+  movePlayerEnd,
+  movePlayerContinue,
+} from 'store/gameTransforms/move'
 import { loadMap, LoadedMap, LoadMapData } from 'store/gameTransforms/loadMap'
 import { assertNever } from 'utils/other'
 import { MapsData } from 'assets/maps'
@@ -44,6 +48,7 @@ export const gameActions = {
   moveKeyPress: ActionCreator('MoveKeyPress', data as Direction),
   moveKeyRelease: ActionCreator('MoveKeyRelease'),
   moveStart: ActionCreator('MoveStart', data as Direction),
+  moveContinue: ActionCreator('MoveContinue'),
   moveEnd: ActionCreator('MoveEnd'),
   initialise: ActionCreator('Initialise', data as MapRenderingData),
   loadMap: ActionCreator('LoadMap', data as LoadMapData),
@@ -96,15 +101,20 @@ export const gameReducer = (
         },
       }
     }
-    case 'MoveEnd': {
+    case 'MoveContinue': {
       const { player } = state
-
       return {
         ...state,
         player: {
           ...player,
-          ...movePlayerEnd(state),
+          ...movePlayerContinue(state),
         },
+      }
+    }
+    case 'MoveEnd': {
+      return {
+        ...state,
+        player: movePlayerEnd(state),
       }
     }
     default: {

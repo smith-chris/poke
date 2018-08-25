@@ -44,20 +44,18 @@ class PlayerComponent extends Component<Props, State> {
   }))
 
   componentWillReceiveProps({ game: { controls, player } }: Props) {
-    if (player.direction) {
+    if (player.direction && player.destination) {
       this.setState({
         direction: player.direction,
         animate: true,
       })
     } else if (controls.move) {
-      this.stepper.reset()
       this.setState({
         direction: controls.move,
         animate: false,
         flipX: false,
       })
     } else {
-      this.stepper.reset()
       this.setState({
         animate: false,
         flipX: false,
