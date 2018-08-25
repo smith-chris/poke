@@ -1,7 +1,7 @@
-import _overworldBlockset from 'gfx/blocksets/overworld.bst'
-import _cemeteryBlockset from 'gfx/blocksets/cemetery.bst'
 import { parseHexData } from './utils'
 import { ObjectOf } from 'utils/types'
+import overworldBlockset from 'gfx/blocksets/overworld.bst'
+import redsHouseBlockset from 'gfx/blocksets/reds_house.bst'
 
 export const makeGetBlockTextureIds = (blockset: string) => {
   const parsedBlockset = parseHexData(blockset)
@@ -12,7 +12,7 @@ export const makeGetBlockTextureIds = (blockset: string) => {
 }
 
 export const blocksetData = {
-  overworld: _overworldBlockset,
-  cemetery: _cemeteryBlockset,
+  overworld: overworldBlockset,
+  redsHouse: redsHouseBlockset,
 }
 export type BlocksetsData = ObjectOf<string>

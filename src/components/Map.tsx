@@ -8,7 +8,7 @@ import { TILE_SIZE } from 'assets/const'
 import { SCREEN_SIZE } from 'app/app'
 import { createPointStepper } from 'utils/transition'
 import { Sprite, Container } from 'utils/fiber'
-import { TILESETS } from 'assets/tilesets'
+import { TILESETS, OVERWORLD } from 'assets/tilesets'
 import { Flower } from './Flower'
 import { Water } from './Water'
 import { Rectangle } from 'pixi.js'
@@ -35,7 +35,7 @@ const pointInRectangle = (rect: Rectangle, x: number, y: number) =>
 
 const getMapPosition = (player: Point) =>
   new Point(MAP_CENTER.x - player.x * 16, MAP_CENTER.y - player.y * 16)
-const makeMap = (textureIds: number[][], slice: Rectangle) => {
+const makeMap = (tilesetName: string, textureIds: number[][], slice: Rectangle) => {
   const result: JSX.Element[] = []
   textureIds.forEach((row, x) => {
     row.forEach((textureId, y) => {
@@ -47,26 +47,29 @@ const makeMap = (textureIds: number[][], slice: Rectangle) => {
         position: new Point(x * 8, y * 8),
       }
 
-      switch (textureId) {
-        case 3:
-          result.push(<Flower {...componentProps} />)
-          break
-        case 20:
-          result.push(<Water {...componentProps} />)
-          break
-        default:
-          result.push(
-            <Sprite
-              {...componentProps}
-              texture={TILESETS.OVERWORLD.cutTexture(
-                (textureId % 16) * 8,
-                Math.floor(textureId / 16) * 8,
-                8,
-                8,
-              )}
-            />,
-          )
+      if (tilesetName === OVERWORLD) {
+        switch (textureId) {
+          case 3:
+            result.push(<Flower {...componentProps} />)
+            return
+          case 20:
+            result.push(<Water {...componentProps} />)
+            return
+          default:
+            break
+        }
       }
+      result.push(
+        <Sprite
+          {...componentProps}
+          texture={TILESETS[tilesetName].cutTexture(
+            (textureId % 16) * 8,
+            Math.floor(textureId / 16) * 8,
+            8,
+            8,
+          )}
+        />,
+      )
     })
   })
   return result
@@ -99,10 +102,11 @@ class MapComponent extends Component<Props, State> {
       this.state !== newState
     )
   }
-  setMap = ({ game: { currentMap, player } }: Props) => {
+  setMap = ({ game: { currentMap, player, maps } }: Props) => {
     if (currentMap) {
       this.setState({
         map: makeMap(
+          maps[currentMap.name].tilesetName,
           currentMap.textureIds,
           new Rectangle(
             player.position.x * 2 + 1 - SLICE_SIZE / 2,

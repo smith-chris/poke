@@ -1,11 +1,12 @@
-import _overworld from 'gfx/tilesets/overworld.png'
-import _overworldCollisions from 'gfx/tilesets/overworld.tilecoll'
-import _cemetery from 'gfx/tilesets/cemetery.png'
 import { Texture, BaseTexture, Rectangle } from 'pixi.js'
 import { ObjectOf } from 'utils/types'
 import { blocksetData } from './blocksets'
+import overworldTileset from 'gfx/tilesets/overworld.png'
+import overworldCollisions from 'gfx/tilesets/overworld.tilecoll'
+import redsHouseTileset from 'gfx/tilesets/reds_house.png'
+import redsHouseCollisions from 'gfx/tilesets/reds_house.tilecoll'
 
-type Asset = typeof _overworld
+type Asset = typeof overworldTileset
 
 const cutTexture = (baseTexture: BaseTexture) => (
   x = 0,
@@ -18,7 +19,7 @@ const cutTexture = (baseTexture: BaseTexture) => (
   return tx
 }
 
-const makeTexture = (asset: Asset, name: string) => {
+const makeTexture = (asset: Asset) => {
   const { baseTexture } = Texture.fromImage(asset.src)
   // Seems like pixi do not read b64 image dimensions correctly
   baseTexture.width = asset.width
@@ -29,18 +30,26 @@ const makeTexture = (asset: Asset, name: string) => {
   }
 }
 
-export const DEFAULT_TILESET_NAME = 'OVERWORLD'
-
-export const TILESETS: ObjectOf<ReturnType<typeof makeTexture>> = {
-  [DEFAULT_TILESET_NAME]: makeTexture(_overworld, DEFAULT_TILESET_NAME),
-  CEMETERY: makeTexture(_cemetery, 'CEMETERY'),
-}
+export const OVERWORLD = 'OVERWORLD'
 
 export const tilesetsData = {
-  overworld: {
-    collisions: _overworldCollisions.slice(0, -1),
+  [OVERWORLD]: {
+    collisions: overworldCollisions.slice(0, -1),
     blockset: blocksetData.overworld,
+  },
+  REDS_HOUSE_1: {
+    collisions: redsHouseCollisions.slice(0, -1),
+    blockset: blocksetData.redsHouse,
   },
 }
 
-export type TilesetsData = ObjectOf<typeof tilesetsData.overworld>
+type TilesetNames = keyof typeof tilesetsData
+
+type Tileset = ReturnType<typeof makeTexture>
+
+export const TILESETS: ObjectOf<Tileset> = {
+  [OVERWORLD]: makeTexture(overworldTileset),
+  REDS_HOUSE_1: makeTexture(redsHouseTileset),
+} as Record<TilesetNames, Tileset>
+
+export type TilesetsData = ObjectOf<typeof tilesetsData.OVERWORLD>

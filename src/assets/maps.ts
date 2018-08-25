@@ -1,5 +1,5 @@
 import { MAP_CONSTANTS } from 'const/map'
-import { DEFAULT_TILESET_NAME } from './tilesets'
+import { OVERWORLD } from './tilesets'
 import { ObjectOf } from 'utils/types'
 import palletTownBlocks from 'maps/pallettown.blk'
 import palletTownHeader from 'data/mapHeaders/pallettown.asm'
@@ -15,10 +15,10 @@ const tilesetNameRegex = /_h:[\s]*db[\ ]*([A-Z_0-9]*)/
 const getTilesetName = (input: string) => {
   const searchResult = tilesetNameRegex.exec(input)
   if (searchResult && searchResult.length >= 1) {
-    return searchResult[1].toLowerCase()
+    return searchResult[1]
   }
   console.warn('Couldnt find tile name in: ', input, searchResult)
-  return DEFAULT_TILESET_NAME.toLowerCase()
+  return OVERWORLD
 }
 
 const parseParams = (params: string) => params.split(',').map(s => s.trim())
