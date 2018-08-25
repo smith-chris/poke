@@ -1,13 +1,16 @@
-import palletTownBlocks from 'maps/pallettown.blk'
-import palletTownHeader from 'data/mapHeaders/pallettown.asm'
-import palletTownObjects from 'data/mapObjects/pallettown.asm'
 import { MAP_CONSTANTS } from 'const/map'
 import { DEFAULT_TILESET_NAME } from './tilesets'
 import { ObjectOf } from 'utils/types'
+import palletTownBlocks from 'maps/pallettown.blk'
+import palletTownHeader from 'data/mapHeaders/pallettown.asm'
+import palletTownObjects from 'data/mapObjects/pallettown.asm'
+import redsHouse1fBlocks from 'maps/redshouse1f.blk'
+import redsHouse1fHeader from 'data/mapHeaders/redshouse1f.asm'
+import redsHouse1fObjects from 'data/mapObjects/redshouse1f.asm'
 
-const objectRegex = /\n\s([a-z_]+)([a-zA-Z_0-9 ,]*)/g
+const objectRegex = /\n\s([a-z_]+)([a-zA-Z_0-9- ,]*)/g
 
-const tilesetNameRegex = /_h:[\s]*db[\ ]*([A-Z_]*)/
+const tilesetNameRegex = /_h:[\s]*db[\ ]*([A-Z_0-9]*)/
 
 const getTilesetName = (input: string) => {
   const searchResult = tilesetNameRegex.exec(input)
@@ -36,11 +39,18 @@ const getObjects = (input: string) => {
 }
 
 export const mapsData = {
-  palletTown: {
+  PALLET_TOWN: {
     blocksData: palletTownBlocks,
     size: MAP_CONSTANTS.PALLET_TOWN,
     tilesetName: getTilesetName(palletTownHeader),
     objects: getObjects(palletTownObjects),
   },
+  REDS_HOUSE_1F: {
+    blocksData: redsHouse1fBlocks,
+    size: MAP_CONSTANTS.REDS_HOUSE_1F,
+    tilesetName: getTilesetName(redsHouse1fHeader),
+    objects: getObjects(redsHouse1fObjects),
+  },
 }
-export type MapsData = ObjectOf<typeof mapsData.palletTown>
+
+export type MapsData = ObjectOf<typeof mapsData.PALLET_TOWN>

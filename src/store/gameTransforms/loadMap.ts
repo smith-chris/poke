@@ -11,14 +11,20 @@ const fixedArray = <T>(x: number, y: number) => {
   return result
 }
 
-export const loadMap = (state: GameState, mapName: string) => {
+export type LoadedMap = {
+  name: string
+  textureIds: number[][]
+  collisions: boolean[][]
+}
+
+export const loadMap = (state: GameState, mapName: string): LoadedMap | undefined => {
   const map = state.maps[mapName]
   if (!map) {
     console.warn(
       `Map "${mapName}" is not one of available maps`,
       Object.keys(state.maps),
     )
-    return
+    return state.currentMap
   }
   const tileset = state.tilesets[map.tilesetName]
   if (!tileset) {
@@ -26,7 +32,7 @@ export const loadMap = (state: GameState, mapName: string) => {
       `Tileset "${map.tilesetName}" is not one of available tilesets`,
       Object.keys(state.tilesets),
     )
-    return
+    return state.currentMap
   }
   const getBlockTextureIds = makeGetBlockTextureIds(tileset.blockset)
   const blockIds = parseHexData(map.blocksData)
@@ -62,5 +68,3 @@ export const loadMap = (state: GameState, mapName: string) => {
     collisions: parsedCollisions,
   }
 }
-
-export type LoadedMap = ReturnType<typeof loadMap>

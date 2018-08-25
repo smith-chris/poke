@@ -14,7 +14,7 @@ actions.initialise({
   tilesets: tilesetsData,
 })
 
-actions.loadMap('palletTown')
+actions.loadMap('PALLET_TOWN')
 
 render(
   <Provider store={store}>

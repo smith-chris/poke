@@ -1,4 +1,4 @@
-import { subscribe } from 'store/store'
+import { subscribe, actions } from 'store/store'
 
 subscribe(
   ({
@@ -15,7 +15,7 @@ subscribe(
       const { x, y } = position
       const mapName = objects.warps[`${x}_${y}`]
       if (mapName) {
-        console.info(mapName)
+        actions.loadMap(mapName)
       }
     }
   },
