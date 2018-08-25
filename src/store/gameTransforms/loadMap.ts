@@ -69,10 +69,9 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
     parsedCollisions[baseX + 1][baseY + 1] = collisions.includes(textureIds[14])
   })
 
-  const lastMap = lastMapName ? maps[lastMapName] : undefined
   let player = state.player
-  if (location !== undefined && lastMap) {
-    const wrapPosition = getWarpPosition(lastMap, location)
+  if (location !== undefined) {
+    const wrapPosition = getWarpPosition(map, location)
     if (wrapPosition) {
       if (exit) {
         player = {

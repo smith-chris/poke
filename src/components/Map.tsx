@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { gameActions } from 'store/game'
+import { gameActions, wannaMove } from 'store/game'
 import { Point } from 'utils/point'
 import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
@@ -130,16 +130,14 @@ class MapComponent extends Component<Props, State> {
     }
   }
   handleAnimationFinish = () => {
-    const {
-      moveEnd,
-      moveContinue,
-      game: { controls },
-    } = this.props
-    if (controls.move) {
-      moveContinue()
-    } else {
-      moveEnd()
+    const { moveStart, moveContinue, moveEnd, loadMap, game } = this.props
+    if (
+      game.controls.move &&
+      wannaMove(game, { moveStart, moveContinue, moveEnd, loadMap })
+    ) {
+      return
     }
+    moveEnd()
   }
   render() {
     const {

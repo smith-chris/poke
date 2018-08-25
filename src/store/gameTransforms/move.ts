@@ -32,6 +32,7 @@ export const movePlayerStart = (position: Point, direction: Direction) => {
 
 export const movePlayerContinue = ({ player, currentMap, controls }: GameState) => {
   if (!player.destination || !currentMap) {
+    console.warn('No current map or destination!', currentMap, player)
     return {}
   }
 

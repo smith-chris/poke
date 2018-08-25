@@ -1,24 +1,17 @@
 import keyboardjs from 'keyboardjs'
 import { actions, store } from 'store/store'
-import { Direction } from 'store/game'
+import { Direction, wannaMove } from 'store/game'
 import { stage, SCREEN_SIZE } from 'app/app'
 import { Point } from 'utils/point'
-import { canMove } from 'store/gameUtils'
 
 const moveQueue = new Map()
 
 const handleKeyPress = (direction: Direction, keyName?: string) => {
-  const {
-    game: { controls, player, currentMap },
-  } = store.getState()
-  if (controls.move === undefined) {
+  const { game } = store.getState()
+  if (game.controls.move === undefined) {
     actions.moveKeyPress(direction)
-    if (
-      player.destination === undefined &&
-      currentMap &&
-      canMove(player.position, direction, currentMap.collisions)
-    ) {
-      actions.moveStart(direction)
+    if (game.player.destination === undefined) {
+      wannaMove(game, actions, direction)
     }
   } else if (keyName) {
     moveQueue.set(keyName, direction)
