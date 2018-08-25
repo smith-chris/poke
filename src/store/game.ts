@@ -31,7 +31,7 @@ export type GameState = {
 
 const initialState: GameState = {
   player: {
-    position: new Point(5, 6),
+    position: new Point(13, 6),
     moved: false,
   },
   controls: {},
@@ -125,6 +125,10 @@ export const gameReducer = (
         controls: {
           ...state.controls,
           move: action.data,
+        },
+        player: {
+          ...state.player,
+          moved: true,
         },
       }
     }

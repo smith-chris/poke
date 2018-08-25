@@ -10,6 +10,12 @@ import redsHouse1fObjects from 'data/mapObjects/redshouse1f.asm'
 import redsHouse2fBlocks from 'maps/redshouse2f.blk'
 import redsHouse2fHeader from 'data/mapHeaders/redshouse2f.asm'
 import redsHouse2fObjects from 'data/mapObjects/redshouse2f.asm'
+import oakslabBlocks from 'maps/oakslab.blk'
+import oakslabHeader from 'data/mapHeaders/oakslab.asm'
+import oakslabObjects from 'data/mapObjects/oakslab.asm'
+import bluesHouseBlocks from 'maps/blueshouse.blk'
+import bluesHouseHeader from 'data/mapHeaders/blueshouse.asm'
+import bluesHouseObjects from 'data/mapObjects/blueshouse.asm'
 
 const objectRegex = /\n\s([a-z_]+)([a-zA-Z_0-9- ,]*)/g
 
@@ -61,6 +67,18 @@ export const mapsData = {
     size: MAP_CONSTANTS.REDS_HOUSE_2F,
     tilesetName: getTilesetName(redsHouse2fHeader),
     objects: getObjects(redsHouse2fObjects),
+  },
+  OAKS_LAB: {
+    blocksData: oakslabBlocks,
+    size: MAP_CONSTANTS.OAKS_LAB,
+    tilesetName: getTilesetName(oakslabHeader),
+    objects: getObjects(oakslabObjects),
+  },
+  BLUES_HOUSE: {
+    blocksData: bluesHouseBlocks,
+    size: MAP_CONSTANTS.BLUES_HOUSE,
+    tilesetName: getTilesetName(bluesHouseHeader),
+    objects: getObjects(bluesHouseObjects),
   },
 }
 

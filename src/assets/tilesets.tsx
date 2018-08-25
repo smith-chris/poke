@@ -5,6 +5,10 @@ import overworldTileset from 'gfx/tilesets/overworld.png'
 import overworldCollisions from 'gfx/tilesets/overworld.tilecoll'
 import redsHouseTileset from 'gfx/tilesets/reds_house.png'
 import redsHouseCollisions from 'gfx/tilesets/reds_house.tilecoll'
+import gymTileset from 'gfx/tilesets/gym.png'
+import gymCollisions from 'gfx/tilesets/gym.tilecoll'
+import houseTileset from 'gfx/tilesets/house.png'
+import houseCollisions from 'gfx/tilesets/house.tilecoll'
 
 type Asset = typeof overworldTileset
 
@@ -45,6 +49,14 @@ export const tilesetsData = {
     collisions: redsHouseCollisions.slice(0, -1),
     blockset: blocksetData.redsHouse,
   },
+  DOJO: {
+    collisions: gymCollisions.slice(0, -1),
+    blockset: blocksetData.gym,
+  },
+  HOUSE: {
+    collisions: houseCollisions.slice(0, -1),
+    blockset: blocksetData.house,
+  },
 }
 
 type TilesetNames = keyof typeof tilesetsData
@@ -55,6 +67,8 @@ export const TILESETS: ObjectOf<Tileset> = {
   [OVERWORLD]: makeTexture(overworldTileset),
   REDS_HOUSE_1: makeTexture(redsHouseTileset),
   REDS_HOUSE_2: makeTexture(redsHouseTileset),
+  DOJO: makeTexture(gymTileset),
+  HOUSE: makeTexture(houseTileset),
 } as Record<TilesetNames, Tileset>
 
 export type TilesetsData = ObjectOf<typeof tilesetsData.OVERWORLD>
