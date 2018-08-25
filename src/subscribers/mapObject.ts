@@ -6,9 +6,8 @@ subscribe(
       player: { position },
       currentMap,
       maps,
-      lastMapName,
     },
-  }: StoreState) => ({ position, currentMap, maps, lastMapName }),
+  }: StoreState) => ({ position, currentMap, maps }),
   ({ position, currentMap, maps }) => {
     const map = currentMap ? maps[currentMap.name] : null
     if (map) {

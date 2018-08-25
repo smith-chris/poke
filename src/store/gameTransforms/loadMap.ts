@@ -22,14 +22,17 @@ export type LoadedMap = {
 export type LoadMapData = { mapName: string; location?: number; exit?: boolean }
 
 export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapData) => {
-  const { maps, currentMap, lastMapName, tilesets } = state
+  const { maps, tilesets } = state
 
   const map = maps[mapName]
   if (!map) {
     console.warn(`Map "${mapName}" is not one of available maps`, Object.keys(maps))
     return undefined
   }
-
+  if (state.currentMap && !state.player.moved) {
+    console.warn('Trying to load map while player has not moved!')
+    return undefined
+  }
   const tileset = tilesets[map.tilesetName]
   if (!tileset) {
     console.warn(
@@ -69,7 +72,7 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
     parsedCollisions[baseX + 1][baseY + 1] = collisions.includes(textureIds[14])
   })
 
-  let player = state.player
+  let player = { ...state.player, moved: false }
   if (location !== undefined) {
     const wrapPosition = getWarpPosition(map, location)
     if (wrapPosition) {
@@ -77,6 +80,7 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
         player = {
           position: new Point(wrapPosition.x, wrapPosition.y + 1),
           direction: Direction.S,
+          moved: false,
         }
       } else {
         player = {
@@ -94,7 +98,6 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
       textureIds: parsedTextureIds,
       collisions: parsedCollisions,
     },
-    lastMapName: currentMap ? currentMap.name : undefined,
   }
 }
 

@@ -4,7 +4,6 @@ import {
   movePlayerStart,
   movePlayerEnd,
   movePlayerContinue,
-  getNextPosition,
 } from 'store/gameTransforms/move'
 import { loadMap, LoadedMap, LoadMapData } from 'store/gameTransforms/loadMap'
 import { assertNever } from 'utils/other'
@@ -22,17 +21,18 @@ export type GameState = {
     destination?: Point
     direction?: Direction
     position: Point
+    moved: boolean
   }
   controls: {
     move?: Direction
   }
   currentMap?: LoadedMap
-  lastMapName?: string
 } & MapRenderingData
 
 const initialState: GameState = {
   player: {
     position: new Point(5, 6),
+    moved: false,
   },
   controls: {},
   maps: {},
@@ -62,7 +62,7 @@ type MoveActions = Pick<
 >
 
 export const wannaMove = (
-  { player, currentMap, controls, maps, lastMapName }: GameState,
+  { player, currentMap, controls, maps }: GameState,
   actions: MoveActions,
   direction?: Direction,
 ) => {
@@ -93,10 +93,7 @@ export const wannaMove = (
     if (warp) {
       const { mapName, location } = warp
       if (mapName === '-1') {
-        if (!lastMapName) {
-          console.warn('Last map name is not available', { mapName, lastMapName })
-        }
-        actions.loadMap({ mapName: lastMapName || 'PALLET_TOWN', location, exit: true })
+        actions.loadMap({ mapName: 'PALLET_TOWN', location, exit: true })
       }
     }
   }

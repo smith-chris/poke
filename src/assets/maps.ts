@@ -7,6 +7,9 @@ import palletTownObjects from 'data/mapObjects/pallettown.asm'
 import redsHouse1fBlocks from 'maps/redshouse1f.blk'
 import redsHouse1fHeader from 'data/mapHeaders/redshouse1f.asm'
 import redsHouse1fObjects from 'data/mapObjects/redshouse1f.asm'
+import redsHouse2fBlocks from 'maps/redshouse2f.blk'
+import redsHouse2fHeader from 'data/mapHeaders/redshouse2f.asm'
+import redsHouse2fObjects from 'data/mapObjects/redshouse2f.asm'
 
 const objectRegex = /\n\s([a-z_]+)([a-zA-Z_0-9- ,]*)/g
 
@@ -52,6 +55,12 @@ export const mapsData = {
     size: MAP_CONSTANTS.REDS_HOUSE_1F,
     tilesetName: getTilesetName(redsHouse1fHeader),
     objects: getObjects(redsHouse1fObjects),
+  },
+  REDS_HOUSE_2F: {
+    blocksData: redsHouse2fBlocks,
+    size: MAP_CONSTANTS.REDS_HOUSE_2F,
+    tilesetName: getTilesetName(redsHouse2fHeader),
+    objects: getObjects(redsHouse2fObjects),
   },
 }
 

@@ -41,6 +41,10 @@ export const tilesetsData = {
     collisions: redsHouseCollisions.slice(0, -1),
     blockset: blocksetData.redsHouse,
   },
+  REDS_HOUSE_2: {
+    collisions: redsHouseCollisions.slice(0, -1),
+    blockset: blocksetData.redsHouse,
+  },
 }
 
 type TilesetNames = keyof typeof tilesetsData
@@ -50,6 +54,7 @@ type Tileset = ReturnType<typeof makeTexture>
 export const TILESETS: ObjectOf<Tileset> = {
   [OVERWORLD]: makeTexture(overworldTileset),
   REDS_HOUSE_1: makeTexture(redsHouseTileset),
+  REDS_HOUSE_2: makeTexture(redsHouseTileset),
 } as Record<TilesetNames, Tileset>
 
 export type TilesetsData = ObjectOf<typeof tilesetsData.OVERWORLD>

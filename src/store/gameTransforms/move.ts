@@ -44,6 +44,7 @@ export const movePlayerContinue = ({ player, currentMap, controls }: GameState) 
       position: player.destination,
       destination: getNextPosition(player.destination, controls.move),
       direction: controls.move,
+      moved: true,
     }
   } else {
     return {}
@@ -57,5 +58,6 @@ export const movePlayerEnd = ({ player }: GameState) => {
   return {
     position: player.destination,
     direction: player.direction,
+    moved: true,
   }
 }
