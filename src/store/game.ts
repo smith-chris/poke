@@ -1,12 +1,10 @@
+import { Point } from 'utils/point'
 import { ActionCreator, data, ActionsUnion } from 'utils/redux'
-import { Point } from 'pixi.js'
-import { getNextPosition } from './gameTransforms/move'
+import { movePlayerStart, movePlayerEnd } from 'store/gameTransforms/move'
+import { loadMap, LoadedMap } from 'store/gameTransforms/loadMap'
 import { assertNever } from 'utils/other'
-import { pointsEqual } from 'utils/pixi'
 import { MapsData } from 'assets/maps'
 import { TilesetsData } from 'assets/tilesets'
-import { loadMapTransform, LoadedMap } from './gameTransforms/loadMap'
-import { canMove } from './gameUtils'
 
 type MapRenderingData = {
   maps: MapsData
@@ -66,7 +64,7 @@ export const gameReducer = (
     case 'LoadMap': {
       return {
         ...state,
-        currentMap: loadMapTransform(state, action.data),
+        currentMap: loadMap(state, action.data),
       }
     }
     case 'MoveKeyPress': {
@@ -89,40 +87,22 @@ export const gameReducer = (
     }
     case 'MoveStart': {
       const { player } = state
-      const destination = getNextPosition(action.data, player.position)
-      if (!pointsEqual(destination, player.position)) {
-        return {
-          ...state,
-          player: {
-            ...player,
-            destination,
-            direction: action.data,
-          },
-        }
-      } else {
-        return state
-      }
-    }
-    case 'MoveEnd': {
-      const { player, controls, currentMap } = state
-      if (!player.destination || !currentMap) {
-        return state
-      }
-      let newDestination = undefined
-      let newDirection = undefined
-      if (
-        controls.move !== undefined &&
-        canMove(player.destination, controls.move, currentMap.collisions)
-      ) {
-        newDestination = getNextPosition(controls.move, player.destination)
-        newDirection = controls.move
-      }
       return {
         ...state,
         player: {
-          position: player.destination,
-          destination: newDestination,
-          direction: newDirection,
+          ...player,
+          ...movePlayerStart(player.position, action.data),
+        },
+      }
+    }
+    case 'MoveEnd': {
+      const { player } = state
+
+      return {
+        ...state,
+        player: {
+          ...player,
+          ...movePlayerEnd(state),
         },
       }
     }

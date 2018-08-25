@@ -11,7 +11,7 @@ const fixedArray = <T>(x: number, y: number) => {
   return result
 }
 
-export const loadMapTransform = (state: GameState, mapName: string) => {
+export const loadMap = (state: GameState, mapName: string) => {
   const map = state.maps[mapName]
   if (!map) {
     console.warn(
@@ -68,4 +68,4 @@ export const loadMapTransform = (state: GameState, mapName: string) => {
   }
 }
 
-export type LoadedMap = ReturnType<typeof loadMapTransform>
+export type LoadedMap = ReturnType<typeof loadMap>

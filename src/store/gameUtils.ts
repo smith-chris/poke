@@ -7,6 +7,6 @@ export const canMove = (
   direction: Direction,
   collisions: boolean[][],
 ) => {
-  const { x, y } = getNextPosition(direction, position)
+  const { x, y } = getNextPosition(position, direction)
   return collisions[x][y]
 }
