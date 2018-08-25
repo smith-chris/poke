@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import { mapsData } from 'assets/maps'
 import { tilesetsData } from 'assets/tilesets'
 import { Game } from 'components/Game'
+import 'subscribers/mapObject'
 import 'keyboard'
 
 actions.initialise({

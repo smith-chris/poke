@@ -9,6 +9,7 @@ import { makeStepper } from 'utils/transition'
 import { TILE_SIZE } from 'assets/const'
 import { SCREEN_SIZE } from 'app/app'
 import { getPlayerSpriteProps } from './getPlayerTexture'
+import { shallowDiff } from 'utils/other'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -30,15 +31,6 @@ const playerBaseProps = {
   position: new Point(SCREEN_SIZE / 2, SCREEN_SIZE / 2),
   anchor: new Point(0.5, 0.5),
   scale: new Point(1, 1),
-}
-
-const shallowDiff = <T extends {}>(a: T, b: T) => {
-  for (const key in a) {
-    if (a[key] !== b[key]) {
-      return true
-    }
-  }
-  return false
 }
 
 type State = typeof defaultState

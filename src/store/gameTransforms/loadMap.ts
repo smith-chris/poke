@@ -35,8 +35,6 @@ export const loadMap = (state: GameState, mapName: string) => {
   let parsedCollisions = fixedArray<boolean>(map.size.width * 2, map.size.height * 2)
   let parsedTextureIds = fixedArray<number>(map.size.width * 4, map.size.height * 4)
 
-  const blocks: Array<{ x: number; y: number; textures: number[][] }> = []
-
   blockIds.forEach((blockId, i) => {
     const x = i % map.size.width
     const y = Math.floor(i / map.size.width)
@@ -44,14 +42,11 @@ export const loadMap = (state: GameState, mapName: string) => {
     // Each block has 4x4 textures
     const textureBaseX = x * 4
     const textureBaseY = y * 4
-    const textures = fixedArray<number>(4, 4)
     textureIds.forEach((textureId, j) => {
       const textureX = textureBaseX + (j % 4)
       const textureY = textureBaseY + Math.floor(j / 4)
       parsedTextureIds[textureX][textureY] = textureId
-      textures[j % 4][Math.floor(j / 4)] = textureId
     })
-    blocks.push({ x, y, textures })
 
     // Each block has 2x2 collisions
     const baseX = x * 2
@@ -62,9 +57,9 @@ export const loadMap = (state: GameState, mapName: string) => {
     parsedCollisions[baseX + 1][baseY + 1] = collisions.includes(textureIds[14])
   })
   return {
+    name: mapName,
     textureIds: parsedTextureIds,
     collisions: parsedCollisions,
-    blocks,
   }
 }
 

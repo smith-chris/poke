@@ -9,3 +9,12 @@ export const assertNever = (value: never, { state = undefined as any } = {}): ne
   }
   return value
 }
+
+export const shallowDiff = <T extends {}>(a: T, b: T) => {
+  for (const key in a) {
+    if (a[key] !== b[key]) {
+      return true
+    }
+  }
+  return false
+}

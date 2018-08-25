@@ -6,8 +6,8 @@ import Redux, {
 } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import { transformActions } from 'utils/redux'
-import { gameReducer, GameState, gameActions } from './game'
-import { makeSubscribe } from './makeSubscribe'
+import { gameReducer, GameState, gameActions } from 'store/game'
+import { makeSubscribe } from 'store/makeSubscribe'
 
 declare global {
   type StoreState = {

@@ -18,15 +18,18 @@ const getTilesetName = (input: string) => {
   return DEFAULT_TILESET_NAME.toLowerCase()
 }
 
+const parseParams = (params: string) => params.split(',').map(s => s.trim())
+
 const getObjects = (input: string) => {
   let match
-  const warps = []
+  const warps: ObjectOf<string> = {}
   while ((match = objectRegex.exec(input))) {
     // match is now the next match, in array form.
-    const [_, name, params] = match
+    const [, name, params] = match
     // For now lets just read wraps
     if (name === 'warp') {
-      warps.push(params.split(',').map(s => s.trim()))
+      const [x, y, , mapName] = parseParams(params)
+      warps[`${x}_${y}`] = mapName
     }
   }
   return { warps }
