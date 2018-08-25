@@ -25,14 +25,16 @@ const parseParams = (params: string) => params.split(',').map(s => s.trim())
 
 const getObjects = (input: string) => {
   let match
-  const warps: ObjectOf<string> = {}
+  const warps: ObjectOf<{ location: number; mapName: string; id: number }> = {}
+  let warpId = 0
   while ((match = objectRegex.exec(input))) {
     // match is now the next match, in array form.
     const [, name, params] = match
     // For now lets just read wraps
     if (name === 'warp') {
-      const [x, y, , mapName] = parseParams(params)
-      warps[`${x}_${y}`] = mapName
+      const [x, y, location, mapName] = parseParams(params)
+      warps[`${x}_${y}`] = { location: Number(location), mapName, id: warpId }
+      warpId++
     }
   }
   return { warps }
@@ -53,4 +55,6 @@ export const mapsData = {
   },
 }
 
-export type MapsData = ObjectOf<typeof mapsData.PALLET_TOWN>
+export type MapData = typeof mapsData.PALLET_TOWN
+
+export type MapsData = ObjectOf<MapData>

@@ -1,7 +1,7 @@
 import { Point } from 'utils/point'
 import { ActionCreator, data, ActionsUnion } from 'utils/redux'
 import { movePlayerStart, movePlayerEnd } from 'store/gameTransforms/move'
-import { loadMap, LoadedMap } from 'store/gameTransforms/loadMap'
+import { loadMap, LoadedMap, LoadMapData } from 'store/gameTransforms/loadMap'
 import { assertNever } from 'utils/other'
 import { MapsData } from 'assets/maps'
 import { TilesetsData } from 'assets/tilesets'
@@ -21,6 +21,7 @@ export type GameState = {
     move?: Direction
   }
   currentMap?: LoadedMap
+  lastMapName?: string
 } & MapRenderingData
 
 const initialState: GameState = {
@@ -45,7 +46,7 @@ export const gameActions = {
   moveStart: ActionCreator('MoveStart', data as Direction),
   moveEnd: ActionCreator('MoveEnd'),
   initialise: ActionCreator('Initialise', data as MapRenderingData),
-  loadMap: ActionCreator('LoadMap', data as string),
+  loadMap: ActionCreator('LoadMap', data as LoadMapData),
 }
 
 export type GameAction = ActionsUnion<typeof gameActions>
@@ -64,7 +65,7 @@ export const gameReducer = (
     case 'LoadMap': {
       return {
         ...state,
-        currentMap: loadMap(state, action.data),
+        ...loadMap(state, action.data),
       }
     }
     case 'MoveKeyPress': {

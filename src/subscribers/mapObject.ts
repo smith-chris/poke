@@ -6,16 +6,26 @@ subscribe(
       player: { position },
       currentMap,
       maps,
+      lastMapName,
     },
-  }: StoreState) => ({ position, currentMap, maps }),
-  ({ position, currentMap, maps }) => {
+  }: StoreState) => ({ position, currentMap, maps, lastMapName }),
+  ({ position, currentMap, maps, lastMapName }) => {
     const map = currentMap ? maps[currentMap.name] : null
     if (map) {
       const { objects } = map
       const { x, y } = position
-      const mapName = objects.warps[`${x}_${y}`]
-      if (mapName) {
-        actions.loadMap(mapName)
+      const warp = objects.warps[`${x}_${y}`]
+      if (warp) {
+        const { mapName, location } = warp
+        if (mapName === '-1') {
+          if (!lastMapName) {
+            console.warn('Last map name is not available', { mapName, lastMapName })
+            return
+          }
+          actions.loadMap({ mapName: lastMapName, location, exit: true })
+        } else {
+          actions.loadMap({ mapName, location })
+        }
       }
     }
   },

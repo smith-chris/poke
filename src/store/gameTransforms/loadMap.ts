@@ -1,6 +1,8 @@
-import { GameState } from 'store/game'
+import { GameState, Direction } from 'store/game'
 import { parseHexData } from 'assets/utils'
 import { makeGetBlockTextureIds } from 'assets/blocksets'
+import { MapData } from 'assets/maps'
+import { Point } from 'utils/point'
 
 const fixedArray = <T>(x: number, y: number) => {
   // TODO: make it sealed
@@ -17,23 +19,26 @@ export type LoadedMap = {
   collisions: boolean[][]
 }
 
-export const loadMap = (state: GameState, mapName: string): LoadedMap | undefined => {
-  const map = state.maps[mapName]
+export type LoadMapData = { mapName: string; location?: number; exit?: boolean }
+
+export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapData) => {
+  const { maps, currentMap, lastMapName, tilesets } = state
+
+  const map = maps[mapName]
   if (!map) {
-    console.warn(
-      `Map "${mapName}" is not one of available maps`,
-      Object.keys(state.maps),
-    )
-    return state.currentMap
+    console.warn(`Map "${mapName}" is not one of available maps`, Object.keys(maps))
+    return undefined
   }
-  const tileset = state.tilesets[map.tilesetName]
+
+  const tileset = tilesets[map.tilesetName]
   if (!tileset) {
     console.warn(
       `Tileset "${map.tilesetName}" is not one of available tilesets`,
-      Object.keys(state.tilesets),
+      Object.keys(tilesets),
     )
-    return state.currentMap
+    return undefined
   }
+
   const getBlockTextureIds = makeGetBlockTextureIds(tileset.blockset)
   const blockIds = parseHexData(map.blocksData)
   const collisions = parseHexData(tileset.collisions)
@@ -54,7 +59,8 @@ export const loadMap = (state: GameState, mapName: string): LoadedMap | undefine
       parsedTextureIds[textureX][textureY] = textureId
     })
 
-    // Each block has 2x2 collisions
+    // Each block has 2x2 tiles and 2x2 collisions
+    // Each tile has 2x2 textures and lower left texture decides if theres collision or not
     const baseX = x * 2
     const baseY = y * 2
     parsedCollisions[baseX][baseY] = collisions.includes(textureIds[4])
@@ -62,9 +68,44 @@ export const loadMap = (state: GameState, mapName: string): LoadedMap | undefine
     parsedCollisions[baseX][baseY + 1] = collisions.includes(textureIds[12])
     parsedCollisions[baseX + 1][baseY + 1] = collisions.includes(textureIds[14])
   })
+
+  const lastMap = lastMapName ? maps[lastMapName] : undefined
+  let player = state.player
+  if (location !== undefined && lastMap) {
+    const wrapPosition = getWarpPosition(lastMap, location)
+    if (wrapPosition) {
+      if (exit) {
+        player = {
+          position: new Point(wrapPosition.x, wrapPosition.y + 1),
+          direction: Direction.S,
+        }
+      } else {
+        player = {
+          ...player,
+          position: wrapPosition,
+        }
+      }
+    }
+  }
+
   return {
-    name: mapName,
-    textureIds: parsedTextureIds,
-    collisions: parsedCollisions,
+    player,
+    currentMap: {
+      name: mapName,
+      textureIds: parsedTextureIds,
+      collisions: parsedCollisions,
+    },
+    lastMapName: currentMap ? currentMap.name : undefined,
+  }
+}
+
+const getWarpPosition = (map: MapData, location: number) => {
+  const { warps } = map.objects
+  for (let key in warps) {
+    const warp = warps[key]
+    if (warp.id === location) {
+      const [x, y] = key.split('_')
+      return new Point(Number(x), Number(y))
+    }
   }
 }
