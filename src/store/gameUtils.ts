@@ -8,5 +8,9 @@ export const canMove = (
   collisions: boolean[][],
 ) => {
   const { x, y } = getNextPosition(position, direction)
-  return collisions[x][y]
+  const column = collisions[x]
+  if (column === undefined) {
+    return undefined
+  }
+  return column[y]
 }
