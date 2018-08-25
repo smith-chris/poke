@@ -31,7 +31,7 @@ export type GameState = {
 
 const initialState: GameState = {
   player: {
-    position: new Point(13, 6),
+    position: new Point(12, 12),
     moved: false,
   },
   controls: {},

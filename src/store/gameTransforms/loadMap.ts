@@ -1,8 +1,9 @@
-import { GameState, Direction } from 'store/game'
+import { GameState, Direction, wannaMove } from 'store/game'
 import { parseHexData } from 'assets/utils'
 import { makeGetBlockTextureIds } from 'assets/blocksets'
 import { MapData } from 'assets/maps'
 import { Point } from 'utils/point'
+import { actions, store } from '../store'
 
 const fixedArray = <T>(x: number, y: number) => {
   // TODO: make it sealed
@@ -78,7 +79,7 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
     if (wrapPosition) {
       if (exit) {
         player = {
-          position: new Point(wrapPosition.x, wrapPosition.y + 1),
+          position: new Point(wrapPosition.x, wrapPosition.y),
           direction: Direction.S,
           moved: false,
         }
@@ -89,6 +90,13 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
         }
       }
     }
+  }
+
+  if (state.controls.move !== undefined) {
+    // Super dirty hack :/
+    setTimeout(() => {
+      wannaMove(store.getState().game, actions)
+    })
   }
 
   return {
