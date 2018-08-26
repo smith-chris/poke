@@ -16,21 +16,38 @@ import oakslabObjects from 'data/mapObjects/oakslab.asm'
 import bluesHouseBlocks from 'maps/blueshouse.blk'
 import bluesHouseHeader from 'data/mapHeaders/blueshouse.asm'
 import bluesHouseObjects from 'data/mapObjects/blueshouse.asm'
+import { Direction, toDirection } from 'store/game'
 
 const objectRegex = /\n\s([a-z_]+)([a-zA-Z_0-9- ,]*)/g
 
 const tilesetNameRegex = /_h:[\s]*db[\ ]*([A-Z_0-9]*)/
+const connectionsRegex = /((NORTH|SOUTH|WEST|EAST)_MAP_CONNECTION)([A-Z _,0-9]*)\s/g
 
-const getTilesetName = (input: string) => {
+const parseParams = (params: string) =>
+  params
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => s !== '')
+
+const getHeaders = (input: string) => {
+  let match
+  let connections: ObjectOf<{ mapName: string; x: number; y: number }> = {}
+  while ((match = connectionsRegex.exec(input))) {
+    const [, , direction, params] = match
+    const [, mapName, x, y] = parseParams(params)
+    connections[toDirection(direction)] = { mapName, x: Number(x), y: Number(y) }
+  }
+
+  let tilesetName
   const searchResult = tilesetNameRegex.exec(input)
   if (searchResult && searchResult.length >= 1) {
-    return searchResult[1]
+    tilesetName = searchResult[1]
+  } else {
+    console.warn('Couldnt find tile name in: ', input, searchResult)
+    tilesetName = OVERWORLD
   }
-  console.warn('Couldnt find tile name in: ', input, searchResult)
-  return OVERWORLD
+  return { tilesetName, connections, huj: 5 }
 }
-
-const parseParams = (params: string) => params.split(',').map(s => s.trim())
 
 const getObjects = (input: string) => {
   let match
@@ -53,32 +70,32 @@ export const mapsData = {
   PALLET_TOWN: {
     blocksData: palletTownBlocks,
     size: MAP_CONSTANTS.PALLET_TOWN,
-    tilesetName: getTilesetName(palletTownHeader),
     objects: getObjects(palletTownObjects),
+    ...getHeaders(palletTownHeader),
   },
   REDS_HOUSE_1F: {
     blocksData: redsHouse1fBlocks,
     size: MAP_CONSTANTS.REDS_HOUSE_1F,
-    tilesetName: getTilesetName(redsHouse1fHeader),
     objects: getObjects(redsHouse1fObjects),
+    ...getHeaders(redsHouse1fHeader),
   },
   REDS_HOUSE_2F: {
     blocksData: redsHouse2fBlocks,
     size: MAP_CONSTANTS.REDS_HOUSE_2F,
-    tilesetName: getTilesetName(redsHouse2fHeader),
     objects: getObjects(redsHouse2fObjects),
+    ...getHeaders(redsHouse2fHeader),
   },
   OAKS_LAB: {
     blocksData: oakslabBlocks,
     size: MAP_CONSTANTS.OAKS_LAB,
-    tilesetName: getTilesetName(oakslabHeader),
     objects: getObjects(oakslabObjects),
+    ...getHeaders(oakslabHeader),
   },
   BLUES_HOUSE: {
     blocksData: bluesHouseBlocks,
     size: MAP_CONSTANTS.BLUES_HOUSE,
-    tilesetName: getTilesetName(bluesHouseHeader),
     objects: getObjects(bluesHouseObjects),
+    ...getHeaders(bluesHouseHeader),
   },
 }
 

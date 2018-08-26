@@ -46,6 +46,14 @@ export enum Direction {
   S = 'S',
 }
 
+export const toDirection = (input: string) => {
+  if (['NORTH', 'EAST', 'WEST', 'SOUTH'].includes(input)) {
+    return input[0] as Direction
+  }
+  console.warn('Couldnt find direction for ', input)
+  return Direction.N
+}
+
 export const gameActions = {
   moveKeyPress: ActionCreator('MoveKeyPress', data as Direction),
   moveKeyRelease: ActionCreator('MoveKeyRelease'),
