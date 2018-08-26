@@ -30,50 +30,61 @@ const MAP_CENTER = {
   y: SCREEN_SIZE / 2 - TILE_SIZE / 2,
 }
 
-const pointInRectangle = (rect: Rectangle, x: number, y: number) =>
-  x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
-
 const getMapPosition = (player: Point) =>
   new Point(MAP_CENTER.x - player.x * 16, MAP_CENTER.y - player.y * 16)
-const makeMap = (tilesetName: string, textureIds: number[][], slice: Rectangle) => {
-  const result: JSX.Element[] = []
-  textureIds.forEach((row, x) => {
-    row.forEach((textureId, y) => {
-      if (!pointInRectangle(slice, x, y)) {
-        return
-      }
-      const componentProps = {
-        key: `${x}x${y}`,
-        position: new Point(x * 8, y * 8),
-      }
 
-      if (tilesetName === OVERWORLD) {
-        switch (textureId) {
-          case 3:
-            result.push(<Flower {...componentProps} />)
-            return
-          case 20:
-            result.push(<Water {...componentProps} />)
-            return
-          default:
-            break
-        }
-      }
-      result.push(
-        <Sprite
-          {...componentProps}
-          texture={TILESETS[tilesetName].cutTexture(
-            (textureId % 16) * 8,
-            Math.floor(textureId / 16) * 8,
-            8,
-            8,
-          )}
-        />,
-      )
-    })
-  })
-  return result
+// tslint:disable-next-line
+const mapRectangle = <T extends any>(
+  rect: Rectangle,
+  f: (x: number, y: number) => T,
+) => {
+  const results: T[] = []
+  for (let x = rect.x; x <= rect.width + rect.x; x++) {
+    for (let y = rect.y; y <= rect.height + rect.y; y++) {
+      results.push(f(x, y))
+    }
+  }
+  return results
 }
+
+const makeMap = (tilesetName: string, textureIds: number[][], slice: Rectangle) =>
+  mapRectangle(slice, (x, y) => {
+    let textureId = textureIds[x] ? textureIds[x][y] : undefined
+    const isOverworld = tilesetName === OVERWORLD
+    if (!textureId) {
+      if (isOverworld) {
+        textureId = 82
+      } else {
+        return null
+      }
+    }
+    const componentProps = {
+      key: `${x}x${y}`,
+      position: new Point(x * 8, y * 8),
+    }
+
+    if (isOverworld) {
+      switch (textureId) {
+        case 3:
+          return <Flower {...componentProps} />
+        case 20:
+          return <Water {...componentProps} />
+        default:
+          break
+      }
+    }
+    return (
+      <Sprite
+        {...componentProps}
+        texture={TILESETS[tilesetName].cutTexture(
+          (textureId % 16) * 8,
+          Math.floor(textureId / 16) * 8,
+          8,
+          8,
+        )}
+      />
+    )
+  })
 
 const SLICE_SIZE = SCREEN_SIZE / 8 + 4
 
