@@ -1,6 +1,7 @@
 # Poke
 
-WIP
+So far looks like a clone of original pokemon red ;)
+[Demo](http://smithchris.com/poke/)
 
 ## How to use
 
