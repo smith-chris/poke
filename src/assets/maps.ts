@@ -1,6 +1,7 @@
 import { MAP_CONSTANTS } from 'const/map'
 import { OVERWORLD } from './tilesets'
 import { ObjectOf } from 'utils/types'
+import { toDirection } from 'store/game'
 import palletTownBlocks from 'maps/pallettown.blk'
 import palletTownHeader from 'data/mapHeaders/pallettown.asm'
 import palletTownObjects from 'data/mapObjects/pallettown.asm'
@@ -16,7 +17,12 @@ import oakslabObjects from 'data/mapObjects/oakslab.asm'
 import bluesHouseBlocks from 'maps/blueshouse.blk'
 import bluesHouseHeader from 'data/mapHeaders/blueshouse.asm'
 import bluesHouseObjects from 'data/mapObjects/blueshouse.asm'
-import { Direction, toDirection } from 'store/game'
+import route1Blocks from 'maps/route1.blk'
+import route1Header from 'data/mapHeaders/route1.asm'
+import route1Objects from 'data/mapObjects/route1.asm'
+import route21Blocks from 'maps/route21.blk'
+import route21Header from 'data/mapHeaders/route21.asm'
+import route21Objects from 'data/mapObjects/route21.asm'
 
 const objectRegex = /\n\s([a-z_]+)([a-zA-Z_0-9- ,]*)/g
 
@@ -96,6 +102,18 @@ export const mapsData = {
     size: MAP_CONSTANTS.BLUES_HOUSE,
     objects: getObjects(bluesHouseObjects),
     ...getHeaders(bluesHouseHeader),
+  },
+  ROUTE_1: {
+    blocksData: route1Blocks,
+    size: MAP_CONSTANTS.ROUTE_1,
+    objects: getObjects(route1Objects),
+    ...getHeaders(route1Header),
+  },
+  ROUTE_21: {
+    blocksData: route21Blocks,
+    size: MAP_CONSTANTS.ROUTE_21,
+    objects: getObjects(route21Objects),
+    ...getHeaders(route21Header),
   },
 }
 
