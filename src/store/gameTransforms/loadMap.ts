@@ -4,6 +4,7 @@ import { makeGetBlockTextureIds } from 'assets/blocksets'
 import { MapData } from 'assets/maps'
 import { Point } from 'utils/point'
 import { actions, store } from '../store'
+import { ObjectOf } from 'utils/types'
 
 const fixedArray = <T>(x: number, y: number) => {
   // TODO: make it sealed
@@ -23,15 +24,65 @@ export type LoadedMap = {
 export type LoadMapData = { mapName: string; location?: number; exit?: boolean }
 
 export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapData) => {
-  const { maps, tilesets } = state
+  const { maps } = state
 
+  if (state.currentMap.center && !state.player.moved) {
+    console.warn('Trying to load map while player has not moved!')
+    return undefined
+  }
+
+  const map = maps[mapName]
+  const centerMap = getMap(state, mapName)
+  if (!map || !centerMap) {
+    return undefined
+  }
+  const currentMap: ObjectOf<LoadedMap> = { center: centerMap }
+  for (const key in map.connections) {
+    const connectionMapName = map.connections[key]
+    const connectionMap = getMap(state, connectionMapName.mapName)
+    if (connectionMap) {
+      currentMap[key] = connectionMap
+    }
+  }
+
+  let player = { ...state.player, moved: false }
+  if (location !== undefined) {
+    const wrapPosition = getWarpPosition(map, location)
+    if (wrapPosition) {
+      if (exit) {
+        player = {
+          position: new Point(wrapPosition.x, wrapPosition.y),
+          direction: Direction.S,
+          moved: false,
+        }
+      } else {
+        player = {
+          ...player,
+          position: wrapPosition,
+        }
+      }
+    }
+  }
+
+  if (state.controls.move !== undefined) {
+    // Super dirty hack :/
+    setTimeout(() => {
+      wannaMove(store.getState().game, actions)
+    })
+  }
+
+  return {
+    player,
+    currentMap,
+  }
+}
+
+const getMap = (state: GameState, mapName: string) => {
+  // To be optimisied (memoized)
+  const { maps, tilesets } = state
   const map = maps[mapName]
   if (!map) {
     console.warn(`Map "${mapName}" is not one of available maps`, Object.keys(maps))
-    return undefined
-  }
-  if (state.currentMap.center && !state.player.moved) {
-    console.warn('Trying to load map while player has not moved!')
     return undefined
   }
   const tileset = tilesets[map.tilesetName]
@@ -72,42 +123,10 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
     parsedCollisions[baseX][baseY + 1] = collisions.includes(textureIds[12])
     parsedCollisions[baseX + 1][baseY + 1] = collisions.includes(textureIds[14])
   })
-
-  let player = { ...state.player, moved: false }
-  if (location !== undefined) {
-    const wrapPosition = getWarpPosition(map, location)
-    if (wrapPosition) {
-      if (exit) {
-        player = {
-          position: new Point(wrapPosition.x, wrapPosition.y),
-          direction: Direction.S,
-          moved: false,
-        }
-      } else {
-        player = {
-          ...player,
-          position: wrapPosition,
-        }
-      }
-    }
-  }
-
-  if (state.controls.move !== undefined) {
-    // Super dirty hack :/
-    setTimeout(() => {
-      wannaMove(store.getState().game, actions)
-    })
-  }
-
   return {
-    player,
-    currentMap: {
-      center: {
-        name: mapName,
-        textureIds: parsedTextureIds,
-        collisions: parsedCollisions,
-      },
-    },
+    name: mapName,
+    textureIds: parsedTextureIds,
+    collisions: parsedCollisions,
   }
 }
 
