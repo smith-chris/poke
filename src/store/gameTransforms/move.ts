@@ -31,14 +31,14 @@ export const movePlayerStart = (position: Point, direction: Direction) => {
 }
 
 export const movePlayerContinue = ({ player, currentMap, controls }: GameState) => {
-  if (!player.destination || !currentMap) {
+  if (!player.destination || !currentMap.center) {
     console.warn('No current map or destination!', currentMap, player)
     return {}
   }
 
   if (
     controls.move !== undefined &&
-    canMove(player.destination, controls.move, currentMap.collisions)
+    canMove(player.destination, controls.move, currentMap.center.collisions)
   ) {
     return {
       position: player.destination,

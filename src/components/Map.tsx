@@ -114,11 +114,11 @@ class MapComponent extends Component<Props, State> {
     )
   }
   setMap = ({ game: { currentMap, player, maps } }: Props) => {
-    if (currentMap) {
+    if (currentMap.center) {
       this.setState({
         map: makeMap(
-          maps[currentMap.name].tilesetName,
-          currentMap.textureIds,
+          maps[currentMap.center.name].tilesetName,
+          currentMap.center.textureIds,
           new Rectangle(
             player.position.x * 2 + 1 - SLICE_SIZE / 2,
             player.position.y * 2 + 1 - SLICE_SIZE / 2,

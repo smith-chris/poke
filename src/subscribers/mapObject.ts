@@ -9,7 +9,7 @@ subscribe(
     },
   }: StoreState) => ({ position, currentMap, maps }),
   ({ position, currentMap, maps }) => {
-    const map = currentMap ? maps[currentMap.name] : null
+    const map = currentMap.center ? maps[currentMap.center.name] : null
     if (map) {
       const { objects } = map
       const { x, y } = position

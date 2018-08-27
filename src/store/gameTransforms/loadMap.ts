@@ -30,7 +30,7 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
     console.warn(`Map "${mapName}" is not one of available maps`, Object.keys(maps))
     return undefined
   }
-  if (state.currentMap && !state.player.moved) {
+  if (state.currentMap.center && !state.player.moved) {
     console.warn('Trying to load map while player has not moved!')
     return undefined
   }
@@ -102,9 +102,11 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
   return {
     player,
     currentMap: {
-      name: mapName,
-      textureIds: parsedTextureIds,
-      collisions: parsedCollisions,
+      center: {
+        name: mapName,
+        textureIds: parsedTextureIds,
+        collisions: parsedCollisions,
+      },
     },
   }
 }

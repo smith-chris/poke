@@ -26,32 +26,36 @@ export type GameState = {
   controls: {
     move?: Direction
   }
-  currentMap?: LoadedMap
+  currentMap: Partial<Record<'center' | Direction, LoadedMap>>
 } & MapRenderingData
 
 const initialState: GameState = {
   player: {
-    position: new Point(12, 12),
+    position: new Point(10, 2),
     moved: false,
   },
   controls: {},
   maps: {},
   tilesets: {},
+  currentMap: {},
 }
 
 export enum Direction {
-  N = 'N',
-  E = 'E',
-  W = 'W',
-  S = 'S',
+  N = 'north',
+  E = 'east',
+  W = 'west',
+  S = 'south',
 }
 
 export const toDirection = (input: string) => {
-  if (['NORTH', 'EAST', 'WEST', 'SOUTH'].includes(input)) {
-    return input[0] as Direction
+  // tslint:disable-next-line
+  const firstLetter: any = typeof input === 'string' && input[0]
+  if (firstLetter) {
+    return Direction[firstLetter]
+  } else {
+    console.warn('Couldnt find direction for ', input)
+    return Direction.N
   }
-  console.warn('Couldnt find direction for ', input)
-  return Direction.N
 }
 
 export const gameActions = {
@@ -80,11 +84,11 @@ export const wannaMove = (
     console.warn('No move direction!', { controls, direction })
     return
   }
-  if (!currentMap) {
+  if (!currentMap.center) {
     console.warn('No current map!', currentMap)
     return
   }
-  const playerCanMove = canMove(from, moveDirection, currentMap.collisions)
+  const playerCanMove = canMove(from, moveDirection, currentMap.center.collisions)
   if (playerCanMove) {
     if (player.destination === undefined) {
       // Check if can move - if not, check for undefined collision
@@ -95,7 +99,7 @@ export const wannaMove = (
     return true
   } else if (playerCanMove === undefined) {
     const { x, y } = from
-    const { objects } = maps[currentMap.name]
+    const { objects } = maps[currentMap.center.name]
     const warp = objects.warps[`${x}_${y}`]
 
     if (warp) {
