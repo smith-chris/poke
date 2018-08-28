@@ -47,6 +47,7 @@ const mapRectangle = <T extends any>(
   return results
 }
 
+let effort = 0
 const makeGetTextureId = (game: GameState) => {
   const { currentMap, maps } = game
   const { center, north, east, south, west } = currentMap
@@ -59,6 +60,7 @@ const makeGetTextureId = (game: GameState) => {
     console.warn('No center map', center.name, maps)
     return undefined
   }
+  // This is all WIP
   const northMap = north ? maps[north.name] : undefined
   const eastMap = east ? maps[east.name] : undefined
   const westMap = west ? maps[west.name] : undefined
@@ -71,12 +73,17 @@ const makeGetTextureId = (game: GameState) => {
     const isInCenterMapHeight = y >= 0 && y < centerBottom
 
     if (isInCenterMapWidth && isInCenterMapHeight) {
+      effort++
       return center && center.textureIds[x] && center.textureIds[x][y]
     }
 
     const isNorth = isInCenterMapWidth && y < 0
     if (isNorth && northMap) {
       const offsetX = centerMap.connections.north.x * 4 || 0
+      if (x < offsetX || x >= northMap.size.width * 4 + offsetX) {
+        return
+      }
+      effort++
       return (
         north &&
         north.textureIds[x - offsetX] &&
@@ -89,6 +96,10 @@ const makeGetTextureId = (game: GameState) => {
     if (isEast && eastMap) {
       const eastX = x - centerMap.size.width * 4
       const offsetY = centerMap.connections.east.x * 4 || 0
+      if (y < offsetY || y >= eastMap.size.height * 4 + offsetY) {
+        return
+      }
+      effort++
       return east && east.textureIds[eastX] && east.textureIds[eastX][y - offsetY]
     }
 
@@ -97,12 +108,20 @@ const makeGetTextureId = (game: GameState) => {
     if (isWest && westMap) {
       const westX = x + westMap.size.width * 4
       const offsetY = centerMap.connections.west.x * 4 || 0
+      if (y < offsetY || y >= westMap.size.height * 4 + offsetY) {
+        return
+      }
+      effort++
       return west && west.textureIds[westX] && west.textureIds[westX][y - offsetY]
     }
     const isSouth = isInCenterMapWidth && y >= centerBottom
 
     if (isSouth && southMap) {
       const offsetX = centerMap.connections.south.x * 4 || 0
+      if (x < offsetX || x >= southMap.size.width * 4 + offsetX) {
+        return
+      }
+      effort++
       return (
         south &&
         south.textureIds[x - offsetX] &&
@@ -120,6 +139,7 @@ const makeMap = (game: GameState, slice: Rectangle) => {
     console.warn('No current map!', currentMap)
     return null
   }
+  effort = 0
   const centerMap = maps[center.name]
   const getTextureInd = makeGetTextureId(game)
   if (!getTextureInd) {
@@ -205,6 +225,7 @@ class MapComponent extends Component<Props, State> {
           ),
         ),
       })
+      // console.log('makeMap effort', effort)
     }
   }
   componentWillMount() {
