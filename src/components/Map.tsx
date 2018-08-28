@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { gameActions, wannaMove } from 'store/game'
+import { gameActions, wannaMove, GameState } from 'store/game'
 import { Point } from 'utils/point'
 import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
@@ -47,10 +47,88 @@ const mapRectangle = <T extends any>(
   return results
 }
 
-const makeMap = (tilesetName: string, textureIds: number[][], slice: Rectangle) =>
-  mapRectangle(slice, (x, y) => {
-    let textureId = textureIds[x] ? textureIds[x][y] : undefined
-    const isOverworld = tilesetName === OVERWORLD
+const makeGetTextureId = (game: GameState) => {
+  const { currentMap, maps } = game
+  const { center, north, east, south, west } = currentMap
+  if (!center) {
+    console.warn('No current map!', currentMap)
+    return undefined
+  }
+  const centerMap = maps[center.name]
+  if (!centerMap) {
+    console.warn('No center map', center.name, maps)
+    return undefined
+  }
+  const northMap = north ? maps[north.name] : undefined
+  const eastMap = east ? maps[east.name] : undefined
+  const westMap = west ? maps[west.name] : undefined
+  const southMap = south ? maps[south.name] : undefined
+  return (x: number, y: number) => {
+    const centerRight = centerMap.size.width * 4
+    const centerBottom = centerMap.size.height * 4
+
+    const isInCenterMapWidth = x >= 0 && x < centerRight
+    const isInCenterMapHeight = y >= 0 && y < centerBottom
+
+    if (isInCenterMapWidth && isInCenterMapHeight) {
+      return center && center.textureIds[x] && center.textureIds[x][y]
+    }
+
+    const isNorth = isInCenterMapWidth && y < 0
+    if (isNorth && northMap) {
+      const offsetX = centerMap.connections.north.x * 4 || 0
+      return (
+        north &&
+        north.textureIds[x - offsetX] &&
+        north.textureIds[x - offsetX][y + northMap.size.height * 4]
+      )
+    }
+
+    const isEast = isInCenterMapHeight && x >= centerRight
+
+    if (isEast && eastMap) {
+      const eastX = x - centerMap.size.width * 4
+      const offsetY = centerMap.connections.east.x * 4 || 0
+      return east && east.textureIds[eastX] && east.textureIds[eastX][y - offsetY]
+    }
+
+    const isWest = isInCenterMapHeight && x < 0
+
+    if (isWest && westMap) {
+      const westX = x + westMap.size.width * 4
+      const offsetY = centerMap.connections.west.x * 4 || 0
+      return west && west.textureIds[westX] && west.textureIds[westX][y - offsetY]
+    }
+    const isSouth = isInCenterMapWidth && y >= centerBottom
+
+    if (isSouth && southMap) {
+      const offsetX = centerMap.connections.south.x * 4 || 0
+      return (
+        south &&
+        south.textureIds[x - offsetX] &&
+        south.textureIds[x - offsetX][y - centerMap.size.height * 4]
+      )
+    }
+    return false
+  }
+}
+
+const makeMap = (game: GameState, slice: Rectangle) => {
+  const { currentMap, maps } = game
+  const { center } = currentMap
+  if (!center) {
+    console.warn('No current map!', currentMap)
+    return null
+  }
+  const centerMap = maps[center.name]
+  const getTextureInd = makeGetTextureId(game)
+  if (!getTextureInd) {
+    return
+  }
+
+  return mapRectangle(slice, (x, y) => {
+    let textureId = getTextureInd(x, y)
+    const isOverworld = centerMap.tilesetName === OVERWORLD
     if (!textureId) {
       if (isOverworld) {
         textureId = 82
@@ -76,7 +154,7 @@ const makeMap = (tilesetName: string, textureIds: number[][], slice: Rectangle) 
     return (
       <Sprite
         {...componentProps}
-        texture={TILESETS[tilesetName].cutTexture(
+        texture={TILESETS[centerMap.tilesetName].cutTexture(
           (textureId % 16) * 8,
           Math.floor(textureId / 16) * 8,
           8,
@@ -85,6 +163,7 @@ const makeMap = (tilesetName: string, textureIds: number[][], slice: Rectangle) 
       />
     )
   })
+}
 
 const SLICE_SIZE = SCREEN_SIZE / 8 + 4
 
@@ -113,15 +192,14 @@ class MapComponent extends Component<Props, State> {
       this.state !== newState
     )
   }
-  setMap = ({ game: { currentMap, player, maps } }: Props) => {
-    if (currentMap.center) {
+  setMap = ({ game }: Props) => {
+    if (game.currentMap.center) {
       this.setState({
         map: makeMap(
-          maps[currentMap.center.name].tilesetName,
-          currentMap.center.textureIds,
+          game,
           new Rectangle(
-            player.position.x * 2 + 1 - SLICE_SIZE / 2,
-            player.position.y * 2 + 1 - SLICE_SIZE / 2,
+            game.player.position.x * 2 + 1 - SLICE_SIZE / 2,
+            game.player.position.y * 2 + 1 - SLICE_SIZE / 2,
             SLICE_SIZE - 1,
             SLICE_SIZE - 1,
           ),

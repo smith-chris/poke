@@ -20,9 +20,24 @@ import bluesHouseObjects from 'data/mapObjects/blueshouse.asm'
 import route1Blocks from 'maps/route1.blk'
 import route1Header from 'data/mapHeaders/route1.asm'
 import route1Objects from 'data/mapObjects/route1.asm'
+import route4Blocks from 'maps/route4.blk'
+import route4Header from 'data/mapHeaders/route4.asm'
+import route4Objects from 'data/mapObjects/route4.asm'
+import route5Blocks from 'maps/route5.blk'
+import route5Header from 'data/mapHeaders/route5.asm'
+import route5Objects from 'data/mapObjects/route5.asm'
+import route9Blocks from 'maps/route9.blk'
+import route9Header from 'data/mapHeaders/route9.asm'
+import route9Objects from 'data/mapObjects/route9.asm'
 import route21Blocks from 'maps/route21.blk'
 import route21Header from 'data/mapHeaders/route21.asm'
 import route21Objects from 'data/mapObjects/route21.asm'
+import route24Blocks from 'maps/route24.blk'
+import route24Header from 'data/mapHeaders/route24.asm'
+import route24Objects from 'data/mapObjects/route24.asm'
+import ceruleanCityBlocks from 'maps/ceruleancity.blk'
+import ceruleanCityHeader from 'data/mapHeaders/ceruleancity.asm'
+import ceruleanCityObjects from 'data/mapObjects/ceruleancity.asm'
 
 const objectRegex = /\n\s([a-z_]+)([a-zA-Z_0-9- ,]*)/g
 
@@ -52,7 +67,7 @@ const getHeaders = (input: string) => {
     console.warn('Couldnt find tile name in: ', input, searchResult)
     tilesetName = OVERWORLD
   }
-  return { tilesetName, connections, huj: 5 }
+  return { tilesetName, connections }
 }
 
 const getObjects = (input: string) => {
@@ -109,11 +124,41 @@ export const mapsData = {
     objects: getObjects(route1Objects),
     ...getHeaders(route1Header),
   },
+  ROUTE_4: {
+    blocksData: route4Blocks,
+    size: MAP_CONSTANTS.ROUTE_4,
+    objects: getObjects(route4Objects),
+    ...getHeaders(route4Header),
+  },
+  ROUTE_5: {
+    blocksData: route5Blocks,
+    size: MAP_CONSTANTS.ROUTE_5,
+    objects: getObjects(route5Objects),
+    ...getHeaders(route5Header),
+  },
+  ROUTE_9: {
+    blocksData: route9Blocks,
+    size: MAP_CONSTANTS.ROUTE_9,
+    objects: getObjects(route9Objects),
+    ...getHeaders(route9Header),
+  },
   ROUTE_21: {
     blocksData: route21Blocks,
     size: MAP_CONSTANTS.ROUTE_21,
     objects: getObjects(route21Objects),
     ...getHeaders(route21Header),
+  },
+  ROUTE_24: {
+    blocksData: route24Blocks,
+    size: MAP_CONSTANTS.ROUTE_24,
+    objects: getObjects(route24Objects),
+    ...getHeaders(route24Header),
+  },
+  CERULEAN_CITY: {
+    blocksData: ceruleanCityBlocks,
+    size: MAP_CONSTANTS.CERULEAN_CITY,
+    objects: getObjects(ceruleanCityObjects),
+    ...getHeaders(ceruleanCityHeader),
   },
 }
 
