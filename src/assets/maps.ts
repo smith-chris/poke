@@ -42,7 +42,7 @@ import ceruleanCityObjects from 'data/mapObjects/ceruleancity.asm'
 const objectRegex = /\n\s([a-z_]+)([a-zA-Z_0-9- ,]*)/g
 
 const tilesetNameRegex = /_h:[\s]*db[\ ]*([A-Z_0-9]*)/
-const connectionsRegex = /((NORTH|SOUTH|WEST|EAST)_MAP_CONNECTION)([A-Z _,0-9]*)\s/g
+const connectionsRegex = /((NORTH|SOUTH|WEST|EAST)_MAP_CONNECTION)([A-Z -_,0-9]*)\s/g
 
 const parseParams = (params: string) =>
   params

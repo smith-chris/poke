@@ -4,6 +4,7 @@ import {
   movePlayerStart,
   movePlayerEnd,
   movePlayerContinue,
+  getNextPosition,
 } from 'store/gameTransforms/move'
 import { loadMap, LoadedMap, LoadMapData } from 'store/gameTransforms/loadMap'
 import { assertNever } from 'utils/other'
@@ -31,7 +32,11 @@ export type GameState = {
 
 const initialState: GameState = {
   player: {
-    position: new Point(16, 12),
+    // position: new Point(20, 18), // 'CERULEAN_CITY'
+    // position: new Point(9, 10), // 'PALLET_TOWN'
+    // position: new Point(0, 12),
+    position: new Point(89, 12), // ROUTE_4
+    // position: new Point(10, 10),
     moved: false,
   },
   controls: {},
@@ -99,14 +104,56 @@ export const wannaMove = (
     return true
   } else if (playerCanMove === undefined) {
     const { x, y } = from
-    const { objects } = maps[currentMap.center.name]
+    const { objects, connections, size } = maps[currentMap.center.name]
     const warp = objects.warps[`${x}_${y}`]
 
     if (warp) {
       const { mapName, location } = warp
       if (mapName === '-1') {
         actions.loadMap({ mapName: 'PALLET_TOWN', location, exit: true })
+        return false
       }
+    }
+
+    const to = getNextPosition(from, moveDirection)
+    const { north, east, west, south } = connections
+    const northMap = maps[north.mapName]
+    const westMap = maps[west.mapName]
+    const southMap = maps[south.mapName]
+
+    if (to.y < 0) {
+      if (north && northMap) {
+        const position = new Point(north.x * 4 + from.x, northMap.size.height * 2)
+        const destination = new Point(position.x, position.y - 1)
+
+        actions.loadMap({
+          mapName: north.mapName,
+          playerData: { position, destination, direction: Direction.N },
+        })
+      }
+      return true
+    } else if (to.y >= size.height) {
+      if (south && southMap) {
+        const position = new Point(south.x * 4 + from.x, -1)
+        const destination = new Point(position.x, 0)
+
+        actions.loadMap({
+          mapName: south.mapName,
+          playerData: { position, destination, direction: Direction.S },
+        })
+      }
+      return true
+    } else if (to.x < 0) {
+      if (west && westMap) {
+        const position = new Point(westMap.size.width * 2, from.y)
+        const destination = new Point(position.x - 1, position.y)
+
+        actions.loadMap({
+          mapName: west.mapName,
+          playerData: { position, destination, direction: Direction.W },
+        })
+      }
+      return true
     }
   }
   return false

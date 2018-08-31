@@ -21,9 +21,17 @@ export type LoadedMap = {
   collisions: boolean[][]
 }
 
-export type LoadMapData = { mapName: string; location?: number; exit?: boolean }
+export type LoadMapData = {
+  mapName: string
+  location?: number
+  playerData?: { position: Point; destination: Point; direction: Direction }
+  exit?: boolean
+}
 
-export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapData) => {
+export const loadMap = (
+  state: GameState,
+  { mapName, location, playerData, exit }: LoadMapData,
+) => {
   const { maps } = state
 
   if (state.currentMap.center && !state.player.moved) {
@@ -45,8 +53,15 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
     }
   }
 
-  let player = { ...state.player, moved: false }
-  if (location !== undefined) {
+  let player = {
+    ...state.player,
+    moved: false,
+    // Just debugging
+    // position: new Point(map.size.width, map.size.height),
+  }
+  if (playerData) {
+    player = { ...player, ...playerData }
+  } else if (location !== undefined) {
     const wrapPosition = getWarpPosition(map, location)
     if (wrapPosition) {
       if (exit) {
@@ -64,7 +79,7 @@ export const loadMap = (state: GameState, { mapName, location, exit }: LoadMapDa
     }
   }
 
-  if (state.controls.move !== undefined) {
+  if (state.controls.move !== undefined && !playerData) {
     // Super dirty hack :/
     setTimeout(() => {
       wannaMove(store.getState().game, actions)

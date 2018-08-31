@@ -150,6 +150,7 @@ const makeMap = (game: GameState, slice: Rectangle) => {
     let textureId = getTextureInd(x, y)
     const isOverworld = centerMap.tilesetName === OVERWORLD
     if (!textureId) {
+      return null
       if (isOverworld) {
         textureId = 82
       } else {
@@ -161,16 +162,16 @@ const makeMap = (game: GameState, slice: Rectangle) => {
       position: new Point(x * 8, y * 8),
     }
 
-    if (isOverworld) {
-      switch (textureId) {
-        case 3:
-          return <Flower {...componentProps} />
-        case 20:
-          return <Water {...componentProps} />
-        default:
-          break
-      }
-    }
+    // if (isOverworld) {
+    //   switch (textureId) {
+    //     case 3:
+    //       return <Flower {...componentProps} />
+    //     case 20:
+    //       return <Water {...componentProps} />
+    //     default:
+    //       break
+    //   }
+    // }
     return (
       <Sprite
         {...componentProps}
@@ -258,13 +259,14 @@ class MapComponent extends Component<Props, State> {
       return null
     }
 
-    const stepper = player.destination
-      ? createPointStepper({
-          from: getMapPosition(player.position),
-          to: getMapPosition(player.destination),
-          duration: TILE_SIZE,
-        })
-      : undefined
+    const stepper =
+      player.destination !== undefined
+        ? createPointStepper({
+            from: getMapPosition(player.position),
+            to: getMapPosition(player.destination),
+            duration: TILE_SIZE,
+          })
+        : undefined
 
     return (
       <Transition
