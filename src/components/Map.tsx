@@ -5,7 +5,7 @@ import { gameActions, wannaMove, GameState } from 'store/game'
 import { Point } from 'utils/point'
 import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
-import { SCREEN_SIZE } from 'app/app'
+import { SCREEN_SIZE, DEBUG_MAP } from 'app/app'
 import { createPointStepper } from 'utils/transition'
 import { Sprite, Container } from 'utils/fiber'
 import { TILESETS, OVERWORLD } from 'assets/tilesets'
@@ -31,7 +31,7 @@ const MAP_CENTER = {
 }
 
 const getMapPosition = (player: Point) =>
-  new Point(MAP_CENTER.x - player.x * 16, MAP_CENTER.y - player.y * 16)
+  new Point(MAP_CENTER.x - player.x * 16, MAP_CENTER.y - player.y * 16 + 4)
 
 // tslint:disable-next-line
 const mapRectangle = <T extends any>(
@@ -168,42 +168,43 @@ const makeMap = (game: GameState, slice: Rectangle) => {
     return
   }
 
-  // const isOverworld = centerMap.tilesetName === OVERWORLD
+  const isOverworld = centerMap.tilesetName === OVERWORLD
 
   return mapRectangle(slice, (x, y) => {
     let textureId = getTextureInd(x, y)
     if (!textureId) {
-      return null
-      // if (isOverworld) {
-      //   textureId = [82]
-      // } else {
-      //   return null
-      // }
+      if (DEBUG_MAP) {
+        return null
+      }
+      if (isOverworld) {
+        textureId = [82]
+      } else {
+        return null
+      }
     }
     const componentProps = {
       key: `${x}x${y}`,
       position: new Point(x * 8, y * 8),
     }
 
-    // if (isOverworld) {
-    //   switch (textureId) {
-    //     case 3:
-    //       return <Flower {...componentProps} />
-    //     case 20:
-    //       return <Water {...componentProps} />
-    //     default:
-    //       break
-    //   }
-    // }
     const [ID, isCenter] = textureId
     if (typeof ID !== 'number') {
       return null
     }
+    if (isOverworld && !DEBUG_MAP) {
+      switch (ID) {
+        case 3:
+          return <Flower {...componentProps} />
+        case 20:
+          return <Water {...componentProps} />
+        default:
+          break
+      }
+    }
     return (
       <Sprite
         {...componentProps}
-        // alpha={isCenter ? 0.7 : 1}
-        tint={isCenter ? 0xbbffaa : 0xffffff}
+        tint={isCenter && DEBUG_MAP ? 0xbbffaa : 0xffffff}
         texture={TILESETS[centerMap.tilesetName].cutTexture(
           (ID % 16) * 8,
           Math.floor(ID / 16) * 8,
@@ -249,9 +250,9 @@ class MapComponent extends Component<Props, State> {
           game,
           new Rectangle(
             game.player.position.x * 2 + 1 - SLICE_SIZE / 2,
-            game.player.position.y * 2 + 1 - SLICE_SIZE / 2,
+            game.player.position.y * 2 + 1 - SLICE_SIZE / 2 - 1,
             SLICE_SIZE - 1,
-            SLICE_SIZE - 1,
+            SLICE_SIZE - 1 + 1,
           ),
         ),
       })
