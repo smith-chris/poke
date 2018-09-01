@@ -13,7 +13,6 @@ const handleKeyPress = (direction: Direction, keyName?: string) => {
     if (DEBUG_MAP) {
       const map = game.currentMap[direction]
       if (map) {
-        console.info('Debug loading', map)
         actions.loadMap({ mapName: map.name })
       }
       return

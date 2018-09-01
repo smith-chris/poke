@@ -3,7 +3,9 @@ const path = require('path')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const { WatchIgnorePlugin } = require('webpack')
+
 const isDev = process.argv.indexOf('-p') === -1
+
 let removeNull = array => array.filter(e => e !== null)
 
 const STYLES_PATH = [path.resolve('./src/styles')]
@@ -35,6 +37,9 @@ module.exports = {
     path: path.resolve('./dist'),
     filename: 'bundle.js',
     publicPath: '',
+  },
+  resolveLoader: {
+    modules: ['node_modules', path.resolve('./src/loaders')],
   },
   resolve: {
     extensions: [
@@ -76,6 +81,11 @@ module.exports = {
             },
           },
         ],
+      },
+      {
+        test: /map_constants.asm$/,
+        include: ASSETS_PATH,
+        use: 'maps-loader',
       },
       {
         test: /\.(xml|blk|bst|asm|tilecoll)$/,
