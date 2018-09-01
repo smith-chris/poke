@@ -82,16 +82,11 @@ const parseParams = (params: string) =>
 
 const getHeaders = (input: string) => {
   let match
-  let connections: ObjectOf<{ mapName: string; x: number; y: number }> = {}
+  let connections: ObjectOf<{ mapName: string; offset: number }> = {}
   while ((match = connectionsRegex.exec(input))) {
-    const [, , _direction, params] = match
-    const [, mapName, x, y] = parseParams(params)
-    const direction = toDirection(_direction)
-    if (direction === Direction.N || direction === Direction.S) {
-      connections[direction] = { mapName, x: Number(x) - Number(y), y: Number(y) }
-    } else {
-      connections[direction] = { mapName, x: Number(y), y: Number(x) - Number(y) }
-    }
+    const [, , direction, params] = match
+    const [, mapName, a, b] = parseParams(params)
+    connections[toDirection(direction)] = { mapName, offset: Number(a) - Number(b) }
   }
 
   let tilesetName

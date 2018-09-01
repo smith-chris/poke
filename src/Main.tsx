@@ -14,15 +14,16 @@ actions.initialise({
   tilesets: tilesetsData,
 })
 
-// actions.loadMap({ mapName: 'CERULEAN_CITY' })
+actions.loadMap({ mapName: 'CERULEAN_CITY' })
 // actions.loadMap({ mapName: 'PALLET_TOWN' })
 // actions.loadMap({ mapName: 'VIRIDIAN_CITY' })
 // actions.loadMap({ mapName: 'PEWTER_CITY' })
-actions.loadMap({ mapName: 'SAFFRON_CITY' })
+// actions.loadMap({ mapName: 'SAFFRON_CITY' })
 // actions.loadMap({ mapName: 'ROUTE_1' })
 // actions.loadMap({ mapName: 'ROUTE_2' })
 // actions.loadMap({ mapName: 'ROUTE_4' })
 // actions.loadMap({ mapName: 'ROUTE_5' })
+// actions.loadMap({ mapName: 'ROUTE_9' })
 // actions.loadMap({ mapName: 'ROUTE_24' })
 
 render(

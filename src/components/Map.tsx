@@ -79,7 +79,7 @@ const makeGetTextureId = (game: GameState) => {
 
     const isNorth = isInCenterMapWidth && y < 0
     if (isNorth && northMap) {
-      const offsetX = centerMap.connections.north.x * 4 || 0
+      const offsetX = centerMap.connections.north.offset * 4 || 0
       // console.log(centerMap.connections.north.x)
       // const offsetX = -5 * 4 || 0
       if (x < offsetX || x >= northMap.size.width * 4 + offsetX) {
@@ -97,7 +97,7 @@ const makeGetTextureId = (game: GameState) => {
 
     if (isEast && eastMap) {
       const eastX = x - centerMap.size.width * 4
-      const offsetY = centerMap.connections.east.y * 4 || 0
+      const offsetY = centerMap.connections.east.offset * 4 || 0
       if (y < offsetY || y >= eastMap.size.height * 4 + offsetY) {
         return
       }
@@ -109,7 +109,7 @@ const makeGetTextureId = (game: GameState) => {
 
     if (isWest && westMap) {
       const westX = x + westMap.size.width * 4
-      const offsetY = centerMap.connections.west.y * 4 || 0
+      const offsetY = centerMap.connections.west.offset * 4 || 0
       if (y < offsetY || y >= westMap.size.height * 4 + offsetY) {
         return
       }
@@ -119,7 +119,7 @@ const makeGetTextureId = (game: GameState) => {
     const isSouth = isInCenterMapWidth && y >= centerBottom
 
     if (isSouth && southMap) {
-      const offsetX = centerMap.connections.south.x * 4 || 0
+      const offsetX = centerMap.connections.south.offset * 4 || 0
       if (x < offsetX || x >= southMap.size.width * 4 + offsetX) {
         return
       }

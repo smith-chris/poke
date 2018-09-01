@@ -32,9 +32,16 @@ export type GameState = {
 
 const initialState: GameState = {
   player: {
-    position: new Point(20, 18), // 'CERULEAN_CITY'
+    // position: new Point(20, 18), // 'CERULEAN_CITY'
     // position: new Point(9, 10), // 'PALLET_TOWN'
     // position: new Point(0, 12),
+    // position: new Point(20, 0),
+    // position: new Point(20, 35),
+    // position: new Point(40, 35),
+    // position: new Point(39, 17),
+    // position: new Point(0, 9),
+    position: new Point(28, 35),
+    // position: new Point(10, 0),
     // position: new Point(89, 12), // ROUTE_4
     // position: new Point(10, 10),
     moved: false,
@@ -117,13 +124,13 @@ export const wannaMove = (
 
     const to = getNextPosition(from, moveDirection)
     const { north, east, west, south } = connections
-    const northMap = maps[north.mapName]
-    const westMap = maps[west.mapName]
-    const southMap = maps[south.mapName]
-
+    const northMap = north && maps[north.mapName]
+    const eastMap = east && maps[east.mapName]
+    const westMap = west && maps[west.mapName]
+    const southMap = south && maps[south.mapName]
     if (to.y < 0) {
       if (north && northMap) {
-        const position = new Point(north.x * 4 + from.x, northMap.size.height * 2)
+        const position = new Point(from.x - north.offset * 2, northMap.size.height * 2)
         const destination = new Point(position.x, position.y - 1)
 
         actions.loadMap({
@@ -132,9 +139,9 @@ export const wannaMove = (
         })
       }
       return true
-    } else if (to.y >= size.height) {
+    } else if (to.y >= size.height * 2) {
       if (south && southMap) {
-        const position = new Point(south.x * 4 + from.x, -1)
+        const position = new Point(from.x - south.offset * 2, -1)
         const destination = new Point(position.x, 0)
 
         actions.loadMap({
@@ -143,9 +150,20 @@ export const wannaMove = (
         })
       }
       return true
+    } else if (to.x >= size.width * 2) {
+      if (east && eastMap) {
+        const position = new Point(-1, from.y - east.offset * 2)
+        const destination = new Point(0, position.y)
+
+        actions.loadMap({
+          mapName: east.mapName,
+          playerData: { position, destination, direction: Direction.E },
+        })
+      }
+      return true
     } else if (to.x < 0) {
       if (west && westMap) {
-        const position = new Point(westMap.size.width * 2, from.y)
+        const position = new Point(westMap.size.width * 2, from.y - west.offset * 2)
         const destination = new Point(position.x - 1, position.y)
 
         actions.loadMap({
