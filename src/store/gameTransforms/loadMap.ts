@@ -57,7 +57,7 @@ export const loadMap = (
     ...state.player,
     moved: false,
     // Just debugging
-    // position: new Point(map.size.width, map.size.height),
+    position: new Point(map.size.width, map.size.height),
   }
   if (playerData) {
     player = { ...player, ...playerData }

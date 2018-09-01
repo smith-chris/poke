@@ -32,10 +32,10 @@ export type GameState = {
 
 const initialState: GameState = {
   player: {
-    // position: new Point(20, 18), // 'CERULEAN_CITY'
+    position: new Point(20, 18), // 'CERULEAN_CITY'
     // position: new Point(9, 10), // 'PALLET_TOWN'
     // position: new Point(0, 12),
-    position: new Point(89, 12), // ROUTE_4
+    // position: new Point(89, 12), // ROUTE_4
     // position: new Point(10, 10),
     moved: false,
   },
