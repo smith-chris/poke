@@ -61,14 +61,20 @@ const makeGetTextureId = (game: GameState) => {
     return undefined
   }
   // This is all WIP
+
+  //
   const northMap = north ? maps[north.name] : undefined
   const eastMap = east ? maps[east.name] : undefined
   const westMap = west ? maps[west.name] : undefined
   const southMap = south ? maps[south.name] : undefined
-  return (x: number, y: number) => {
-    const centerRight = centerMap.size.width * 4
-    const centerBottom = centerMap.size.height * 4
 
+  const centerRight = centerMap.size.width * 4
+  const centerBottom = centerMap.size.height * 4
+  const nOffsetX = northMap ? centerMap.connections.north.offset * 4 : 0
+  const eOffsetY = eastMap ? centerMap.connections.east.offset * 4 : 0
+  const wOffsetY = westMap ? centerMap.connections.west.offset * 4 : 0
+  const sOffsetX = southMap ? centerMap.connections.south.offset * 4 : 0
+  return (x: number, y: number) => {
     const isInCenterMapWidth = x >= 0 && x < centerRight
     const isInCenterMapHeight = y >= 0 && y < centerBottom
 
@@ -77,57 +83,51 @@ const makeGetTextureId = (game: GameState) => {
       return [center && center.textureIds[x] && center.textureIds[x][y], true]
     }
 
-    const isNorth = isInCenterMapWidth && y < 0
+    const isNorth = y < 0
     if (isNorth && northMap) {
-      const offsetX = centerMap.connections.north.offset * 4 || 0
-      // console.log(centerMap.connections.north.x)
-      // const offsetX = -5 * 4 || 0
-      if (x < offsetX || x >= northMap.size.width * 4 + offsetX) {
+      if (x < nOffsetX || x >= northMap.size.width * 4 + nOffsetX) {
         return
       }
       effort++
       return [
         north &&
-          north.textureIds[x - offsetX] &&
-          north.textureIds[x - offsetX][y + northMap.size.height * 4],
+          north.textureIds[x - nOffsetX] &&
+          north.textureIds[x - nOffsetX][y + northMap.size.height * 4],
       ]
     }
 
-    const isEast = isInCenterMapHeight && x >= centerRight
+    const isEast = x >= centerRight
 
     if (isEast && eastMap) {
       const eastX = x - centerMap.size.width * 4
-      const offsetY = centerMap.connections.east.offset * 4 || 0
-      if (y < offsetY || y >= eastMap.size.height * 4 + offsetY) {
+      if (y < eOffsetY || y >= eastMap.size.height * 4 + eOffsetY) {
         return
       }
       effort++
-      return [east && east.textureIds[eastX] && east.textureIds[eastX][y - offsetY]]
+      return [east && east.textureIds[eastX] && east.textureIds[eastX][y - eOffsetY]]
     }
 
-    const isWest = isInCenterMapHeight && x < 0
+    const isWest = x < 0
 
     if (isWest && westMap) {
       const westX = x + westMap.size.width * 4
-      const offsetY = centerMap.connections.west.offset * 4 || 0
-      if (y < offsetY || y >= westMap.size.height * 4 + offsetY) {
+      if (y < wOffsetY || y >= westMap.size.height * 4 + wOffsetY) {
         return
       }
       effort++
-      return [west && west.textureIds[westX] && west.textureIds[westX][y - offsetY]]
+      return [west && west.textureIds[westX] && west.textureIds[westX][y - wOffsetY]]
     }
-    const isSouth = isInCenterMapWidth && y >= centerBottom
+    const isSouth = y >= centerBottom
 
     if (isSouth && southMap) {
-      const offsetX = centerMap.connections.south.offset * 4 || 0
-      if (x < offsetX || x >= southMap.size.width * 4 + offsetX) {
+      if (x < sOffsetX || x >= southMap.size.width * 4 + sOffsetX) {
         return
       }
       effort++
       return [
         south &&
-          south.textureIds[x - offsetX] &&
-          south.textureIds[x - offsetX][y - centerMap.size.height * 4],
+          south.textureIds[x - sOffsetX] &&
+          south.textureIds[x - sOffsetX][y - centerMap.size.height * 4],
       ]
     }
     return false

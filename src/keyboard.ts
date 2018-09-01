@@ -1,7 +1,7 @@
 import keyboardjs from 'keyboardjs'
 import { actions, store } from 'store/store'
 import { Direction, wannaMove } from 'store/game'
-import { stage, SCREEN_SIZE } from 'app/app'
+import { stage, SCREEN_SIZE, DEBUG_MAP } from 'app/app'
 import { Point } from 'utils/point'
 
 const moveQueue = new Map()
@@ -10,6 +10,14 @@ const handleKeyPress = (direction: Direction, keyName?: string) => {
   const { game } = store.getState()
   if (game.controls.move === undefined) {
     actions.moveKeyPress(direction)
+    if (DEBUG_MAP) {
+      const map = game.currentMap[direction]
+      if (map) {
+        console.info('Debug loading', map)
+        actions.loadMap({ mapName: map.name })
+      }
+      return
+    }
     if (game.player.destination === undefined) {
       wannaMove(game, actions, direction)
     }

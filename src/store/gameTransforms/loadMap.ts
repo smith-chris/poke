@@ -5,6 +5,7 @@ import { MapData } from 'assets/maps'
 import { Point } from 'utils/point'
 import { actions, store } from '../store'
 import { ObjectOf } from 'utils/types'
+import { DEBUG_MAP } from 'app/app'
 
 const fixedArray = <T>(x: number, y: number) => {
   // TODO: make it sealed
@@ -56,8 +57,10 @@ export const loadMap = (
   let player = {
     ...state.player,
     moved: false,
-    // Just debugging
-    // position: new Point(map.size.width, map.size.height),
+    // To be removed
+    position: DEBUG_MAP
+      ? new Point(map.size.width, map.size.height)
+      : state.player.position,
   }
   if (playerData) {
     player = { ...player, ...playerData }
