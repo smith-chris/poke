@@ -84,53 +84,73 @@ const makeGetTextureId = (game: GameState) => {
     }
 
     const isNorth = y < 0
+
     if (isNorth && northMap) {
-      if (x < nOffsetX || x >= northMap.size.width * 4 + nOffsetX) {
-        return
+      const finalX = x - nOffsetX
+      const finalY = y + northMap.size.height * 4
+      const isOutsideMapWidth = x < nOffsetX || x >= northMap.size.width * 4 + nOffsetX
+      // Only a problem in map debug mode
+      const isOutsideMapHeight = finalY < 0
+      if (!isOutsideMapWidth && !isOutsideMapHeight) {
+        effort++
+        return [
+          north && north.textureIds[finalX] && north.textureIds[finalX][finalY],
+          false,
+        ]
       }
-      effort++
-      return [
-        north &&
-          north.textureIds[x - nOffsetX] &&
-          north.textureIds[x - nOffsetX][y + northMap.size.height * 4],
-      ]
     }
 
     const isEast = x >= centerRight
 
     if (isEast && eastMap) {
-      const eastX = x - centerMap.size.width * 4
-      if (y < eOffsetY || y >= eastMap.size.height * 4 + eOffsetY) {
-        return
+      const finalX = x - centerMap.size.width * 4
+      const finalY = y - eOffsetY
+      const isOutsideMapHeight = y < eOffsetY || y >= eastMap.size.height * 4 + eOffsetY
+      // Only a problem in map debug mode
+      const isOutsideMapWidth = finalX >= eastMap.size.width * 4
+      if (!isOutsideMapHeight && !isOutsideMapWidth) {
+        effort++
+        return [
+          east && east.textureIds[finalX] && east.textureIds[finalX][finalY],
+          false,
+        ]
       }
-      effort++
-      return [east && east.textureIds[eastX] && east.textureIds[eastX][y - eOffsetY]]
     }
 
     const isWest = x < 0
 
     if (isWest && westMap) {
-      const westX = x + westMap.size.width * 4
-      if (y < wOffsetY || y >= westMap.size.height * 4 + wOffsetY) {
-        return
+      const finalX = x + westMap.size.width * 4
+      const finalY = y - wOffsetY
+      const isOutsideMapHeight = y < wOffsetY || y >= westMap.size.height * 4 + wOffsetY
+      // Only a problem in map debug mode
+      const isOutsideMapWidth = finalX < 0
+      if (!isOutsideMapHeight && !isOutsideMapWidth) {
+        effort++
+        return [
+          west && west.textureIds[finalX] && west.textureIds[finalX][finalY],
+          false,
+        ]
       }
-      effort++
-      return [west && west.textureIds[westX] && west.textureIds[westX][y - wOffsetY]]
     }
+
     const isSouth = y >= centerBottom
 
     if (isSouth && southMap) {
-      if (x < sOffsetX || x >= southMap.size.width * 4 + sOffsetX) {
-        return
+      const finalX = x - sOffsetX
+      const finalY = y - centerMap.size.height * 4
+      const isOutsideMapWidth = x < sOffsetX || x >= southMap.size.width * 4 + sOffsetX
+      // Only a problem in map debug mode
+      const isOutsideMapHeight = finalY >= southMap.size.height * 4
+      if (!isOutsideMapWidth && !isOutsideMapHeight) {
+        effort++
+        return [
+          south && south.textureIds[finalX] && south.textureIds[finalX][finalY],
+          false,
+        ]
       }
-      effort++
-      return [
-        south &&
-          south.textureIds[x - sOffsetX] &&
-          south.textureIds[x - sOffsetX][y - centerMap.size.height * 4],
-      ]
     }
-    return false
+    return
   }
 }
 
@@ -148,16 +168,17 @@ const makeMap = (game: GameState, slice: Rectangle) => {
     return
   }
 
+  // const isOverworld = centerMap.tilesetName === OVERWORLD
+
   return mapRectangle(slice, (x, y) => {
     let textureId = getTextureInd(x, y)
-    const isOverworld = centerMap.tilesetName === OVERWORLD
     if (!textureId) {
       return null
-      if (isOverworld) {
-        textureId = [82]
-      } else {
-        return null
-      }
+      // if (isOverworld) {
+      //   textureId = [82]
+      // } else {
+      //   return null
+      // }
     }
     const componentProps = {
       key: `${x}x${y}`,
@@ -175,11 +196,14 @@ const makeMap = (game: GameState, slice: Rectangle) => {
     //   }
     // }
     const [ID, isCenter] = textureId
+    if (typeof ID !== 'number') {
+      return null
+    }
     return (
       <Sprite
         {...componentProps}
         // alpha={isCenter ? 0.7 : 1}
-        {...(isCenter ? { tint: 0xbbffaa } : {})}
+        tint={isCenter ? 0xbbffaa : 0xffffff}
         texture={TILESETS[centerMap.tilesetName].cutTexture(
           (ID % 16) * 8,
           Math.floor(ID / 16) * 8,
