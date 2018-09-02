@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { gameActions, wannaMove, GameState } from 'store/game'
+import { gameActions, wannaMove, GameState, Direction, toDirection } from 'store/game'
 import { Point } from 'utils/point'
 import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
@@ -12,6 +12,7 @@ import { TILESETS, OVERWORLD } from 'assets/tilesets'
 import { Flower } from './Flower'
 import { Water } from './Water'
 import { Rectangle } from 'pixi.js'
+import { LoadedMap } from 'store/gameTransforms/loadMap'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -50,7 +51,7 @@ const mapRectangle = <T extends any>(
 let effort = 0
 const makeGetTextureId = (game: GameState) => {
   const { currentMap, maps } = game
-  const { center, north, east, south, west } = currentMap
+  const { center } = currentMap
   if (!center) {
     console.warn('No current map!', currentMap)
     return undefined
@@ -60,97 +61,87 @@ const makeGetTextureId = (game: GameState) => {
     console.warn('No center map', center.name, maps)
     return undefined
   }
-  // This is all WIP
 
-  //
-  const northMap = north ? maps[north.name] : undefined
-  const eastMap = east ? maps[east.name] : undefined
-  const westMap = west ? maps[west.name] : undefined
-  const southMap = south ? maps[south.name] : undefined
+  const centerRect = new Rectangle(
+    0,
+    0,
+    centerMap.size.width * 4,
+    centerMap.size.height * 4,
+  )
 
-  const centerRight = centerMap.size.width * 4
-  const centerBottom = centerMap.size.height * 4
-  const nOffsetX = northMap ? centerMap.connections.north.offset * 4 : 0
-  const eOffsetY = eastMap ? centerMap.connections.east.offset * 4 : 0
-  const wOffsetY = westMap ? centerMap.connections.west.offset * 4 : 0
-  const sOffsetX = southMap ? centerMap.connections.south.offset * 4 : 0
+  // Could be using something like 'typedEntries' to get better typings
+  const connectionsData = Object.entries(currentMap)
+    .filter(
+      ([key, value]) =>
+        toDirection(key) !== undefined &&
+        value !== undefined &&
+        maps[value.name] !== undefined,
+    )
+    .map(([direction, { textureIds, name }]: [Direction, LoadedMap]) => ({
+      direction,
+      textureIds,
+      width: maps[name].size.width * 4,
+      height: maps[name].size.height * 4,
+      offset: centerMap.connections[direction].offset * 4,
+    }))
+
+  const getConnectionTextureID = (x: number, y: number) => {
+    for (const { direction, textureIds, width, height, offset } of connectionsData) {
+      // Basically top left cornerd of rendered connection map
+      let finalX, finalY
+      switch (direction) {
+        case Direction.N:
+          if (y >= 0) {
+            continue
+          }
+          finalX = x - offset
+          finalY = y + height
+          break
+        case Direction.E:
+          if (x < centerRect.right) {
+            continue
+          }
+          finalX = x - centerRect.width
+          finalY = y - offset
+          break
+        case Direction.W:
+          if (x >= 0) {
+            continue
+          }
+          finalX = x + width
+          finalY = y - offset
+          break
+        case Direction.S:
+          if (y < centerRect.bottom) {
+            continue
+          }
+          finalX = x - offset
+          finalY = y - centerRect.height
+          break
+        default:
+          continue
+      }
+
+      const isOutsideMapWidth = finalX < 0 || finalX >= width
+      const isOutsideMapHeight = finalY < 0 || finalY >= height
+      if (!isOutsideMapWidth && !isOutsideMapHeight) {
+        effort++
+        return [textureIds[finalX] && textureIds[finalX][finalY], false]
+      }
+    }
+    return undefined
+  }
+
   return (x: number, y: number) => {
-    const isInCenterMapWidth = x >= 0 && x < centerRight
-    const isInCenterMapHeight = y >= 0 && y < centerBottom
+    const isInCenterMapWidth = x >= 0 && x < centerRect.right
+    const isInCenterMapHeight = y >= 0 && y < centerRect.bottom
 
     if (isInCenterMapWidth && isInCenterMapHeight) {
       effort++
       return [center && center.textureIds[x] && center.textureIds[x][y], true]
     }
 
-    const isNorth = y < 0
-
-    if (isNorth && northMap) {
-      const finalX = x - nOffsetX
-      const finalY = y + northMap.size.height * 4
-      const isOutsideMapWidth = x < nOffsetX || x >= northMap.size.width * 4 + nOffsetX
-      // Only a problem in map debug mode
-      const isOutsideMapHeight = finalY < 0
-      if (!isOutsideMapWidth && !isOutsideMapHeight) {
-        effort++
-        return [
-          north && north.textureIds[finalX] && north.textureIds[finalX][finalY],
-          false,
-        ]
-      }
-    }
-
-    const isEast = x >= centerRight
-
-    if (isEast && eastMap) {
-      const finalX = x - centerMap.size.width * 4
-      const finalY = y - eOffsetY
-      const isOutsideMapHeight = y < eOffsetY || y >= eastMap.size.height * 4 + eOffsetY
-      // Only a problem in map debug mode
-      const isOutsideMapWidth = finalX >= eastMap.size.width * 4
-      if (!isOutsideMapHeight && !isOutsideMapWidth) {
-        effort++
-        return [
-          east && east.textureIds[finalX] && east.textureIds[finalX][finalY],
-          false,
-        ]
-      }
-    }
-
-    const isWest = x < 0
-
-    if (isWest && westMap) {
-      const finalX = x + westMap.size.width * 4
-      const finalY = y - wOffsetY
-      const isOutsideMapHeight = y < wOffsetY || y >= westMap.size.height * 4 + wOffsetY
-      // Only a problem in map debug mode
-      const isOutsideMapWidth = finalX < 0
-      if (!isOutsideMapHeight && !isOutsideMapWidth) {
-        effort++
-        return [
-          west && west.textureIds[finalX] && west.textureIds[finalX][finalY],
-          false,
-        ]
-      }
-    }
-
-    const isSouth = y >= centerBottom
-
-    if (isSouth && southMap) {
-      const finalX = x - sOffsetX
-      const finalY = y - centerMap.size.height * 4
-      const isOutsideMapWidth = x < sOffsetX || x >= southMap.size.width * 4 + sOffsetX
-      // Only a problem in map debug mode
-      const isOutsideMapHeight = finalY >= southMap.size.height * 4
-      if (!isOutsideMapWidth && !isOutsideMapHeight) {
-        effort++
-        return [
-          south && south.textureIds[finalX] && south.textureIds[finalX][finalY],
-          false,
-        ]
-      }
-    }
-    return
+    return getConnectionTextureID(x, y)
   }
 }
 

@@ -17,6 +17,8 @@ type MapRenderingData = {
   tilesets: TilesetsData
 }
 
+export type CurrentMap = Partial<Record<'center' | Direction, LoadedMap>>
+
 export type GameState = {
   player: {
     destination?: Point
@@ -27,7 +29,7 @@ export type GameState = {
   controls: {
     move?: Direction
   }
-  currentMap: Partial<Record<'center' | Direction, LoadedMap>>
+  currentMap: CurrentMap
 } & MapRenderingData
 
 const initialState: GameState = {
@@ -50,12 +52,12 @@ export enum Direction {
 
 export const toDirection = (input: string) => {
   // tslint:disable-next-line
-  const firstLetter: any = typeof input === 'string' && input[0]
+  const firstLetter: any = typeof input === 'string' && input[0].toUpperCase()
   if (firstLetter) {
-    return Direction[firstLetter]
+    return Direction[firstLetter] as Direction
   } else {
     console.warn('Couldnt find direction for ', input)
-    return Direction.N
+    return undefined
   }
 }
 
