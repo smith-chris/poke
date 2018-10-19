@@ -60,6 +60,18 @@ window.addEventListener('pointerdown', e => {
   handleKeyPress(direction)
 })
 
+window.addEventListener('touchstart', e => {
+  // @ts-ignore
+  const direction = globalToKey({ x: e.pageX, y: e.pageY })
+  handleKeyPress(direction)
+})
+
+window.addEventListener('touchend', e => {
+  // @ts-ignore
+  const direction = globalToKey({ x: e.pageX, y: e.pageY })
+  handleKeyRelease(store.getState().game.controls.move || direction)
+})
+
 window.addEventListener('pointerup', e => {
   const direction = globalToKey(e)
   handleKeyRelease(store.getState().game.controls.move || direction)
