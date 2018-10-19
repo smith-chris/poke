@@ -39,9 +39,10 @@ const handleKeyRelease = (direction: Direction, keyName?: string) => {
   }
 }
 
-const globalToKey = ({ x, y }: Point) => {
-  const dX = x - SCREEN_SIZE / 2
-  const dY = y - SCREEN_SIZE / 2
+type P = { x: number; y: number }
+const globalToKey = ({ x, y }: P) => {
+  const dX = x - window.innerWidth / 2
+  const dY = y - window.innerHeight / 2
   const angle = Math.atan2(dY, dX) * (180 / Math.PI) + 180
   if (angle > 45 && angle <= 135) {
     return Direction.N
@@ -54,16 +55,13 @@ const globalToKey = ({ x, y }: Point) => {
   }
 }
 
-type PointerEvent = { data: { global: Point } }
-
-stage.interactive = true
-stage.on('pointerdown', ({ data: { global } }: PointerEvent) => {
-  const direction = globalToKey(global)
+window.addEventListener('pointerdown', e => {
+  const direction = globalToKey(e)
   handleKeyPress(direction)
 })
 
-stage.on('pointerup', ({ data: { global } }: PointerEvent) => {
-  const direction = globalToKey(global)
+window.addEventListener('pointerup', e => {
+  const direction = globalToKey(e)
   handleKeyRelease(store.getState().game.controls.move || direction)
 })
 
