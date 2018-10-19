@@ -9,7 +9,7 @@ import { createPointStepper } from 'utils/transition'
 import { Container } from 'utils/fiber'
 import { Rectangle } from 'pixi.js'
 import { getMapPosition } from './mapUtils'
-import { MapBase } from './Map2'
+import { MapTiles } from './MapTiles'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -106,7 +106,7 @@ class MapComponent extends Component<Props, State> {
         onFinish={this.handleAnimationFinish}
         render={(position = getMapPosition(player.position)) => (
           <Container position={position}>
-            <MapBase game={this.props.game} slice={map} />
+            <MapTiles game={this.props.game} slice={map} />
           </Container>
         )}
       />

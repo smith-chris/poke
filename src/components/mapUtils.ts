@@ -1,5 +1,5 @@
 import { TILE_SIZE } from 'assets/const'
-import { SCREEN_SIZE, DEBUG_MAP } from 'app/app'
+import { SCREEN_SIZE } from 'app/app'
 import { Point } from 'utils/point'
 import { Rectangle } from 'pixi.js'
 import { GameState, toDirection, Direction } from 'store/game'
@@ -21,12 +21,13 @@ export const mapRectangle = <T extends any>(
   rect: Rectangle,
   f: (x: number, y: number) => T,
 ) => {
-  const results: T[] = []
+  const results: Exclude<T, undefined>[] = []
   for (let x = rect.x; x <= rect.width + rect.x; x++) {
     for (let y = rect.y; y <= rect.height + rect.y; y++) {
       const item = f(x, y)
       // @ts-ignore
-      if (item || item === 0) {
+      if (item || item === 0 || item === false) {
+        // @ts-ignore
         results.push(item)
       }
     }
@@ -146,15 +147,12 @@ export const makeMapIDs = (game: GameState, slice: Rectangle) => {
   return mapRectangle(slice, (x, y) => {
     let textureId = getTextureInd(x, y)
     if (!textureId) {
-      if (DEBUG_MAP) {
-        return null
-      }
       if (isOverworld) {
         textureId = 82
       } else {
-        return null
+        return
       }
     }
-    return [x, y, textureId]
+    return [x, y, textureId] as [number, number, number]
   })
 }
