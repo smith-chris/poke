@@ -1,7 +1,7 @@
 import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { particles, Rectangle, Sprite, Texture } from 'pixi.js'
+import { particles, Rectangle, Sprite, Texture, Container } from 'pixi.js'
 
 import { PixiComponent } from 'utils/fiber'
 import { gameActions } from 'store/game'
@@ -32,15 +32,17 @@ type Props = {
   game: StoreState['game']
 }
 
-export const MapBase = PixiComponent<Props, particles.ParticleContainer>('Map2', {
+export const MapBase = PixiComponent<Props, Container>('Map2', {
   create: () => {
     this.oldSprites = {}
-    this.container = new particles.ParticleContainer(PARTICLES, {
+    this.lastTileset = ''
+    const container = new Container()
+    this.tiles = new particles.ParticleContainer(PARTICLES, {
       uvs: true,
       position: true,
     })
-    this.lastTileset = ''
-    return this.container
+    container.addChild(this.tiles)
+    return container
   },
   applyProps: (container, oldProps, newProps) => {
     const { game, slice: mapRect } = newProps
@@ -55,7 +57,7 @@ export const MapBase = PixiComponent<Props, particles.ParticleContainer>('Map2',
       const centerMap = maps[center.name]
       const { tilesetName } = centerMap
       if (this.lastTileset !== tilesetName) {
-        container.removeChildren()
+        this.tiles.removeChildren()
         this.oldSprites = {}
         this.lastTileset = tilesetName
       }
@@ -89,7 +91,7 @@ export const MapBase = PixiComponent<Props, particles.ParticleContainer>('Map2',
         let sprite = leftovers.pop()
         if (!sprite) {
           sprite = new Sprite()
-          container.addChild(sprite)
+          this.tiles.addChild(sprite)
         }
         sprite.texture = texture
         sprite.position.x = x * 8
@@ -97,7 +99,7 @@ export const MapBase = PixiComponent<Props, particles.ParticleContainer>('Map2',
         newSprites[sid] = sprite
       }
       for (const item of leftovers) {
-        container.removeChild(item)
+        this.tiles.removeChild(item)
       }
       this.oldSprites = newSprites
     }
