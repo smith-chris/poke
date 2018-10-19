@@ -1,9 +1,10 @@
 import { TILE_SIZE } from 'assets/const'
-import { SCREEN_SIZE } from 'app/app'
+import { SCREEN_SIZE, DEBUG_MAP } from 'app/app'
 import { Point } from 'utils/point'
 import { Rectangle } from 'pixi.js'
 import { GameState, toDirection, Direction } from 'store/game'
 import { LoadedMap } from 'store/gameTransforms/loadMap'
+import { OVERWORLD } from 'assets/tilesets'
 
 export const MOVE_DISTANCE = TILE_SIZE
 
@@ -121,4 +122,36 @@ export const makeGetTextureId = (game: GameState) => {
 
     return getConnectionTextureID(x, y)
   }
+}
+
+export const makeMapIDs = (game: GameState, slice: Rectangle) => {
+  const { currentMap, maps } = game
+  const { center } = currentMap
+  if (!center) {
+    console.warn('No current map!', currentMap)
+    return null
+  }
+  const centerMap = maps[center.name]
+  const getTextureInd = makeGetTextureId(game)
+  if (!getTextureInd) {
+    return
+  }
+
+  const isOverworld = centerMap.tilesetName === OVERWORLD
+
+  return mapRectangle(slice, (x, y) => {
+    let textureId = getTextureInd(x, y)
+    if (!textureId) {
+      if (DEBUG_MAP) {
+        return null
+      }
+      if (isOverworld) {
+        textureId = [82]
+      } else {
+        return null
+      }
+    }
+    const [ID] = textureId
+    return ID
+  })
 }

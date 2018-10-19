@@ -5,8 +5,8 @@ import { Map2 } from './Map2'
 
 export const Game = () => (
   <>
-    <Map />
+    {/* <Map /> */}
     <Map2 />
-    <Player />
+    {/* <Player /> */}
   </>
 )
