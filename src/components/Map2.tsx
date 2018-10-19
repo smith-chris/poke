@@ -1,74 +1,112 @@
 import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { particles, Rectangle, Sprite } from 'pixi.js'
+import { particles, Rectangle, Sprite, Texture } from 'pixi.js'
 
 import { PixiComponent } from 'utils/fiber'
 import { gameActions } from 'store/game'
 import { SCREEN_SIZE } from 'app/app'
 import { makeMapIDs } from './mapUtils'
 import { TILESETS } from 'assets/tilesets'
+import { ObjectOf } from 'utils/types'
 
-const mapStateToProps = (state: StoreState) => state
-type StateProps = ReturnType<typeof mapStateToProps>
+// const mapStateToProps = (state: StoreState) => state
+// type StateProps = ReturnType<typeof mapStateToProps>
 
-const mapDispatchToProps = (dispatch: Dispatch) => {
-  return bindActionCreators({ ...gameActions }, dispatch)
-}
-type DispatchProps = ReturnType<typeof mapDispatchToProps>
+// const mapDispatchToProps = (dispatch: Dispatch) => {
+//   return bindActionCreators({ ...gameActions }, dispatch)
+// }
+// type DispatchProps = ReturnType<typeof mapDispatchToProps>
 
-type Props = StateProps & DispatchProps
+// type Props = StateProps & DispatchProps
 
 const SLICE_SIZE = SCREEN_SIZE / 8 + 4
+
+const PARTICLES = (SCREEN_SIZE / 4) * (SCREEN_SIZE / 4)
 
 const getTexture = (tilesetName: string, id: number) =>
   TILESETS[tilesetName].cutTexture((id % 16) * 8, Math.floor(id / 16) * 8, 8, 8)
 
-const MapComponent = PixiComponent<Props, particles.ParticleContainer>('Map2', {
-  create: () => new particles.ParticleContainer(),
+type Props = {
+  slice: Rectangle
+  game: StoreState['game']
+}
+
+export const MapBase = PixiComponent<Props, particles.ParticleContainer>('Map2', {
+  create: () => {
+    this.oldSprites = {}
+    this.container = new particles.ParticleContainer(PARTICLES, {
+      uvs: true,
+      position: true,
+    })
+    this.lastTileset = ''
+    return this.container
+  },
   applyProps: (container, oldProps, newProps) => {
-    const { game } = newProps
+    const { game, slice: mapRect } = newProps
     const { currentMap, player, maps } = game
     const oldPlayer = (oldProps.game && oldProps.game.player) || {}
     if (currentMap.center && player.position !== oldPlayer.position) {
-      const mapRect = new Rectangle(
-        player.position.x * 2 + 1 - SLICE_SIZE / 2,
-        player.position.y * 2 + 1 - SLICE_SIZE / 2 - 1,
-        SLICE_SIZE - 1,
-        SLICE_SIZE - 1 + 1,
-      )
-
-      const mapIDs = makeMapIDs(game, mapRect)
-      if (!mapIDs || mapIDs.length <= 0) {
-        return
-      }
-
       const { center } = currentMap
       if (!center) {
         console.warn('No current map!', currentMap)
         return null
       }
       const centerMap = maps[center.name]
-
-      let i = 0
-      const div = mapRect.width + 2
-      for (const id of mapIDs) {
-        const texture = getTexture(centerMap.tilesetName, id)
-        const sprite = new Sprite(texture)
-        const y = (i % div) * 8
-        const x = Math.floor(i / div) * 8
-        sprite.position.x = x
-        sprite.position.y = y
-        container.addChild(sprite)
-        i++
+      const { tilesetName } = centerMap
+      if (this.lastTileset !== tilesetName) {
+        container.removeChildren()
+        this.oldSprites = {}
+        this.lastTileset = tilesetName
       }
+      const mapIDs = makeMapIDs(game, mapRect)
+      if (!mapIDs || mapIDs.length <= 0) {
+        return
+      }
+
+      const newSprites: ObjectOf<Sprite> = {}
+      const todo = []
+
+      for (const item of mapIDs) {
+        if (!item) {
+          continue
+        }
+        const [x, y, id] = item
+        const sid = `${x}_${y}_${id}`
+        if (!this.oldSprites[sid]) {
+          todo.push(item)
+        } else {
+          newSprites[sid] = this.oldSprites[sid]
+          delete this.oldSprites[sid]
+        }
+      }
+
+      const leftovers: Sprite[] = Object.values(this.oldSprites)
+      for (const item of todo) {
+        const [x, y, id] = item
+        const sid = `${x}_${y}_${id}`
+        const texture = getTexture(tilesetName, id)
+        let sprite = leftovers.pop()
+        if (!sprite) {
+          sprite = new Sprite()
+          container.addChild(sprite)
+        }
+        sprite.texture = texture
+        sprite.position.x = x * 8
+        sprite.position.y = y * 8
+        newSprites[sid] = sprite
+      }
+      for (const item of leftovers) {
+        container.removeChild(item)
+      }
+      this.oldSprites = newSprites
     }
   },
 })
 
-const MapWrapper = (props: Props) => <MapComponent {...props} />
+// const MapWrapper = (props: Props) => <MapBase {...props} />
 
-export const Map2 = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(MapWrapper)
+// export const Map2 = connect(
+//   mapStateToProps,
+//   mapDispatchToProps,
+// )(MapWrapper)

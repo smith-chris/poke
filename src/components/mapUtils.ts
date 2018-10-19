@@ -152,6 +152,6 @@ export const makeMapIDs = (game: GameState, slice: Rectangle) => {
       }
     }
     const [ID] = textureId
-    return ID
+    return [x, y, ID]
   })
 }

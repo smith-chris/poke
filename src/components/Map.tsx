@@ -13,6 +13,7 @@ import { Flower } from './Flower'
 import { Water } from './Water'
 import { Rectangle } from 'pixi.js'
 import { makeGetTextureId, mapRectangle, getMapPosition } from './mapUtils'
+import { MapBase } from './Map2'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -87,11 +88,11 @@ const makeMap = (game: GameState, slice: Rectangle) => {
 
 const SLICE_SIZE = SCREEN_SIZE / 8 + 4
 
-type State = { map: ReturnType<typeof makeMap> }
+type State = { map?: Rectangle }
 
 class MapComponent extends Component<Props, State> {
   state = {
-    map: [],
+    map: undefined,
   }
   shouldComponentUpdate(
     {
@@ -115,14 +116,11 @@ class MapComponent extends Component<Props, State> {
   setMap = ({ game }: Props) => {
     if (game.currentMap.center) {
       this.setState({
-        map: makeMap(
-          game,
-          new Rectangle(
-            game.player.position.x * 2 + 1 - SLICE_SIZE / 2,
-            game.player.position.y * 2 + 1 - SLICE_SIZE / 2 - 1,
-            SLICE_SIZE - 1,
-            SLICE_SIZE - 1 + 1,
-          ),
+        map: new Rectangle(
+          game.player.position.x * 2 + 1 - SLICE_SIZE / 2,
+          game.player.position.y * 2 + 1 - SLICE_SIZE / 2 - 1,
+          SLICE_SIZE - 1,
+          SLICE_SIZE - 1 + 1,
         ),
       })
     }
@@ -172,7 +170,9 @@ class MapComponent extends Component<Props, State> {
         useTicks
         onFinish={this.handleAnimationFinish}
         render={(position = getMapPosition(player.position)) => (
-          <Container position={position}>{map}</Container>
+          <Container position={position}>
+            <MapBase game={this.props.game} slice={map} />
+          </Container>
         )}
       />
     )

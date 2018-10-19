@@ -10,7 +10,7 @@ const isSafari =
 
 export const DEBUG_MAP = false
 
-export const SCREEN_SIZE = DEBUG_MAP ? 1312 : 64
+export const SCREEN_SIZE = DEBUG_MAP ? 1312 : 144
 const App = new Application(SCREEN_SIZE, SCREEN_SIZE, {
   backgroundColor: palette.black,
   antialias: false,

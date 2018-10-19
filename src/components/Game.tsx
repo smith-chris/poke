@@ -1,12 +1,12 @@
 import React from 'react'
 import { Player } from './Player'
 import { Map } from './Map'
-import { Map2 } from './Map2'
+import { Container } from 'utils/fiber'
+import { Point } from 'utils/point'
 
 export const Game = () => (
   <>
-    {/* <Map /> */}
-    <Map2 />
-    {/* <Player /> */}
+    <Map />
+    <Player />
   </>
 )
