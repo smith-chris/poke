@@ -24,7 +24,11 @@ export const mapRectangle = <T extends any>(
   const results: T[] = []
   for (let x = rect.x; x <= rect.width + rect.x; x++) {
     for (let y = rect.y; y <= rect.height + rect.y; y++) {
-      results.push(f(x, y))
+      const item = f(x, y)
+      // @ts-ignore
+      if (item || item === 0) {
+        results.push(item)
+      }
     }
   }
   return results
@@ -106,7 +110,7 @@ export const makeGetTextureId = (game: GameState) => {
       const isOutsideMapWidth = finalX < 0 || finalX >= width
       const isOutsideMapHeight = finalY < 0 || finalY >= height
       if (!isOutsideMapWidth && !isOutsideMapHeight) {
-        return [textureIds[finalX] && textureIds[finalX][finalY], false]
+        return textureIds[finalX] && textureIds[finalX][finalY]
       }
     }
     return undefined
@@ -117,7 +121,7 @@ export const makeGetTextureId = (game: GameState) => {
     const isInCenterMapHeight = y >= 0 && y < centerRect.bottom
 
     if (isInCenterMapWidth && isInCenterMapHeight) {
-      return [center && center.textureIds[x] && center.textureIds[x][y], true]
+      return center && center.textureIds[x] && center.textureIds[x][y]
     }
 
     return getConnectionTextureID(x, y)
@@ -134,7 +138,7 @@ export const makeMapIDs = (game: GameState, slice: Rectangle) => {
   const centerMap = maps[center.name]
   const getTextureInd = makeGetTextureId(game)
   if (!getTextureInd) {
-    return
+    return null
   }
 
   const isOverworld = centerMap.tilesetName === OVERWORLD
@@ -146,12 +150,11 @@ export const makeMapIDs = (game: GameState, slice: Rectangle) => {
         return null
       }
       if (isOverworld) {
-        textureId = [82]
+        textureId = 82
       } else {
         return null
       }
     }
-    const [ID] = textureId
-    return [x, y, ID]
+    return [x, y, textureId]
   })
 }

@@ -1,26 +1,10 @@
-import React from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
 import { particles, Rectangle, Sprite, Texture, Container } from 'pixi.js'
 
 import { PixiComponent } from 'utils/fiber'
-import { gameActions } from 'store/game'
 import { SCREEN_SIZE } from 'app/app'
 import { makeMapIDs } from './mapUtils'
 import { TILESETS } from 'assets/tilesets'
 import { ObjectOf } from 'utils/types'
-
-// const mapStateToProps = (state: StoreState) => state
-// type StateProps = ReturnType<typeof mapStateToProps>
-
-// const mapDispatchToProps = (dispatch: Dispatch) => {
-//   return bindActionCreators({ ...gameActions }, dispatch)
-// }
-// type DispatchProps = ReturnType<typeof mapDispatchToProps>
-
-// type Props = StateProps & DispatchProps
-
-const SLICE_SIZE = SCREEN_SIZE / 8 + 4
 
 const PARTICLES = (SCREEN_SIZE / 4) * (SCREEN_SIZE / 4)
 
@@ -105,10 +89,3 @@ export const MapBase = PixiComponent<Props, Container>('Map2', {
     }
   },
 })
-
-// const MapWrapper = (props: Props) => <MapBase {...props} />
-
-// export const Map2 = connect(
-//   mapStateToProps,
-//   mapDispatchToProps,
-// )(MapWrapper)
