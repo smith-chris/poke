@@ -4,6 +4,7 @@ import {
   ContainerProperties,
   SpriteProperties,
   TilingSpriteProperties,
+  ParticleContainerProperties,
 } from '@inlet/react-pixi'
 export { PixiComponent } from '@inlet/react-pixi'
 import { Point } from './point'
@@ -23,3 +24,6 @@ export class Sprite extends Component<SpriteProps> {}
 
 export type TilingSpriteProps = TilingSpriteProperties
 export class TilingSprite extends Component<TilingSpriteProps> {}
+
+export type ParticleContainerProps = ParticleContainerProperties
+export class ParticleContainer extends Component<ParticleContainerProps> {}

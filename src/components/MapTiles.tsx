@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { particles, Rectangle, Sprite } from 'pixi.js'
-import { PixiComponent } from 'utils/fiber'
+import { PixiComponent, ParticleContainer } from 'utils/fiber'
 import { SCREEN_SIZE } from 'app/app'
 import { makeMapIDs } from './mapUtils'
 import { TILESETS } from 'assets/tilesets'
