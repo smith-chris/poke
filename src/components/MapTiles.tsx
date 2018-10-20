@@ -1,19 +1,18 @@
-import React, { Component } from 'react'
+import React, { Component, ReactNode } from 'react'
 import { particles, Rectangle, Sprite } from 'pixi.js'
-import { PixiComponent, ParticleContainer } from 'utils/fiber'
-import { SCREEN_SIZE } from 'app/app'
+import { PixiComponent } from 'utils/fiber'
+import { viewport } from 'app/app'
 import { makeMapIDs } from './mapUtils'
 import { TILESETS } from 'assets/tilesets'
 import { ObjectOf } from 'utils/types'
 import { TEXTURE_SIZE, TILE_SIZE } from 'assets/const'
 import { Point } from 'utils/point'
 import { Flower } from './Flower'
-import { ReactNode } from '../../node_modules/@types/react-redux'
 import { Water } from './Water'
 
 // TODO: Make it better. This is not good
 
-const PARTICLES = (SCREEN_SIZE / 4) * (SCREEN_SIZE / 4)
+const PARTICLES = (viewport.width / 4) * (viewport.height / 4)
 
 const getTexture = (tilesetName: string, id: number) =>
   TILESETS[tilesetName].cutTexture(
