@@ -7,9 +7,9 @@ import { Point } from 'utils/point'
 import { Transition } from 'utils/withTransition'
 import { makeStepper } from 'utils/transition'
 import { TILE_SIZE } from 'assets/const'
-import { SCREEN_SIZE } from 'app/app'
 import { getPlayerSpriteProps } from './getPlayerTexture'
 import { shallowDiff } from 'utils/other'
+import { viewport } from 'app/app'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -28,7 +28,7 @@ const defaultState = {
 }
 
 const playerBaseProps = {
-  position: new Point(SCREEN_SIZE / 2, SCREEN_SIZE / 2),
+  position: new Point(Math.round(viewport.width / 2), Math.round(viewport.height / 2)),
   anchor: new Point(0.5, 0.5),
   scale: new Point(1, 1),
 }

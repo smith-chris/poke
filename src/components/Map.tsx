@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { gameActions, wannaMove } from 'store/game'
 import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
-import { SCREEN_SIZE } from 'app/app'
+import { viewport } from 'app/app'
 import { createPointStepper } from 'utils/transition'
 import { Container } from 'utils/fiber'
 import { Rectangle } from 'pixi.js'
@@ -20,8 +20,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 type DispatchProps = ReturnType<typeof mapDispatchToProps>
 
 type Props = StateProps & DispatchProps
-
-const SLICE_SIZE = SCREEN_SIZE / 8 + 4
 
 type State = { map?: Rectangle }
 
@@ -50,12 +48,14 @@ class MapComponent extends Component<Props, State> {
   }
   setMap = ({ game }: Props) => {
     if (game.currentMap.center) {
+      const sliceWidth = viewport.width / 8 + 4
+      const sliceHeight = viewport.height / 8 + 4
       this.setState({
         map: new Rectangle(
-          game.player.position.x * 2 + 1 - SLICE_SIZE / 2,
-          game.player.position.y * 2 + 1 - SLICE_SIZE / 2 - 1,
-          SLICE_SIZE - 1,
-          SLICE_SIZE - 1 + 1,
+          Math.round(game.player.position.x * 2 + 1 - sliceWidth / 2),
+          Math.round(game.player.position.y * 2 + 1 - sliceHeight / 2 - 1),
+          Math.round(sliceWidth - 1),
+          Math.round(sliceHeight - 1 + 1),
         ),
       })
     }

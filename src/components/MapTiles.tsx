@@ -12,7 +12,7 @@ import { Water } from './Water'
 
 // TODO: Make it better. This is not good
 
-const PARTICLES = (viewport.width / 4) * (viewport.height / 4)
+const PARTICLES = Math.round(((viewport.width / 4) * (viewport.height / 4)) / 4) * 4
 
 const getTexture = (tilesetName: string, id: number) =>
   TILESETS[tilesetName].cutTexture(

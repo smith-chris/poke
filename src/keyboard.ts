@@ -1,8 +1,7 @@
 import keyboardjs from 'keyboardjs'
 import { actions, store } from 'store/store'
 import { Direction, wannaMove } from 'store/game'
-import { stage, SCREEN_SIZE, DEBUG_MAP } from 'app/app'
-import { Point } from 'utils/point'
+import { DEBUG_MAP } from 'app/app'
 
 const moveQueue = new Map()
 

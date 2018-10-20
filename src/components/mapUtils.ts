@@ -1,5 +1,5 @@
 import { TILE_SIZE } from 'assets/const'
-import { SCREEN_SIZE } from 'app/app'
+import { viewport } from 'app/app'
 import { Point } from 'utils/point'
 import { Rectangle } from 'pixi.js'
 import { GameState, toDirection, Direction } from 'store/game'
@@ -8,13 +8,11 @@ import { OVERWORLD } from 'assets/tilesets'
 
 export const MOVE_DISTANCE = TILE_SIZE
 
-const MAP_CENTER = {
-  x: SCREEN_SIZE / 2 - TILE_SIZE / 2,
-  y: SCREEN_SIZE / 2 - TILE_SIZE / 2,
+export const getMapPosition = (player: Point) => {
+  const mapCenterX = Math.round(viewport.width / 2 - TILE_SIZE / 2)
+  const mapCenterY = Math.round(viewport.height / 2 - TILE_SIZE / 2)
+  return new Point(mapCenterX - player.x * 16, mapCenterY - player.y * 16 + 4)
 }
-
-export const getMapPosition = (player: Point) =>
-  new Point(MAP_CENTER.x - player.x * 16, MAP_CENTER.y - player.y * 16 + 4)
 
 // tslint:disable-next-line
 export const mapRectangle = <T extends any>(
