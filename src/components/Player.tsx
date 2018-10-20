@@ -9,7 +9,7 @@ import { makeStepper } from 'utils/transition'
 import { TILE_SIZE } from 'assets/const'
 import { getPlayerSpriteProps } from './getPlayerTexture'
 import { shallowDiff } from 'utils/other'
-import { viewport } from 'app/app'
+import { withViewport, ViewportProps } from './withViewport'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -19,7 +19,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 }
 type DispatchProps = ReturnType<typeof mapDispatchToProps>
 
-type Props = StateProps & DispatchProps
+type Props = StateProps & DispatchProps & ViewportProps
 
 const defaultState = {
   direction: Direction.S,
@@ -28,7 +28,6 @@ const defaultState = {
 }
 
 const playerBaseProps = {
-  position: new Point(Math.round(viewport.width / 2), Math.round(viewport.height / 2)),
   anchor: new Point(0.5, 0.5),
   scale: new Point(1, 1),
 }
@@ -63,8 +62,8 @@ class PlayerComponent extends Component<Props, State> {
     }
   }
 
-  shouldComponentUpdate(_: Props, newState: State) {
-    return shallowDiff(this.state, newState)
+  shouldComponentUpdate({ viewport: newViewport }: Props, newState: State) {
+    return shallowDiff(this.state, newState) || this.props.viewport !== newViewport
   }
 
   handleLoop = () => {
@@ -75,7 +74,11 @@ class PlayerComponent extends Component<Props, State> {
 
   render() {
     const { animate, direction, flipX } = this.state
-
+    const { viewport } = this.props
+    const position = new Point(
+      Math.round(viewport.width / 2),
+      Math.round(viewport.height / 2),
+    )
     return (
       <Transition
         stepper={animate ? this.stepper : undefined}
@@ -85,6 +88,7 @@ class PlayerComponent extends Component<Props, State> {
         render={(altTexture = false) => (
           <Sprite
             {...playerBaseProps}
+            position={position}
             {...getPlayerSpriteProps(direction, altTexture, flipX)}
           />
         )}
@@ -93,7 +97,9 @@ class PlayerComponent extends Component<Props, State> {
   }
 }
 
-export const Player = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(PlayerComponent)
+export const Player = withViewport(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(PlayerComponent),
+)

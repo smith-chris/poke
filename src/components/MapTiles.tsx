@@ -144,8 +144,8 @@ export class MapTiles extends Component<Props, State> {
       animations,
     }
   }
-  shouldComponentUpdate(_: {}, { playerPosition }: State) {
-    return this.state.playerPosition !== playerPosition
+  shouldComponentUpdate(_: {}, { mapIds }: State) {
+    return this.state.mapIds !== mapIds
   }
   render() {
     const { tilesetName, mapIds, animations } = this.state

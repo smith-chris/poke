@@ -4,12 +4,12 @@ import { connect } from 'react-redux'
 import { gameActions, wannaMove } from 'store/game'
 import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
-import { viewport } from 'app/app'
 import { createPointStepper } from 'utils/transition'
 import { Container } from 'utils/fiber'
 import { Rectangle } from 'pixi.js'
 import { getMapPosition } from './mapUtils'
 import { MapTiles } from './MapTiles'
+import { withViewport, ViewportProps } from './withViewport'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -19,7 +19,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 }
 type DispatchProps = ReturnType<typeof mapDispatchToProps>
 
-type Props = StateProps & DispatchProps
+type Props = StateProps & DispatchProps & ViewportProps
 
 type State = { map?: Rectangle }
 
@@ -32,6 +32,7 @@ class MapComponent extends Component<Props, State> {
       game: {
         player: { position: newPosition, destination: newDestination },
       },
+      viewport: newViewport,
     }: Props,
     newState: State,
   ) {
@@ -39,14 +40,16 @@ class MapComponent extends Component<Props, State> {
       game: {
         player: { position, destination },
       },
+      viewport,
     } = this.props
     return (
       position !== newPosition ||
       destination !== newDestination ||
+      viewport !== newViewport ||
       this.state !== newState
     )
   }
-  setMap = ({ game }: Props) => {
+  setMap = ({ game, viewport }: Props) => {
     if (game.currentMap.center) {
       const sliceWidth = viewport.width / 8 + 4
       const sliceHeight = viewport.height / 8 + 4
@@ -66,8 +69,12 @@ class MapComponent extends Component<Props, State> {
   componentWillReceiveProps(newProps: Props) {
     const {
       game: { currentMap, player },
+      viewport,
     } = newProps
-    if (currentMap && this.props.game.player.position !== player.position) {
+    if (
+      (currentMap && this.props.game.player.position !== player.position) ||
+      this.props.viewport !== viewport
+    ) {
       this.setMap(newProps)
     }
   }
@@ -103,6 +110,7 @@ class MapComponent extends Component<Props, State> {
       <Transition
         stepper={stepper}
         useTicks
+        shouldUpdate={map}
         onFinish={this.handleAnimationFinish}
         render={(position = getMapPosition(player.position)) => (
           <Container position={position}>
@@ -117,4 +125,4 @@ class MapComponent extends Component<Props, State> {
 export const Map = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(MapComponent)
+)(withViewport(MapComponent))

@@ -143,7 +143,7 @@ export function withTransition<T, S = {}>(
   }
 }
 
-type TranProps<T> = {
+type TranProps<T, U = {}> = {
   render: (data?: T) => ReactNode
   useDeltaTime?: boolean
   useTicks?: boolean
@@ -151,12 +151,13 @@ type TranProps<T> = {
   onFinish?: () => void
   onLoop?: () => void
   stepper?: Stepper<T>
+  shouldUpdate?: U
 }
 
 type TranState<T> = { data?: T }
 
 // This is temporary and will be refactored to share functionality with withTransition
-export class Transition<T> extends Component<TranProps<T>, TranState<T>> {
+export class Transition<T = {}> extends Component<TranProps<T>, TranState<T>> {
   ticker = new ticker.Ticker()
   tickerCallback: () => void
 
