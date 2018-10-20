@@ -10,40 +10,48 @@ const isSafari =
 
 export const DEBUG_MAP = false
 
-export const SCREEN_SIZE = DEBUG_MAP ? 1312 : 144
-const App = new Application(SCREEN_SIZE, SCREEN_SIZE, {
+export const SCREEN_SIZE_FACTOR = DEBUG_MAP ? 1312 : 144
+
+const App = new Application(SCREEN_SIZE_FACTOR, SCREEN_SIZE_FACTOR, {
   backgroundColor: palette.black,
   antialias: false,
   roundPixels: true,
 })
 const appElement = document.querySelector('#app')
-const canvasHolderElement = appElement && appElement.querySelector('div')
+
+export const viewport = App.renderer.screen
 
 const getClosestMultiplication = (base: number, max: number) =>
   ((max - (max % base)) / base + 1) * base
 
 if (!appElement) {
   console.warn('App element not found..')
-} else if (!canvasHolderElement) {
-  console.warn('Canvas not found..')
 } else {
   const canvasElement = App.view
   appElement.classList.add(styles.app)
-  canvasHolderElement.classList.add(styles.canvasHolder)
   canvasElement.classList.add(styles.canvas)
-  canvasHolderElement.appendChild(App.view)
+  appElement.appendChild(canvasElement)
 
   const resize = () => {
     const width = window.innerWidth
     const height = window.innerHeight
-    const smaller = Math.min(width, height)
-    canvasHolderElement.style.width = `${smaller}px`
-    canvasHolderElement.style.height = `${smaller}px`
+    let rendererWidth = SCREEN_SIZE_FACTOR
+    let rendererHeight = SCREEN_SIZE_FACTOR
+    if (width > height) {
+      rendererWidth = SCREEN_SIZE_FACTOR * (width / height)
+    } else if (height > width) {
+      rendererHeight = SCREEN_SIZE_FACTOR * (height / width)
+    }
+    canvasElement.style.width = `${width}px`
+    canvasElement.style.height = `${height}px`
+
+    const multiplier = !isSafari
+      ? 1
+      : getClosestMultiplication(SCREEN_SIZE_FACTOR, Math.min(width, height))
+
+    App.renderer.resize(rendererWidth * multiplier, rendererHeight * multiplier)
     if (isSafari) {
-      let canvasSize
-      canvasSize = getClosestMultiplication(SCREEN_SIZE, canvasElement.offsetWidth)
-      App.renderer.resize(canvasSize, canvasSize)
-      App.stage.scale.set(canvasSize / SCREEN_SIZE)
+      App.stage.scale.set(multiplier)
     }
   }
   resize()
