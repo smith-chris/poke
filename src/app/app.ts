@@ -9,8 +9,10 @@ const isSafari =
   /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor)
 
 export const DEBUG_MAP = false
+export const DEBUG_MAP_BOUNDS = true
+export const DEBUG_OFFSET = 30
 
-const SCREEN_SIZE_FACTOR = DEBUG_MAP ? 1312 : 144
+const SCREEN_SIZE_FACTOR = 144
 
 const App = new Application(SCREEN_SIZE_FACTOR, SCREEN_SIZE_FACTOR, {
   backgroundColor: palette.black,
@@ -19,7 +21,16 @@ const App = new Application(SCREEN_SIZE_FACTOR, SCREEN_SIZE_FACTOR, {
 })
 const appElement = document.querySelector('#app')
 
-export const viewport = App.renderer.screen
+export const viewport = !DEBUG_MAP_BOUNDS
+  ? App.renderer.screen
+  : {
+      get width() {
+        return App.renderer.screen.width - DEBUG_OFFSET * 2
+      },
+      get height() {
+        return App.renderer.screen.height - DEBUG_OFFSET * 2
+      },
+    }
 
 const getClosestMultiplication = (base: number, max: number) =>
   ((max - (max % base)) / base + 1) * base

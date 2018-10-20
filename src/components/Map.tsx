@@ -95,7 +95,7 @@ class MapComponent extends Component<Props, State> {
         ? createPointStepper({
             from: getMapPosition(player.position),
             to: getMapPosition(player.destination),
-            duration: TILE_SIZE,
+            duration: TILE_SIZE * 2,
           })
         : undefined
 
