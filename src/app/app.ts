@@ -2,6 +2,7 @@ import { Application } from 'pixi.js'
 import { palette } from 'styles/palette'
 import styles from './app.sass'
 import 'assets/fonts/fonts'
+import { debounce } from 'components/withViewport'
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
 
@@ -65,7 +66,7 @@ if (!appElement) {
   }
   resize()
 
-  window.addEventListener('resize', resize)
+  window.addEventListener('resize', debounce(resize, 50))
 }
 
 export const stage = App.stage
