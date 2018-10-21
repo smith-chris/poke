@@ -9,17 +9,20 @@ const isSafari =
   /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor)
 
 export const DEBUG_MAP = false
-export const DEBUG_MAP_BOUNDS = true
+export const DEBUG_MAP_BOUNDS = false
 export const DEBUG_OFFSET = 30
 
 const SCREEN_SIZE_FACTOR = DEBUG_MAP ? 1312 : 144
 
 const App = new Application(SCREEN_SIZE_FACTOR, SCREEN_SIZE_FACTOR, {
-  backgroundColor: palette.red,
+  backgroundColor: DEBUG_MAP_BOUNDS ? palette.red : palette.black,
   antialias: false,
   roundPixels: true,
 })
 const appElement = document.querySelector('#app')
+if (DEBUG_MAP_BOUNDS && appElement) {
+  appElement.classList.add(styles.debugBounds)
+}
 
 export const viewport = !DEBUG_MAP_BOUNDS
   ? App.renderer.screen

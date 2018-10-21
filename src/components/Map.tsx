@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { gameActions, wannaMove } from 'store/game'
+import { gameActions, wannaMove, Direction } from 'store/game'
 import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
 import { createPointStepper } from 'utils/transition'
@@ -52,8 +52,29 @@ class MapComponent extends Component<Props, State> {
   }
   setMap = ({ game, viewport }: Props) => {
     if (game.currentMap.center) {
+      const slice = getSlice(viewport, game.player.position)
+      if (game.player.destination && game.player.direction) {
+        switch (game.player.direction) {
+          case Direction.N:
+            slice.y -= 2
+            slice.height += 2
+            break
+          case Direction.E:
+            slice.width += 2
+            break
+          case Direction.W:
+            slice.x -= 2
+            slice.width += 2
+            break
+          case Direction.S:
+            slice.height += 2
+            break
+          default:
+            break
+        }
+      }
       this.setState({
-        map: getSlice(viewport, game.player.position),
+        map: slice,
       })
     }
   }
@@ -65,8 +86,16 @@ class MapComponent extends Component<Props, State> {
       game: { currentMap, player },
       viewport,
     } = newProps
+
+    const newDestination =
+      player.destination && this.props.game.player.destination !== player.destination
+
+    const newPosition =
+      this.props.game.player.destination !== player.position &&
+      this.props.game.player.position !== player.position
+
     if (
-      (currentMap && this.props.game.player.position !== player.position) ||
+      (currentMap && (newDestination || newPosition)) ||
       this.props.viewport !== viewport
     ) {
       this.setMap(newProps)

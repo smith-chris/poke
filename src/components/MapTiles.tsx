@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from 'react'
 import { particles, Rectangle, Sprite } from 'pixi.js'
 import { PixiComponent } from 'utils/fiber'
-import { viewport } from 'app/app'
+import { viewport, DEBUG_MAP_BOUNDS } from 'app/app'
 import { makeMapIDs } from './mapUtils'
 import { TILESETS } from 'assets/tilesets'
 import { ObjectOf } from 'utils/types'
@@ -78,10 +78,12 @@ export const MapBase = PixiComponent<MapBaseProps, particles.ParticleContainer>(
         sprite.texture = texture
         sprite.position.x = x * TEXTURE_SIZE
         sprite.position.y = y * TEXTURE_SIZE
-        if ((x + y) % 2) {
-          sprite.alpha = 0.7
-        } else {
-          sprite.alpha = 1
+        if (DEBUG_MAP_BOUNDS) {
+          if ((x + y) % 2) {
+            sprite.alpha = 0.7
+          } else {
+            sprite.alpha = 1
+          }
         }
         newSprites[sid] = sprite
       }
