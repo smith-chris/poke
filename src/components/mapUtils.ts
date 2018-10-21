@@ -1,10 +1,10 @@
 import { TILE_SIZE } from 'assets/const'
 import { viewport } from 'app/app'
-import { Point } from 'utils/point'
-import { Rectangle } from 'pixi.js'
+import { Point, Rectangle } from 'utils/point'
 import { GameState, toDirection, Direction } from 'store/game'
 import { LoadedMap } from 'store/gameTransforms/loadMap'
 import { OVERWORLD } from 'assets/tilesets'
+import { mapRectangle } from './tileUtils'
 
 export const MOVE_DISTANCE = TILE_SIZE
 
@@ -12,25 +12,6 @@ export const getMapPosition = (player: Point) => {
   const mapCenterX = Math.round(viewport.width / 2 - TILE_SIZE / 2)
   const mapCenterY = Math.round(viewport.height / 2 - TILE_SIZE / 2)
   return new Point(mapCenterX - player.x * 16, mapCenterY - player.y * 16 + 4)
-}
-
-// tslint:disable-next-line
-export const mapRectangle = <T extends any>(
-  rect: Rectangle,
-  f: (x: number, y: number) => T,
-) => {
-  const results: Exclude<T, undefined>[] = []
-  for (let x = rect.x; x <= rect.width + rect.x; x++) {
-    for (let y = rect.y; y <= rect.height + rect.y; y++) {
-      const item = f(x, y)
-      // @ts-ignore
-      if (item || item === 0 || item === false) {
-        // @ts-ignore
-        results.push(item)
-      }
-    }
-  }
-  return results
 }
 
 export const makeGetTextureId = (game: GameState) => {
@@ -142,7 +123,7 @@ export const makeMapIDs = (game: GameState, slice: Rectangle) => {
 
   const isOverworld = centerMap.tilesetName === OVERWORLD
 
-  return mapRectangle(slice, (x, y) => {
+  return mapRectangle(slice, (x: number, y: number) => {
     let textureId = getTextureInd(x, y)
     if (!textureId) {
       if (isOverworld) {

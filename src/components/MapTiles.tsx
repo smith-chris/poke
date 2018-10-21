@@ -78,6 +78,11 @@ export const MapBase = PixiComponent<MapBaseProps, particles.ParticleContainer>(
         sprite.texture = texture
         sprite.position.x = x * TEXTURE_SIZE
         sprite.position.y = y * TEXTURE_SIZE
+        if ((x + y) % 2) {
+          sprite.alpha = 0.7
+        } else {
+          sprite.alpha = 1
+        }
         newSprites[sid] = sprite
       }
       for (const item of leftovers) {

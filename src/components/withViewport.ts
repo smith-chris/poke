@@ -2,11 +2,13 @@ import { ComponentType, Component, createElement } from 'react'
 import { viewport } from 'app/app'
 import { Omit } from 'utils/fiber'
 
+export type Viewport = {
+  width: number
+  height: number
+}
+
 export type ViewportProps = {
-  viewport: {
-    width: number
-    height: number
-  }
+  viewport: Viewport
 }
 
 export const withViewport = <T extends ViewportProps>(component: ComponentType<T>) => {

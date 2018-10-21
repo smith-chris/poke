@@ -10,6 +10,7 @@ import { Rectangle } from 'pixi.js'
 import { getMapPosition } from './mapUtils'
 import { MapTiles } from './MapTiles'
 import { withViewport, ViewportProps } from './withViewport'
+import { getSlice } from './tileUtils'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -51,15 +52,8 @@ class MapComponent extends Component<Props, State> {
   }
   setMap = ({ game, viewport }: Props) => {
     if (game.currentMap.center) {
-      const sliceWidth = viewport.width / 8 + 4
-      const sliceHeight = viewport.height / 8 + 4
       this.setState({
-        map: new Rectangle(
-          Math.round(game.player.position.x * 2 + 1 - sliceWidth / 2),
-          Math.round(game.player.position.y * 2 + 1 - sliceHeight / 2 - 1),
-          Math.round(sliceWidth - 1),
-          Math.round(sliceHeight - 1 + 1),
-        ),
+        map: getSlice(viewport, game.player.position),
       })
     }
   }
@@ -102,7 +96,7 @@ class MapComponent extends Component<Props, State> {
         ? createPointStepper({
             from: getMapPosition(player.position),
             to: getMapPosition(player.destination),
-            duration: TILE_SIZE * 2,
+            duration: TILE_SIZE,
           })
         : undefined
 
