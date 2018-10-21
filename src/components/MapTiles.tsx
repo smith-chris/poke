@@ -3,7 +3,7 @@ import { particles, Rectangle, Sprite } from 'pixi.js'
 import { PixiComponent } from 'utils/fiber'
 import { viewport, DEBUG_MAP_BOUNDS } from 'app/app'
 import { makeMapIDs } from './mapUtils'
-import { TILESETS } from 'assets/tilesets'
+import { TILESETS, OVERWORLD } from 'assets/tilesets'
 import { ObjectOf } from 'utils/types'
 import { TEXTURE_SIZE, TILE_SIZE } from 'assets/const'
 import { Point } from 'utils/point'
@@ -62,10 +62,12 @@ export const MapBase = PixiComponent<MapBaseProps, particles.ParticleContainer>(
         }
       }
 
+      const isOverworld = tilesetName === OVERWORLD
+
       const leftovers: Sprite[] = Object.values(this.oldSprites)
       for (const item of todo) {
         const [x, y, id] = item
-        if (id === 3 || id === 20) {
+        if (isOverworld && (id === 3 || id === 20)) {
           continue
         }
         const sid = `${x}_${y}_${id}`
