@@ -1,7 +1,8 @@
 import keyboardjs from 'keyboardjs'
 import { actions, store } from 'store/store'
-import { Direction, wannaMove } from 'store/game'
 import { DEBUG_MAP } from 'app/app'
+import { moveIntent } from 'store/moveIntent'
+import { Direction } from 'store/game'
 
 const moveQueue = new Map()
 
@@ -17,7 +18,7 @@ const handleKeyPress = (direction: Direction, keyName?: string) => {
       return
     }
     if (game.player.destination === undefined) {
-      wannaMove(game, actions, direction)
+      moveIntent(game, actions, direction)
     }
   } else if (keyName) {
     moveQueue.set(keyName, direction)

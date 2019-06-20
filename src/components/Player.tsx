@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Sprite } from 'utils/fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { gameActions, Direction } from 'store/game'
+import { Direction } from 'store/game'
 import { Point } from 'utils/point'
 import { Transition } from 'utils/withTransition'
 import { makeStepper } from 'utils/transition'
@@ -10,12 +10,13 @@ import { TILE_SIZE } from 'assets/const'
 import { getPlayerSpriteProps } from './getPlayerTexture'
 import { shallowDiff } from 'utils/other'
 import { withViewport, ViewportProps } from './withViewport'
+import { gameActionCreators } from 'store/gameStore'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
-  return bindActionCreators({ ...gameActions }, dispatch)
+  return bindActionCreators({ ...gameActionCreators }, dispatch)
 }
 type DispatchProps = ReturnType<typeof mapDispatchToProps>
 

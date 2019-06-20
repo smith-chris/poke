@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { gameActions, wannaMove, Direction } from 'store/game'
+import { Direction } from 'store/game'
 import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
 import { createPointStepper } from 'utils/transition'
@@ -11,12 +11,14 @@ import { getMapPosition } from './mapUtils'
 import { MapTiles } from './MapTiles'
 import { withViewport, ViewportProps } from './withViewport'
 import { getSlice } from './tileUtils'
+import { moveIntent } from 'store/moveIntent'
+import { gameActionCreators } from 'store/gameStore'
 
 const mapStateToProps = (state: StoreState) => state
 type StateProps = ReturnType<typeof mapStateToProps>
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
-  return bindActionCreators({ ...gameActions }, dispatch)
+  return bindActionCreators({ ...gameActionCreators }, dispatch)
 }
 type DispatchProps = ReturnType<typeof mapDispatchToProps>
 
@@ -105,7 +107,7 @@ class MapComponent extends Component<Props, State> {
     const { moveStart, moveContinue, moveEnd, loadMap, game } = this.props
     if (
       game.controls.move &&
-      wannaMove(game, { moveStart, moveContinue, moveEnd, loadMap })
+      moveIntent(game, { moveStart, moveContinue, moveEnd, loadMap })
     ) {
       return
     }

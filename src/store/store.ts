@@ -6,8 +6,9 @@ import Redux, {
 } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import { transformActions } from 'utils/redux'
-import { gameReducer, GameState, gameActions } from 'store/game'
 import { makeSubscribe } from 'store/makeSubscribe'
+import { gameActionCreators, gameReducer } from './gameStore'
+import { GameState } from './gameResolvers'
 
 declare global {
   type StoreState = {
@@ -28,6 +29,6 @@ export const store: Store = createStore(
   composeWithDevTools(applyMiddleware(transformActions)),
 )
 
-export const actions = bindActionCreators(gameActions, store.dispatch)
+export const actions = bindActionCreators(gameActionCreators, store.dispatch)
 
 export const subscribe = makeSubscribe(store)
