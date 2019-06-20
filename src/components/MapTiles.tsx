@@ -30,7 +30,7 @@ type MapBaseProps = {
 export const MapBase = PixiComponent<MapBaseProps, particles.ParticleContainer>(
   'MapBase',
   {
-    create: () => {
+    create() {
       this.oldSprites = {}
       this.lastTileset = ''
       return new particles.ParticleContainer(PARTICLES, {
@@ -38,7 +38,7 @@ export const MapBase = PixiComponent<MapBaseProps, particles.ParticleContainer>(
         position: true,
       })
     },
-    applyProps: (container, _, newProps) => {
+    applyProps(container, _, newProps) {
       const { tilesetName, mapIds } = newProps
       if (this.lastTileset !== tilesetName) {
         container.removeChildren()

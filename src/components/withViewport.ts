@@ -1,6 +1,5 @@
 import { ComponentType, Component, createElement } from 'react'
 import { viewport } from 'app/app'
-import { Omit } from 'utils/fiber'
 
 export const debounce = function(func: Function, wait: number, immediate?: boolean) {
   // tslint:disable-next-line

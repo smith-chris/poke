@@ -1,6 +1,5 @@
 import { Stepper } from 'utils/transition'
 import React, { Component, ComponentType, ReactNode } from 'react'
-import { Omit } from './fiber'
 import { ticker } from 'pixi.js'
 
 type TransitionOptions<S> = {
@@ -19,7 +18,7 @@ export type TransitionProps<T> = {
   }
 }
 
-type WithTransitionState<T> = Pick<TransitionProps<T>, 'data'>
+type TransitionState<T> = Pick<TransitionProps<T>, 'data'>
 
 const getName = (prefix: string, component: ComponentType) =>
   `${prefix}(${component.displayName || component.name})`
@@ -103,22 +102,25 @@ export function withTransition<T, S = {}>(
 
   return <
     AllProps extends TransitionProps<T>,
-    Props = Omit<AllProps, keyof TransitionProps<T>>
+    NonTransitionProps = Omit<AllProps, keyof TransitionProps<T>>
   >(
     Target: ComponentType<AllProps>,
   ) => {
     if (displayName) {
       Target.displayName = displayName
     }
-    return class extends Component<Props, WithTransitionState<T>> {
+    return class extends Component<NonTransitionProps, TransitionState<T>> {
       static displayName = getName('WithTransition', Target)
 
       ticker: ticker.Ticker
       tickerCallback: () => void
 
-      state: WithTransitionState<T> = { data: stepper.next(0).data }
+      state: TransitionState<T> = { data: stepper.next(0).data }
 
-      shouldComponentUpdate(newProps: Props, newState: WithTransitionState<T>) {
+      shouldComponentUpdate(
+        newProps: NonTransitionProps,
+        newState: TransitionState<T>,
+      ) {
         return this.state.data !== newState.data || this.props !== newProps
       }
 
@@ -137,7 +139,16 @@ export function withTransition<T, S = {}>(
       }
 
       render() {
-        return <Target {...this.props} data={this.state.data} transition={transition} />
+        const allProps = {
+          ...this.props,
+          data: this.state.data,
+          transition,
+        }
+        return React.createElement(
+          // Ignore NonTransitionProps and typecheck against TransitionProps
+          Target as ComponentType<TransitionProps<T>>,
+          allProps,
+        )
       }
     }
   }

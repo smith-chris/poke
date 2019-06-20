@@ -1,5 +1,5 @@
 // tslint:disable
-import { Component } from 'react'
+import { Component, ComponentClass } from 'react'
 import {
   ContainerProperties,
   SpriteProperties,
@@ -8,8 +8,6 @@ import {
 } from '@inlet/react-pixi'
 export { PixiComponent } from '@inlet/react-pixi'
 import { Point } from './point'
-
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
 type Obj<Keys extends string> = { [K in Keys]: any }
 

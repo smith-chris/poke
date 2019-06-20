@@ -1,5 +1,5 @@
-import React from 'react'
-import { Sprite, Omit, SpriteProps } from 'utils/fiber'
+import React, { ComponentClass } from 'react'
+import { Sprite, SpriteProps } from 'utils/fiber'
 import { Point } from 'utils/point'
 import { TILESETS } from 'assets/tilesets'
 import { TEXTURE_SIZE } from 'assets/const'
@@ -62,8 +62,10 @@ const withWaterTransition = withTransition(
   { loop: true },
   'Water',
 )
-type Props = Omit<SpriteProps, 'texture'> & TransitionProps<JSX.Element[]>
+type Props = { position: Point } & TransitionProps<JSX.Element[]>
 
-export const Water = withWaterTransition(({ data, position = Point.ZERO }: Props) => {
-  return <Container position={position}>{data}</Container>
-})
+export const Water = withWaterTransition(
+  ({ data: sprite, position = Point.ZERO }: Props) => (
+    <Container position={position}>{sprite}</Container>
+  ),
+)
