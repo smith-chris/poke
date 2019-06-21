@@ -1,5 +1,3 @@
-import { ObjectOf } from 'utils/types'
-
 export const palette: Record<
   | 'black'
   | 'darkBlue'

@@ -1,5 +1,3 @@
-import { ObjectOf } from 'utils/types'
-
 const getMatches = (input: string, regex: RegExp) => {
   const matches = []
   let match
@@ -13,7 +11,7 @@ const mapConstRegex = /mapconst ([A-Z_0-9]*),[ ]*([0-9]*),[ ]*([0-9]*)/g
 
 exports.getMapConstants = (
   input: string,
-): ObjectOf<{ width: number; height: number }> =>
+): Record<string, { width: number; height: number }> =>
   getMatches(input, mapConstRegex).reduce(
     (result, [, name, height, width]) =>
       name.includes('UNUSED')

@@ -1,5 +1,4 @@
 import { parseHexData } from './utils'
-import { ObjectOf } from 'utils/types'
 import overworldBlockset from 'gfx/blocksets/overworld.bst'
 import redsHouseBlockset from 'gfx/blocksets/reds_house.bst'
 import gymBlockset from 'gfx/blocksets/gym.bst'
@@ -19,4 +18,4 @@ export const blocksetData = {
   gym: gymBlockset,
   house: houseBlockset,
 }
-export type BlocksetsData = ObjectOf<string>
+export type BlocksetsData = Record<string, string>

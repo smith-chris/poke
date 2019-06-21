@@ -4,7 +4,6 @@ import { makeGetBlockTextureIds } from 'assets/blocksets'
 import { MapData } from 'assets/maps'
 import { Point } from 'utils/point'
 import { actions, store } from '../store'
-import { ObjectOf } from 'utils/types'
 import { DEBUG_MAP } from 'app/app'
 import { moveIntent } from 'store/moveIntent'
 
@@ -46,7 +45,7 @@ export const loadMap = (
   if (!map || !centerMap) {
     return undefined
   }
-  const currentMap: ObjectOf<LoadedMap> = { center: centerMap }
+  const currentMap: Record<string, LoadedMap> = { center: centerMap }
   for (const key in map.connections) {
     const connectionMapName = map.connections[key]
     const connectionMap = getMap(state, connectionMapName.mapName)

@@ -1,5 +1,4 @@
 import { Texture, BaseTexture, Rectangle } from 'pixi.js'
-import { ObjectOf } from 'utils/types'
 import { blocksetData } from './blocksets'
 import overworldTileset from 'gfx/tilesets/overworld.png'
 import overworldCollisions from 'gfx/tilesets/overworld.tilecoll'
@@ -67,7 +66,7 @@ type TilesetNames = keyof typeof tilesetsData
 
 type Tileset = ReturnType<typeof makeTexture>
 
-export const TILESETS: ObjectOf<Tileset> = {
+export const TILESETS: Record<string, Tileset> = {
   [OVERWORLD]: makeTexture(overworldTileset),
   '00': makeTexture(overworldTileset),
   REDS_HOUSE_1: makeTexture(redsHouseTileset),
@@ -76,4 +75,4 @@ export const TILESETS: ObjectOf<Tileset> = {
   HOUSE: makeTexture(houseTileset),
 } as Record<TilesetNames, Tileset>
 
-export type TilesetsData = ObjectOf<typeof tilesetsData.OVERWORLD>
+export type TilesetsData = Record<string, typeof tilesetsData.OVERWORLD>

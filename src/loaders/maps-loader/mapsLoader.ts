@@ -1,4 +1,3 @@
-import { ObjectOf } from 'utils/types'
 const fs = require('fs')
 const path = require('path')
 const { getMapConstants } = require('./getMapConst')
@@ -33,7 +32,7 @@ const parseParams = (params: string) =>
 
 const getHeaders = (input: string) => {
   let match
-  let connections: ObjectOf<{ mapName: string; offset: number }> = {}
+  let connections: Record<string, { mapName: string; offset: number }> = {}
   while ((match = connectionsRegex.exec(input))) {
     const [, , direction, params] = match
     const [, mapName, a, b] = parseParams(params)
@@ -53,7 +52,7 @@ const getHeaders = (input: string) => {
 
 const getObjects = (input: string) => {
   let match
-  const warps: ObjectOf<{ location: number; mapName: string; id: number }> = {}
+  const warps: Record<string, { location: number; mapName: string; id: number }> = {}
   let warpId = 0
   while ((match = objectRegex.exec(input))) {
     // match is now the next match, in array form.

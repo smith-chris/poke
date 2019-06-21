@@ -4,7 +4,6 @@ import { PixiComponent } from 'utils/fiber'
 import { viewport, DEBUG_MAP_BOUNDS } from 'app/app'
 import { makeMapIDs } from './mapUtils'
 import { TILESETS, OVERWORLD } from 'assets/tilesets'
-import { ObjectOf } from 'utils/types'
 import { TEXTURE_SIZE, TILE_SIZE } from 'assets/const'
 import { Point } from 'utils/point'
 import { Flower } from './Flower'
@@ -45,7 +44,7 @@ export const MapBase = PixiComponent<MapBaseProps, particles.ParticleContainer>(
         this.oldSprites = {}
         this.lastTileset = tilesetName
       }
-      const newSprites: ObjectOf<Sprite> = {}
+      const newSprites: Record<string, Sprite> = {}
       const todo = []
 
       for (const item of mapIds) {
