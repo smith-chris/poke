@@ -2,12 +2,14 @@ const fs = require('fs')
 const path = require('path')
 const { getMapConstants } = require('./getMapConst')
 
-export enum Direction {
+// TODO: add support for ES6 imports for loaders and import this from gameTypes.ts
+enum Direction {
   N = 'north',
   E = 'east',
   W = 'west',
   S = 'south',
 }
+
 const toDirection = (input: string) => {
   // tslint:disable-next-line
   const firstLetter: any = typeof input === 'string' && input[0]

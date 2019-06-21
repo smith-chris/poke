@@ -2,6 +2,7 @@ const path = require('path')
 
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { WatchIgnorePlugin } = require('webpack')
 
 const isDev = process.argv.indexOf('-p') === -1
@@ -56,6 +57,7 @@ module.exports = {
   devtool: 'source-map',
   plugins: [
     new ForkTsCheckerWebpackPlugin(),
+    new CopyWebpackPlugin([{ from: path.resolve('./src/assets'), to: 'assets' }]),
     new WatchIgnorePlugin([/sass\.d\.ts$/]),
     new FriendlyErrorsWebpackPlugin(),
   ],
