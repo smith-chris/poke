@@ -1,10 +1,10 @@
 import { Point } from 'pixi.js'
 import { assertNever } from 'utils/assertNever'
 import { pointsEqual } from 'utils/pixi'
-import { canMove } from 'store/gameUtils'
+import { willCollide } from 'store/gameUtils'
 import { GameState, Direction } from 'store/gameTypes'
 
-export const getNextPosition = (position: Point, direction: Direction) => {
+export const getNextPositionForDirection = (position: Point, direction: Direction) => {
   switch (direction) {
     case Direction.N:
       return new Point(position.x, position.y - 1)
@@ -20,7 +20,7 @@ export const getNextPosition = (position: Point, direction: Direction) => {
 }
 
 export const movePlayerStart = (position: Point, direction: Direction) => {
-  const destination = getNextPosition(position, direction)
+  const destination = getNextPositionForDirection(position, direction)
   if (!pointsEqual(destination, position)) {
     return {
       destination,
@@ -35,14 +35,16 @@ export const movePlayerContinue = ({ player, currentMap, controls }: GameState) 
     console.warn('No current map or destination!', currentMap, player)
     return {}
   }
+  if (controls.move === undefined) {
+    console.warn('Cant continue without direction!', controls, player)
+    return {}
+  }
 
-  if (
-    controls.move !== undefined &&
-    canMove(player.destination, controls.move, currentMap.center.collisions)
-  ) {
+  const newDestination = getNextPositionForDirection(player.destination, controls.move)
+  if (willCollide(newDestination, currentMap.center.collisions)) {
     return {
       position: player.destination,
-      destination: getNextPosition(player.destination, controls.move),
+      destination: newDestination,
       direction: controls.move,
       moved: true,
     }

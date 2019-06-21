@@ -11,6 +11,7 @@ const handleKeyPress = (direction: Direction, keyName?: string) => {
   if (game.controls.move === undefined) {
     actions.moveKeyPress(direction)
     if (DEBUG_MAP) {
+      // Move entire map at a time in debug mode
       const map = game.currentMap[direction]
       if (map) {
         actions.loadMap({ mapName: map.name })
@@ -21,6 +22,7 @@ const handleKeyPress = (direction: Direction, keyName?: string) => {
       moveIntent(game, actions, direction)
     }
   } else if (keyName) {
+    // Handle pressing multiple keys on the keyboard
     moveQueue.set(keyName, direction)
   }
 }
@@ -40,7 +42,7 @@ const handleKeyRelease = (direction: Direction, keyName?: string) => {
 }
 
 type P = { x: number; y: number }
-const globalToKey = ({ x, y }: P) => {
+const pointToDirection = ({ x, y }: P) => {
   const dX = x - window.innerWidth / 2
   const dY = y - window.innerHeight / 2
   const angle = Math.atan2(dY, dX) * (180 / Math.PI) + 180
@@ -56,24 +58,24 @@ const globalToKey = ({ x, y }: P) => {
 }
 
 window.addEventListener('pointerdown', e => {
-  const direction = globalToKey(e)
+  const direction = pointToDirection(e)
   handleKeyPress(direction)
 })
 
 window.addEventListener('touchstart', e => {
   // @ts-ignore
-  const direction = globalToKey({ x: e.pageX, y: e.pageY })
+  const direction = pointToDirection({ x: e.pageX, y: e.pageY })
   handleKeyPress(direction)
 })
 
 window.addEventListener('touchend', e => {
   // @ts-ignore
-  const direction = globalToKey({ x: e.pageX, y: e.pageY })
+  const direction = pointToDirection({ x: e.pageX, y: e.pageY })
   handleKeyRelease(store.getState().game.controls.move || direction)
 })
 
 window.addEventListener('pointerup', e => {
-  const direction = globalToKey(e)
+  const direction = pointToDirection(e)
   handleKeyRelease(store.getState().game.controls.move || direction)
 })
 

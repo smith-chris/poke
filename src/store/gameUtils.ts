@@ -1,13 +1,7 @@
 import { Point } from 'pixi.js'
 import { Direction } from 'store/gameTypes'
-import { getNextPosition } from 'store/gameTransforms/move'
 
-export const canMove = (
-  position: Point,
-  direction: Direction,
-  collisions: boolean[][],
-) => {
-  const { x, y } = getNextPosition(position, direction)
+export const willCollide = ({ x, y }: Point, collisions: boolean[][]) => {
   const column = collisions[x]
   if (column === undefined) {
     return undefined

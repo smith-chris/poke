@@ -1,7 +1,7 @@
 import { gameActionCreators } from '../gameStore'
-import { canMove } from '../gameUtils'
+import { willCollide } from '../gameUtils'
 import { Point } from 'utils/point'
-import { getNextPosition } from './move'
+import { getNextPositionForDirection } from './move'
 import { GameState, Direction } from 'store/gameTypes'
 
 type MoveActions = Pick<
@@ -15,7 +15,7 @@ export const moveIntent = (
   direction?: Direction,
 ) => {
   const moveDirection = direction || controls.move
-  const from = player.destination || player.position
+  const fromPosition = player.destination || player.position
   if (!moveDirection) {
     console.warn('No move direction!', { controls, direction })
     return
@@ -24,7 +24,8 @@ export const moveIntent = (
     console.warn('No current map!', currentMap)
     return
   }
-  const playerCanMove = canMove(from, moveDirection, currentMap.center.collisions)
+  const toPosition = getNextPositionForDirection(fromPosition, moveDirection)
+  const playerCanMove = willCollide(toPosition, currentMap.center.collisions)
   if (playerCanMove) {
     if (player.destination === undefined) {
       // Check if can move - if not, check for undefined collision
@@ -34,7 +35,7 @@ export const moveIntent = (
     }
     return true
   } else if (playerCanMove === undefined) {
-    const { x, y } = from
+    const { x, y } = fromPosition
     const { objects, connections, size } = maps[currentMap.center.name]
     const warp = objects.warps[`${x}_${y}`]
 
@@ -46,15 +47,17 @@ export const moveIntent = (
       }
     }
 
-    const to = getNextPosition(from, moveDirection)
     const { north, east, west, south } = connections
     const northMap = north && maps[north.mapName]
     const eastMap = east && maps[east.mapName]
     const westMap = west && maps[west.mapName]
     const southMap = south && maps[south.mapName]
-    if (to.y < 0) {
+    if (toPosition.y < 0) {
       if (north && northMap) {
-        const position = new Point(from.x - north.offset * 2, northMap.size.height * 2)
+        const position = new Point(
+          fromPosition.x - north.offset * 2,
+          northMap.size.height * 2,
+        )
         const destination = new Point(position.x, position.y - 1)
 
         actions.loadMap({
@@ -63,9 +66,9 @@ export const moveIntent = (
         })
       }
       return true
-    } else if (to.y >= size.height * 2) {
+    } else if (toPosition.y >= size.height * 2) {
       if (south && southMap) {
-        const position = new Point(from.x - south.offset * 2, -1)
+        const position = new Point(fromPosition.x - south.offset * 2, -1)
         const destination = new Point(position.x, 0)
 
         actions.loadMap({
@@ -74,9 +77,9 @@ export const moveIntent = (
         })
       }
       return true
-    } else if (to.x >= size.width * 2) {
+    } else if (toPosition.x >= size.width * 2) {
       if (east && eastMap) {
-        const position = new Point(-1, from.y - east.offset * 2)
+        const position = new Point(-1, fromPosition.y - east.offset * 2)
         const destination = new Point(0, position.y)
 
         actions.loadMap({
@@ -85,9 +88,12 @@ export const moveIntent = (
         })
       }
       return true
-    } else if (to.x < 0) {
+    } else if (toPosition.x < 0) {
       if (west && westMap) {
-        const position = new Point(westMap.size.width * 2, from.y - west.offset * 2)
+        const position = new Point(
+          westMap.size.width * 2,
+          fromPosition.y - west.offset * 2,
+        )
         const destination = new Point(position.x - 1, position.y)
 
         actions.loadMap({
