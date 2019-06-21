@@ -2,13 +2,13 @@ import React, { Component } from 'react'
 import { Sprite } from 'utils/fiber'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import isEqual from 'lodash.isequal'
 import { Direction } from 'store/game'
 import { Point } from 'utils/point'
 import { Transition } from 'utils/withTransition'
 import { makeStepper } from 'utils/transition'
 import { TILE_SIZE } from 'assets/const'
 import { getPlayerSpriteProps } from './getPlayerTexture'
-import { shallowDiff } from 'utils/other'
 import { withViewport, ViewportProps } from './withViewport'
 import { gameActionCreators } from 'store/gameStore'
 
@@ -64,7 +64,7 @@ class PlayerComponent extends Component<Props, State> {
   }
 
   shouldComponentUpdate({ viewport: newViewport }: Props, newState: State) {
-    return shallowDiff(this.state, newState) || this.props.viewport !== newViewport
+    return !isEqual(this.state, newState) || this.props.viewport !== newViewport
   }
 
   handleLoop = () => {

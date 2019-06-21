@@ -7,7 +7,7 @@ import {
   getNextPosition,
 } from 'store/gameTransforms/move'
 import { loadMap, LoadedMap, LoadMapData } from 'store/gameTransforms/loadMap'
-import { assertNever } from 'utils/other'
+import { assertNever } from 'utils/assertNever'
 import { MapsData } from 'assets/maps'
 import { TilesetsData } from 'assets/tilesets'
 import { canMove } from './gameUtils'

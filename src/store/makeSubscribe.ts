@@ -1,4 +1,4 @@
-import { shallowDiff } from 'utils/other'
+import isEqual from 'lodash.isequal'
 
 type Slice<T> = T
 type SliceState<T> = (state: StoreState) => Slice<T>
@@ -11,7 +11,7 @@ export const makeSubscribe = (store: Store) => <T>(
   let currentSlice = sliceState(store.getState())
   store.subscribe(() => {
     const newSlice = sliceState(store.getState())
-    if (shallowDiff(currentSlice, newSlice)) {
+    if (!isEqual(currentSlice, newSlice)) {
       const oldSlice = currentSlice
       currentSlice = newSlice
       subscriber(newSlice, oldSlice)

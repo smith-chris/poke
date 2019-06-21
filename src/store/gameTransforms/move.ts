@@ -1,6 +1,6 @@
 import { Direction, GameState } from '../game'
 import { Point } from 'pixi.js'
-import { assertNever } from 'utils/other'
+import { assertNever } from 'utils/assertNever'
 import { pointsEqual } from 'utils/pixi'
 import { canMove } from '../gameUtils'
 

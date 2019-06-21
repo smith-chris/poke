@@ -1,5 +1,5 @@
 import { Texture, Rectangle } from 'pixi.js'
-import { assertNever } from 'utils/other'
+import { assertNever } from 'utils/assertNever'
 import { Point } from 'utils/point'
 import { Direction } from 'store/game'
 import red from 'gfx/sprites/red.png'
