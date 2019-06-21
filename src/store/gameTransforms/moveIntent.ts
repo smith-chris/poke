@@ -1,9 +1,8 @@
-import { gameActionCreators } from './gameStore'
-import { GameState } from './gameResolvers'
-import { Direction } from './game'
-import { canMove } from './gameUtils'
+import { gameActionCreators } from '../gameStore'
+import { canMove } from '../gameUtils'
 import { Point } from 'utils/point'
-import { getNextPosition } from './gameTransforms/move'
+import { getNextPosition } from './move'
+import { GameState, Direction } from 'store/gameTypes'
 
 type MoveActions = Pick<
   typeof gameActionCreators,

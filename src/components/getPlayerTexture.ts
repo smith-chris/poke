@@ -1,7 +1,7 @@
 import { Texture, Rectangle } from 'pixi.js'
 import { assertNever } from 'utils/assertNever'
 import { Point } from 'utils/point'
-import { Direction } from 'store/game'
+import { Direction } from 'store/gameTypes'
 import red from 'gfx/sprites/red.png'
 
 const baseTexture = Texture.fromImage(red.src).baseTexture

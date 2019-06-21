@@ -1,8 +1,8 @@
 import keyboardjs from 'keyboardjs'
 import { actions, store } from 'store/store'
 import { DEBUG_MAP } from 'app/app'
-import { moveIntent } from 'store/moveIntent'
-import { Direction } from 'store/game'
+import { moveIntent } from 'store/gameTransforms/moveIntent'
+import { Direction } from 'store/gameTypes'
 
 const moveQueue = new Map()
 

@@ -1,8 +1,8 @@
-import { Direction, GameState } from '../game'
 import { Point } from 'pixi.js'
 import { assertNever } from 'utils/assertNever'
 import { pointsEqual } from 'utils/pixi'
-import { canMove } from '../gameUtils'
+import { canMove } from 'store/gameUtils'
+import { GameState, Direction } from 'store/gameTypes'
 
 export const getNextPosition = (position: Point, direction: Direction) => {
   switch (direction) {

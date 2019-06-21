@@ -12,7 +12,6 @@ export type ViewportProps = {
 }
 
 export const withViewport = <T extends ViewportProps>(component: ComponentType<T>) => {
-  // tslint:disable-next-line
   return class extends Component<Omit<T, keyof ViewportProps>, ViewportProps> {
     state = {
       viewport: {

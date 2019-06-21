@@ -1,11 +1,11 @@
-import { GameState, Direction } from 'store/game'
 import { parseHexData } from 'assets/utils'
 import { makeGetBlockTextureIds } from 'assets/blocksets'
 import { MapData } from 'assets/maps'
 import { Point } from 'utils/point'
 import { actions, store } from '../store'
 import { DEBUG_MAP } from 'app/app'
-import { moveIntent } from 'store/moveIntent'
+import { moveIntent } from 'store/gameTransforms/moveIntent'
+import { Direction, GameState, LoadMapData, LoadedMap } from 'store/gameTypes'
 
 const fixedArray = <T>(x: number, y: number) => {
   // TODO: make it sealed
@@ -14,19 +14,6 @@ const fixedArray = <T>(x: number, y: number) => {
     result[i] = []
   }
   return result
-}
-
-export type LoadedMap = {
-  name: string
-  textureIds: number[][]
-  collisions: boolean[][]
-}
-
-export type LoadMapData = {
-  mapName: string
-  location?: number
-  playerData?: { position: Point; destination: Point; direction: Direction }
-  exit?: boolean
 }
 
 export const loadMap = (

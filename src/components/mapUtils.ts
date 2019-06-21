@@ -1,10 +1,10 @@
 import { TILE_SIZE } from 'assets/const'
 import { viewport } from 'app/app'
 import { Point, Rectangle } from 'utils/point'
-import { GameState, toDirection, Direction } from 'store/game'
-import { LoadedMap } from 'store/gameTransforms/loadMap'
 import { OVERWORLD } from 'assets/tilesets'
 import { mapRectangle } from './tileUtils'
+import { GameState, Direction, LoadedMap } from 'store/gameTypes'
+import { toDirection } from 'store/gameUtils'
 
 export const MOVE_DISTANCE = TILE_SIZE
 

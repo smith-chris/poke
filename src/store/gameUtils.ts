@@ -1,5 +1,5 @@
 import { Point } from 'pixi.js'
-import { Direction } from 'store/game'
+import { Direction } from 'store/gameTypes'
 import { getNextPosition } from 'store/gameTransforms/move'
 
 export const canMove = (
@@ -13,4 +13,15 @@ export const canMove = (
     return undefined
   }
   return column[y]
+}
+
+export const toDirection = (input: string) => {
+  // tslint:disable-next-line
+  const firstLetter: any = typeof input === 'string' && input[0].toUpperCase()
+  if (firstLetter) {
+    return Direction[firstLetter] as Direction
+  } else {
+    console.warn('Couldnt find direction for ', input)
+    return undefined
+  }
 }

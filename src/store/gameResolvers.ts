@@ -1,43 +1,10 @@
-import { TilesetsData } from 'assets/tilesets'
-import { MapsData } from 'assets/maps'
-import { Point } from 'utils/point'
-import {
-  LoadMapData,
-  loadMap as loadMapUtil,
-  LoadedMap,
-} from './gameTransforms/loadMap'
+import { loadMap as loadMapUtil } from './gameTransforms/loadMap'
 import {
   movePlayerStart,
   movePlayerContinue,
   movePlayerEnd,
 } from './gameTransforms/move'
-
-enum Direction {
-  N = 'north',
-  E = 'east',
-  W = 'west',
-  S = 'south',
-}
-
-type MapRenderingData = {
-  maps: MapsData
-  tilesets: TilesetsData
-}
-
-export type CurrentMaps = Partial<Record<'center' | Direction, LoadedMap>>
-
-export type GameState = {
-  player: {
-    destination?: Point
-    direction?: Direction
-    position: Point
-    moved: boolean
-  }
-  controls: {
-    move?: Direction
-  }
-  currentMap: CurrentMaps
-} & MapRenderingData
+import { GameState, MapRenderingData, Direction, LoadMapData } from 'store/gameTypes'
 
 export const initialise = (state: GameState) => (data: MapRenderingData): GameState => {
   return { ...state, ...data }

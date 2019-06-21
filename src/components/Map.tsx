@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Direction } from 'store/game'
+import { Direction } from 'store/gameTypes'
 import { Transition } from 'utils/withTransition'
 import { TILE_SIZE } from 'assets/const'
 import { createPointStepper } from 'utils/transition'
@@ -11,7 +11,7 @@ import { getMapPosition } from './mapUtils'
 import { MapTiles } from './MapTiles'
 import { withViewport, ViewportProps } from './withViewport'
 import { getSlice } from './tileUtils'
-import { moveIntent } from 'store/moveIntent'
+import { moveIntent } from 'store/gameTransforms/moveIntent'
 import { gameActionCreators } from 'store/gameStore'
 
 const mapStateToProps = (state: StoreState) => state

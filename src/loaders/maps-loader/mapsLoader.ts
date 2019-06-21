@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const { getMapConstants } = require('./getMapConst')
 
-enum Direction {
+export enum Direction {
   N = 'north',
   E = 'east',
   W = 'west',
@@ -158,8 +158,7 @@ const readMap = (
 module.exports = function mapsLoader(source: string) {
   const mapConstants = getMapConstants(source)
   const basePath = path.resolve(this.resourcePath, '../..')
-  // tslint:disable
-  const result = {} as any
+  const result: Record<string, {}> = {}
   for (const key in mapConstants) {
     result[key] = readMap(basePath, [key, mapConstants[key]])
   }
