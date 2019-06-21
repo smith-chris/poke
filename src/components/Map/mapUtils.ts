@@ -5,6 +5,7 @@ import { OVERWORLD } from 'assets/tilesets'
 import { mapRectangle } from './tileUtils'
 import { GameState, Direction, LoadedMap } from 'store/gameTypes'
 import { toDirection } from 'store/gameUtils'
+import isNumber from 'lodash.isnumber'
 
 export const MOVE_DISTANCE = TILE_SIZE
 
@@ -125,7 +126,7 @@ export const makeMapIDs = (game: GameState, slice: Rectangle) => {
 
   return mapRectangle(slice, (x: number, y: number) => {
     let textureId = getTextureInd(x, y)
-    if (!textureId) {
+    if (!isNumber(textureId)) {
       if (isOverworld) {
         textureId = 82
       } else {

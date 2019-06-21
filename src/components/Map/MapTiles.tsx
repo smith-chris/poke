@@ -46,7 +46,6 @@ export const MapBase = PixiComponent<MapBaseProps, particles.ParticleContainer>(
       }
       const newSprites: Record<string, Sprite> = {}
       const todo = []
-
       for (const item of mapIds) {
         if (!item) {
           continue
@@ -67,6 +66,7 @@ export const MapBase = PixiComponent<MapBaseProps, particles.ParticleContainer>(
       for (const item of todo) {
         const [x, y, id] = item
         if (isOverworld && (id === 3 || id === 20)) {
+          // 3, 20 correspond to Flower and Water in overworld which are gonna be rendered by MapTiles component
           continue
         }
         const sid = `${x}_${y}_${id}`
