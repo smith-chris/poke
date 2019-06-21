@@ -1,8 +1,11 @@
 import React from 'react'
 import { Sprite } from 'utils/fiber'
 import { Texture } from 'pixi.js'
-import { makeStepperFromSteps } from 'utils/transition'
-import { withTransition, TransitionProps } from 'utils/withTransition'
+import { makeStepperFromSteps } from 'components/withTransition/transition'
+import {
+  withTransition,
+  TransitionProps,
+} from 'components/withTransition/withTransition'
 import { Point } from 'utils/point'
 import _flower1 from 'gfx/tilesets/flower/flower1.png'
 import _flower2 from 'gfx/tilesets/flower/flower2.png'

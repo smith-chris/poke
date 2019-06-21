@@ -1,5 +1,5 @@
 import { Rectangle, Point } from 'utils/point'
-import { Viewport } from './withViewport'
+import { Viewport } from '../withViewport'
 
 // tslint:disable-next-line
 export const mapRectangle = <T extends any>(

@@ -1,4 +1,4 @@
-import { Stepper } from 'utils/transition'
+import { Stepper } from 'components/withTransition/transition'
 import React, { Component, ComponentType, ReactNode } from 'react'
 import { ticker } from 'pixi.js'
 

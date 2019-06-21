@@ -3,8 +3,11 @@ import { Sprite, SpriteProps } from 'utils/fiber'
 import { Point } from 'utils/point'
 import { TILESETS } from 'assets/tilesets'
 import { TEXTURE_SIZE } from 'assets/const'
-import { withTransition, TransitionProps } from 'utils/withTransition'
-import { makeStepperFromSteps, evenSteps } from 'utils/transition'
+import {
+  withTransition,
+  TransitionProps,
+} from 'components/withTransition/withTransition'
+import { makeStepperFromSteps, evenSteps } from 'components/withTransition/transition'
 import { Container } from 'utils/fiber'
 
 const { OVERWORLD } = TILESETS

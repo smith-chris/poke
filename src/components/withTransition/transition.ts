@@ -1,4 +1,4 @@
-import { Point } from './point'
+import { Point } from 'utils/point'
 
 export type Steps<T> = Array<[number, T]>
 
@@ -20,7 +20,7 @@ const getId = (() => {
 })()
 
 export const makeStepper = <T>(
-  steppingFunction: ((elapsed: number) => { data?: T; done: boolean }),
+  steppingFunction: (elapsed: number) => { data?: T; done: boolean },
 ): Stepper<T> => {
   let elapsed = 0
   const next = (time: number) => {

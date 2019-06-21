@@ -1,6 +1,6 @@
 import React from 'react'
-import { Player } from './Player'
-import { Map } from './Map'
+import { Player } from './Player/Player'
+import { Map } from './Map/Map'
 import { Container } from 'utils/fiber'
 import { Point } from 'utils/point'
 import { DEBUG_MAP_BOUNDS, DEBUG_OFFSET } from 'app/app'
