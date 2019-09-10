@@ -14,7 +14,7 @@ const toDirection = (input: string) => {
   // tslint:disable-next-line
   const firstLetter: any = typeof input === 'string' && input[0]
   if (firstLetter) {
-    return Direction[firstLetter]
+    return Direction[firstLetter as keyof typeof Direction]
   } else {
     console.warn('Couldnt find direction for ', input)
     return Direction.N

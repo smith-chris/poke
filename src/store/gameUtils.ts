@@ -13,7 +13,7 @@ export const toDirection = (input: string) => {
   // tslint:disable-next-line
   const firstLetter: any = typeof input === 'string' && input[0].toUpperCase()
   if (firstLetter) {
-    return Direction[firstLetter] as Direction
+    return Direction[firstLetter as keyof typeof Direction] as Direction
   } else {
     console.warn('Couldnt find direction for ', input)
     return undefined
