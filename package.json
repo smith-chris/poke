@@ -73,7 +73,7 @@
     "jest": "^24.8.0",
     "lint-staged": "^8.1.4",
     "magick-loader": "^1.0.0",
-    "node-sass": "^4.9.3",
+    "node-sass": "^7.0.0",
     "postcss-input-style": "^1.0.0",
     "postcss-loader": "^2.1.6",
     "raw-loader": "^0.5.1",
