@@ -1,8 +1,5 @@
 # Poke
 
-So far looks like a clone of original pokemon red ;)
-[Demo](http://smithchris.com/poke/)
-
 ## How to use
 
 Clone the repo and install local dependencies run:
